@@ -1,0 +1,4451 @@
+13:36:13 -- 
+===== MainModule :: ReplicatedStorage.MainModule =====
+13:36:13 -- -- Script path: ReplicatedStorage.MainModule
+-- Decompile time: 88.68 ms
+
+local u0 = {}
+local u1 = {"Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."}
+local u14 = {
+    ["[DoubleBarrel]"] = {Legendary = 800, Epic = 600, Common = 400},
+    ["[Revolver]"] = {Legendary = 800, Epic = 600, Common = 400},
+    ["[SMG]"] = {Legendary = 400, Epic = 300, Common = 200},
+    ["[Shotgun]"] = {Legendary = 400, Epic = 300, Common = 200},
+    ["[Silencer]"] = {Legendary = 400, Epic = 300, Common = 200},
+    ["[TacticalShotgun]"] = {Legendary = 600, Epic = 400, Common = 300},
+    BulletBeam = {Legendary = 600, Epic = 400},
+    NameTag = {Legendary = 600},
+}
+
+function MCColorToColor3(a1) -- Line: 29
+    return Color3.fromRGB(unpack(a1))
+end
+
+function AsmoBuildStringWithMCColor(a1) -- Line: 34
+    return a1:gsub("<%a+>.-<>", function(a1) -- Line: 35
+        local v1 = a1:match(">(.+)<")
+        local v2 = a1:match("<(%a+)>")
+        local v3 = _G.AsmoMinecraftColors[v2]
+        if not v3 then
+            return a1
+        end
+        return ("<font color=\"rgb(%d, %d, %d)\">%s</font>"):format(v3[1], v3[2], v3[3], v1)
+    end)
+end
+
+function u0.addComma(a1) -- Line: 46
+    if not tonumber(a1) then
+        return a1
+    end
+    return tostring(a1):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
+end
+
+function u0.GetRarityGunColor(a1) -- Line: 52
+    local v1 = next
+    local Guns = _G.Guns
+    for k, v in v1, Guns do
+        if k == a1 then
+            return script:FindFirstChild(v[1])
+        end
+    end
+end
+
+function u0.GetRarityFrameColor(a1) -- Line: 60
+    local v1 = next
+    local Frames = _G.Frames
+    for k, v in v1, Frames do
+        if k == a1 then
+            return script:FindFirstChild(v[1])
+        end
+    end
+end
+
+function u0.GetRarityBeamColor(a1) -- Line: 68
+    local v1 = next
+    local BulletBeams = _G.BulletBeams
+    for k, v in v1, BulletBeams do
+        if k == a1 then
+            return script:FindFirstChild(v[1])
+        end
+    end
+end
+
+function u0.GetRarityGun(a1, a2, a3, a4) -- Line: 76
+    local v1, v2
+    local v3 = next
+    local Guns = _G.Guns
+    local v4 = nil
+    local v5, v6, v7, v8 = a1, a2, a4, a3
+    for k, v in v3, Guns, v4 do
+        if k == v5 then
+            if v6 then
+                v2 = script
+                v1 = v[1]
+                v2:FindFirstChild(v1):Clone().Parent = v6
+            end
+            if v7 then
+                v2 = script
+                v1 = v[1]
+                v2:FindFirstChild(v1):Clone().Parent = v7
+            end
+            v2 = script
+            v1 = v[1]
+            v2:FindFirstChild(v1):Clone().Parent = v8
+            v8.Text = string.upper(v[1])
+        end
+    end
+end
+
+function u0.GetRarityMisc(a1, a2, a3, a4) -- Line: 91
+    local v1, v2
+    local v3 = next
+    local Misc = _G.Misc
+    local v4 = nil
+    local v5, v6, v7, v8 = a1, a2, a4, a3
+    for k, v in v3, Misc, v4 do
+        if k == v5 then
+            if v6 then
+                v2 = script
+                v1 = v[1]
+                v2:FindFirstChild(v1):Clone().Parent = v6
+            end
+            if v7 then
+                v2 = script
+                v1 = v[1]
+                v2:FindFirstChild(v1):Clone().Parent = v7
+            end
+            v2 = script
+            v1 = v[1]
+            v2:FindFirstChild(v1):Clone().Parent = v8
+            v8.Text = "Miscellaneous"
+        end
+    end
+end
+
+function u0.GetRarityKnife(a1, a2, a3, a4) -- Line: 106
+    local v1, v2
+    local v3 = next
+    local Knives = _G.Knives
+    local v4 = nil
+    local v5, v6, v7, v8 = a1, a2, a4, a3
+    for k, v in v3, Knives, v4 do
+        if k == v5 then
+            if v6 then
+                v2 = script
+                v1 = v[1]
+                v2:FindFirstChild(v1):Clone().Parent = v6
+            end
+            if v7 then
+                v2 = script
+                v1 = v[1]
+                v2:FindFirstChild(v1):Clone().Parent = v7
+            end
+            v2 = script
+            v1 = v[1]
+            v2:FindFirstChild(v1):Clone().Parent = v8
+            v8.Text = string.upper(v[1])
+        end
+    end
+end
+
+function u0.GetRarityBeam(a1, a2, a3, a4) -- Line: 121
+    local v1, v2
+    local v3 = next
+    local BulletBeams = _G.BulletBeams
+    local v4 = nil
+    local v5, v6, v7, v8 = a1, a2, a4, a3
+    for k, v in v3, BulletBeams, v4 do
+        if k == v5 then
+            if v6 then
+                v2 = script
+                v1 = v[1]
+                v2:FindFirstChild(v1):Clone().Parent = v6
+            end
+            if v7 then
+                v2 = script
+                v1 = v[1]
+                v2:FindFirstChild(v1):Clone().Parent = v7
+            end
+            v2 = script
+            v1 = v[1]
+            v2:FindFirstChild(v1):Clone().Parent = v8
+            v8.Text = string.upper(v[1])
+        end
+    end
+end
+
+function u0.GetRarityItem(a1, a2, a3, a4) -- Line: 136
+    local v1, v2
+    local v3 = next
+    local Items = _G.Items
+    local v4 = nil
+    local v5, v6, v7, v8 = a1, a2, a4, a3
+    for k, v in v3, Items, v4 do
+        if k == v5 then
+            if v6 then
+                v2 = script
+                v1 = v[1]
+                v2:FindFirstChild(v1):Clone().Parent = v6
+            end
+            if v7 then
+                v2 = script
+                v1 = v[1]
+                v2:FindFirstChild(v1):Clone().Parent = v7
+            end
+            v2 = script
+            v1 = v[1]
+            v2:FindFirstChild(v1):Clone().Parent = v8
+            v8.Text = string.upper(v[1])
+        end
+    end
+end
+
+function u0.GetRarityFrame(a1, a2, a3, a4) -- Line: 151
+    local v1, v2
+    local v3 = next
+    local Frames = _G.Frames
+    local v4 = nil
+    local v5, v6, v7, v8 = a1, a2, a4, a3
+    for k, v in v3, Frames, v4 do
+        if k == v5 then
+            if v6 then
+                v2 = script
+                v1 = v[1]
+                v2:FindFirstChild(v1):Clone().Parent = v6
+            end
+            if v7 then
+                v2 = script
+                v1 = v[1]
+                v2:FindFirstChild(v1):Clone().Parent = v7
+            end
+            v2 = script
+            v1 = v[1]
+            v2:FindFirstChild(v1):Clone().Parent = v8
+            v8.Text = string.upper(v[1])
+        end
+    end
+end
+
+function u0.GetRarityCharm(a1, a2, a3) -- Line: 166
+    local v1, v2
+    local v3 = next
+    local Charms = _G.Charms
+    local v4 = nil
+    local v5, v6, v7 = a1, a2, a3
+    for k, v in v3, Charms, v4 do
+        if k == v5 then
+            if v6 then
+                v2 = script
+                v1 = v[1]
+                v2:FindFirstChild(v1):Clone().Parent = v6
+            end
+            v2 = script
+            v1 = v[1]
+            v2:FindFirstChild(v1):Clone().Parent = v7
+            v7.Text = string.upper(v[1])
+        end
+    end
+end
+
+function u0.GetRarityTag(a1, a2, a3, a4) -- Line: 179
+    local v1, v2
+    local v3 = next
+    local Tags = _G.Tags
+    local v4 = nil
+    local v5, v6, v7, v8 = a1, a2, a4, a3
+    for k, v in v3, Tags, v4 do
+        if k == v5 then
+            if v6 then
+                v2 = script
+                v1 = v[1]
+                v2:FindFirstChild(v1):Clone().Parent = v6
+            end
+            if v7 then
+                v2 = script
+                v1 = v[1]
+                v2:FindFirstChild(v1):Clone().Parent = v7
+            end
+            v2 = script
+            v1 = v[1]
+            v2:FindFirstChild(v1):Clone().Parent = v8
+            v8.Text = string.upper(v[1])
+        end
+    end
+end
+
+function u0.canTradeAccordingToPolicy(a1) -- Line: 194
+    local v1 = game.HttpService:JSONDecode(a1.DataFolder.PolicyInfo.Value)
+    if v1 and v1.IsPaidItemTradingAllowed then
+        return true
+    end
+    return false
+end
+
+function u0.arePaidItemsRestrictedAccordingToPolicy(a1) -- Line: 203
+    local v1 = game.HttpService:JSONDecode(a1.DataFolder.PolicyInfo.Value)
+    if v1 and v1.ArePaidRandomItemsRestricted then
+        return true
+    end
+    return false
+end
+
+function u0.formatNumber(a1) -- Line: 212
+    if a1 < 1000 then
+        return (tostring(a1))
+    end
+    local v1 = {"", "K", "M"}
+    local v2 = 1
+    local v3 = a1
+    while v3 >= 1000 do
+        if not (v2 < 3) then
+            break
+        end
+        v3 = v3 / 1000
+        v2 = v2 + 1
+    end
+    return tostring((math.floor(v3 * 10)) / 10) .. v1[v2]
+end
+
+function u0.getSkinValue(a1, a2, a3) -- Line: 229 -- upvalues: u0 (val)
+    local v1
+    local v2 = next
+    local Guns = _G.Guns
+    for k, v in v2, Guns do
+        if k == a1 then
+            v1 = v[2]
+            if not tonumber(v1) then
+                return v1
+            end
+            if a2 == "[DoubleBarrel]" then
+                v1 = v1 * 1.25
+            elseif a2 == "[Revolver]" then
+                v1 = v1 * 1.5
+            elseif a2 == "[TacticalShotgun]" or a2 == "[SMG]" then
+                v1 = v1 * 1
+            elseif a2 == "[Shotgun]" then
+                v1 = v1 / 1.25
+            elseif a2 == "[Silencer]" then
+                v1 = v1 / 1.5
+            end
+            if a3 and a3 ~= "" then
+                v1 = v1 + u0.getEnchantValue(a3)
+            end
+            return (math.floor(v1))
+        end
+    end
+end
+
+function u0.getKnifeValue(a1) -- Line: 260
+    local v1 = next
+    local Knives = _G.Knives
+    for k, v in v1, Knives do
+        if k == a1 then
+            return v[2]
+        end
+    end
+end
+
+function u0.getBeamValue(a1) -- Line: 268
+    local v1 = next
+    local BulletBeams = _G.BulletBeams
+    for k, v in v1, BulletBeams do
+        if k == a1 then
+            return v[2]
+        end
+    end
+end
+
+function u0.getTagValue(a1) -- Line: 276
+    local v1 = next
+    local Tags = _G.Tags
+    for k, v in v1, Tags do
+        if k == a1 then
+            return v[2]
+        end
+    end
+end
+
+function u0.getNumberValue(a1) -- Line: 284
+    local v1 = next
+    local Tags = _G.Tags
+    for k, v in v1, Tags do
+        if k == a1 then
+            return v[2]
+        end
+    end
+end
+
+function u0.getFrameValue(a1) -- Line: 292
+    local v1 = next
+    local Frames = _G.Frames
+    for k, v in v1, Frames do
+        if k == a1 then
+            return v[2]
+        end
+    end
+end
+
+function u0.getCharmValue(a1) -- Line: 300
+    local v1 = next
+    local Charms = _G.Charms
+    for k, v in v1, Charms do
+        if k == a1 then
+            return v[2]
+        end
+    end
+end
+
+function u0.getEnchantValue(a1) -- Line: 308
+    local v1 = next
+    local Enchants = _G.Enchants
+    for k, v in v1, Enchants do
+        if k == a1 then
+            return v[2]
+        end
+    end
+end
+
+function u0.roundNumber(a1, a2) -- Line: 316
+    local v1 = 10 ^ (a2 or 0)
+    return math.floor(a1 * v1 + 0.5) / v1
+end
+
+function u0.toMS(a1) -- Line: 321
+    return string.format("%02i:%02i", a1 / 60 % 60, a1 % 60)
+end
+
+function u0.IsSmallTouchScreen() -- Line: 325
+    local ViewportSize = workspace.CurrentCamera.ViewportSize
+    if not game:GetService("UserInputService").TouchEnabled then
+        return false
+    end
+    if not (ViewportSize.Y < 500) and not (ViewportSize.X < 700) then
+        return false
+    end
+    return true
+end
+
+function u0.getMonthStringFromNumber(a1) -- Line: 334 -- upvalues: u1 (val)
+    for k, v in next, u1 do
+        if k == a1 then
+            return v
+        end
+    end
+end
+
+function u0.inCrew(a1, a2) -- Line: 342
+    if a1.BodyEffects.CrewID.Value ~= 0 and a2.BodyEffects.CrewID.Value ~= 0 then
+        if a1.BodyEffects.CrewID.Value == a2.BodyEffects.CrewID.Value then
+            return true
+        end
+        return false
+    end
+    return false
+end
+
+function u0.initializePadAnimations() -- Line: 351
+    local v1 = next
+    local Children, Children_2 = workspace.SHOP:GetChildren()
+    for k, v in v1, Children, Children_2 do
+        v.ClickDetector.MouseHoverEnter:Connect(function() -- Line: 353 -- upvalues: v (val)
+            if _G.CurrentPad == v then
+                return
+            end
+            _G.CurrentPad = v
+            _G.CurrentPadName = v.Name
+            local v1 = script.PAD_ITEMS[v.Name]:Clone()
+            v1.Position = v.Head.Position
+            v1.Parent = v
+            game.TweenService:Create(v1, TweenInfo.new(1, Enum.EasingStyle.Elastic), {
+                Position = Vector3.new(v1.Position.X, v1.Position.Y + 2, v1.Position.Z),
+            }):Play()
+            local Highlight = Instance.new("Highlight")
+            Highlight.FillColor = Color3.fromRGB(255, 255, 255)
+            Highlight.DepthMode = Enum.HighlightDepthMode.Occluded
+            Highlight.Parent = v
+            repeat
+                task.wait()
+            until game.Players.LocalPlayer:GetMouse().Target.Parent ~= v
+            if _G.CurrentPad then
+                local CurrentPad = _G.CurrentPad
+                _G.CurrentPad = nil
+                _G.CurrentPadName = nil
+                game.TweenService:Create(CurrentPad[v.Name], TweenInfo.new(0.075), {Position = v.Head.Position}):Play()
+                CurrentPad.Highlight:Destroy()
+                task.wait(0.05)
+                CurrentPad[v.Name]:Destroy()
+            end
+        end)
+    end
+end
+
+function u0.initLeaderboardCharacterAnimations(a1) -- Line: 382
+    task.spawn(function() -- Line: 383 -- upvalues: a1 (val)
+        local newAnimation
+        a1:WaitForChild("Humanoid")
+        local u5 = {}
+        a1.Humanoid:LoadAnimation(game.ReplicatedStorage.IDLE):Play()
+        local v1 = next
+        local Children, Children_2 = game.ReplicatedStorage.LaderboardDisplayAnimations:GetChildren()
+        for k, v in v1, Children, Children_2 do
+            table.insert(u5, (a1.Humanoid:LoadAnimation(v)))
+        end
+
+        function newAnimation() -- Line: 390 -- upvalues: u5 (val), newAnimation (val)
+            local u6 = u5[math.random(1, #u5)]
+            u6.Priority = Enum.AnimationPriority.Action
+            u6.Looped = false
+            u6:Play()
+            local u12 = nil
+            local v1 = 0
+            u12 = u6.Stopped:Connect(function() -- Line: 398 -- upvalues: u12 (ref), u6 (val), newAnimation (upval)
+                u12:Disconnect()
+                u12 = nil
+                u6:Stop()
+                task.wait(Random.new():NextNumber(3, 5))
+                newAnimation()
+            end)
+            while u12 ~= nil do
+                v1 = v1 + 1
+                if v1 >= 15 then
+                    u12:Disconnect()
+                    break
+                end
+                task.wait(1)
+            end
+        end
+
+        newAnimation()
+    end)
+end
+
+function u0.extractEnchant(a1) -- Line: 422
+    if not string.find(a1, "!ENCHANT") then
+        return nil
+    end
+    local v1 = nil
+    local v2 = nil
+    local v3 = next
+    local v4, v5 = a1:split("!")
+    for k, v in v3, v4, v5 do
+        if k == 2 then
+            v1 = string.gsub(v, "ENCHANT_", "")
+        end
+        if k == 3 then
+            v2 = v
+        end
+    end
+    return {v1, v2}
+end
+
+function u0.getNormalizedSliderValue(a1, a2) -- Line: 442 -- types: a1: userdata, a2: userdata
+    local v1 = a1.AbsoluteSize.X / a2.AbsoluteSize.X
+    local v2 = v1 * a1.AnchorPoint.X
+    return (math.clamp((a1.Position.X.Scale - v2) / (1 - v1 * (1 - a1.AnchorPoint.X) - v2), 0, 1))
+end
+
+function u0.setNormalizedSliderValue(a1, a2, a3) -- Line: 455 -- types: a1: userdata, a2: userdata, a3: number
+    local Scale = a1.Size.X.Scale
+    if 0 < a2.AbsoluteSize.X then
+        Scale = a1.AbsoluteSize.X / a2.AbsoluteSize.X
+    end
+    local v1 = Scale * a1.AnchorPoint.X
+    local v2 = 1 - Scale * (1 - a1.AnchorPoint.X)
+    a1.Position = UDim2.new(v1 + (math.clamp(a3, 0, 1)) * (v2 - v1), 0, a1.Position.Y.Scale, a1.Position.Y.Offset)
+end
+
+function u0.reverseTax(a1) -- Line: 467
+    return (math.round(a1 / 0.9))
+end
+
+local SpringMotionLibrary = require(game.ReplicatedStorage:WaitForChild("SpringMotionLibrary"))
+
+local function buttonScale(a1) -- Line: 493
+    local UIScale = a1:FindFirstChildOfClass("UIScale")
+    if not UIScale then
+        UIScale = Instance.new("UIScale")
+        UIScale.Name = "BUTTON_FEEDBACK_SCALE"
+        UIScale.Parent = a1
+    end
+    return UIScale
+end
+
+game:GetService("UserInputService")
+game:GetService("GuiService")
+
+function u0.isTopmost(a1) -- Line: 513
+    return true
+end
+
+function u0.doButtonFunction(a1, a2, a3) -- Line: 539 -- upvalues: SpringMotionLibrary (val)
+    game.Players.LocalPlayer:GetMouse()
+    local u9 = false
+    local u10 = false
+    local Parent = a1.Parent
+    if a3 then
+        Parent = a1.Parent.Parent
+    end
+    local u14 = nil
+    local u15 = nil
+    local v1 = {
+        AbsolutePosition = {
+            X = a1.Parent.AbsolutePosition.X,
+            Y = a1.Parent.AbsolutePosition.Y,
+        },
+        AbsoluteSize = {X = a1.Parent.AbsoluteSize.X, Y = a1.Parent.AbsoluteSize.Y},
+    }
+    if a1.Parent:FindFirstChild("Shadow") then
+        a1.Parent.Shadow.Visible = false
+    end
+    if a1.Parent.Parent:FindFirstChild("Shadow") then
+        a1.Parent.Parent.Shadow.Visible = false
+    end
+    local u62 = Parent:FindFirstChildOfClass("UIScale")
+    if not u62 then
+        u62 = Instance.new("UIScale")
+        u62.Name = "BUTTON_FEEDBACK_SCALE"
+        u62.Parent = Parent
+    end
+    local u64 = false
+    local u65 = false
+
+    local function refreshButtonState(a1) -- Line: 572
+        -- upvalues: u65 (ref), u64 (ref), SpringMotionLibrary (upval), u62 (val)
+        local v1 = 1
+        if u65 then
+            v1 = 0.92
+        elseif u64 then
+            v1 = 1.05
+        end
+        if a1 then
+            SpringMotionLibrary.target(u62, 1, 22, {Scale = v1})
+            return
+        end
+        SpringMotionLibrary.target(u62, 0.7, 11, {Scale = v1})
+    end
+
+    a1.MouseEnter:Connect(function() -- Line: 586 -- upvalues: a1 (val), u64 (ref), u65 (ref), SpringMotionLibrary (upval), u62 (val)
+        if false then
+            return
+        end
+        u64 = true
+        local v1 = 1
+        if u65 then
+            v1 = 0.92
+        elseif u64 then
+            v1 = 1.05
+        end
+        SpringMotionLibrary.target(u62, 0.7, 11, {Scale = v1})
+    end)
+    a1.MouseLeave:Connect(function() -- Line: 593 -- upvalues: u64 (ref), u65 (ref), SpringMotionLibrary (upval), u62 (val)
+        u64 = false
+        local v1 = 1
+        if u65 then
+            v1 = 0.92
+        elseif u64 then
+            v1 = 1.05
+        end
+        SpringMotionLibrary.target(u62, 0.7, 11, {Scale = v1})
+    end)
+    a1.MouseButton1Down:Connect(function() -- Line: 598
+        -- upvalues: u14 (ref), a1 (val), u9 (ref), u65 (ref), u64 (ref), SpringMotionLibrary (upval), u62 (val)
+        -- upvalues: u15 (ref), u10 (ref), a2 (val)
+        if u14 or false then
+            return
+        end
+        if u9 == false then
+            u9 = true
+            game.Players.LocalPlayer.PlayerGui.ClickButtonDown:Play()
+            u65 = true
+            local v1 = 1
+            if u65 then
+                v1 = 0.92
+            elseif u64 then
+                v1 = 1.05
+            end
+            SpringMotionLibrary.target(u62, 1, 22, {Scale = v1})
+        end
+        game.UserInputService.InputEnded:Connect(function(a1) -- Line: 607
+            -- upvalues: u14 (upval), u15 (upval), u10 (upval), u65 (upval), u64 (upval), SpringMotionLibrary (upval)
+            -- upvalues: u62 (upval), u9 (upval), a2 (upval)
+            local v1 = false
+            if a1.UserInputType == Enum.UserInputType.MouseButton1
+                or a1.UserInputType == Enum.UserInputType.Touch then
+                v1 = true
+            end
+            if a1.KeyCode == Enum.KeyCode.ButtonA then
+                v1 = true
+            end
+            if v1 then
+                if u14 then
+                    u14:Disconnect()
+                    u14 = nil
+                end
+                if u15 then
+                    u15 = nil
+                end
+                game.Players.LocalPlayer.PlayerGui.ClickButtonUp:Play()
+                u10 = true
+                u65 = false
+                local v2 = 1
+                if u65 then
+                    v2 = 0.92
+                elseif u64 then
+                    v2 = 1.05
+                end
+                SpringMotionLibrary.target(u62, 0.7, 11, {Scale = v2})
+                u10 = false
+                u9 = false
+                a2()
+            end
+        end)
+    end)
+end
+
+function u0.doScreenTransition(a1) -- Line: 664
+    game.Players.LocalPlayer.PlayerGui.TRANSITION.Enabled = true
+    game.Players.LocalPlayer.PlayerGui.TRANSITION.Frame.UIGradient.Rotation = -45
+    game.Players.LocalPlayer.PlayerGui.TRANSITION.Frame.UIGradient.Offset = Vector2.new(-1, 0)
+    game.TweenService:Create(
+        game.Players.LocalPlayer.PlayerGui.TRANSITION.Frame.UIGradient,
+        TweenInfo.new(0.3),
+        {Offset = Vector2.new(1.5, 0)}
+    ):Play()
+    if a1 then
+        task.delay(a1 + 0.3, function() -- Line: 670
+            game.Players.LocalPlayer.PlayerGui.TRANSITION.Frame.UIGradient.Rotation = 135
+            game.Players.LocalPlayer.PlayerGui.TRANSITION.Frame.UIGradient.Offset = Vector2.new(-1.5, 0)
+            game.TweenService:Create(
+                game.Players.LocalPlayer.PlayerGui.TRANSITION.Frame.UIGradient,
+                TweenInfo.new(0.3),
+                {Offset = Vector2.new(1, 0)}
+            ):Play()
+            task.wait(0.3)
+            game.Players.LocalPlayer.PlayerGui.TRANSITION.Enabled = false
+        end)
+    end
+end
+
+function u0.undoScreenTransition() -- Line: 680
+    game.Players.LocalPlayer.PlayerGui.TRANSITION.Frame.UIGradient.Rotation = 135
+    game.Players.LocalPlayer.PlayerGui.TRANSITION.Frame.UIGradient.Offset = Vector2.new(-1.5, 0)
+    game.TweenService:Create(
+        game.Players.LocalPlayer.PlayerGui.TRANSITION.Frame.UIGradient,
+        TweenInfo.new(0.3),
+        {Offset = Vector2.new(1, 0)}
+    ):Play()
+    task.wait(0.3)
+    game.Players.LocalPlayer.PlayerGui.TRANSITION.Enabled = false
+end
+
+function u0.getTotalInventorySpace(a1) -- Line: 688
+    local v1 = 0
+    local v2 = next
+    local v3, v4 = game.HttpService:JSONDecode(a1.DataFolder.InventoryData.GunSkins.Value)
+    local v5 = a1
+    for k, v in v2, v3, v4 do
+        for k2, i in next, v do
+            v1 = v1 + 1
+        end
+    end
+    v2 = next
+    v3, v4 = game.HttpService:JSONDecode(v5.DataFolder.InventoryData.KnifeSkins.Value)
+    for k3, j in v2, v3, v4 do
+        v1 = v1 + 1
+    end
+    v2 = next
+    v3, v4 = game.HttpService:JSONDecode(v5.DataFolder.InventoryData.ProfileFrames.Value)
+    for k4, k5 in v2, v3, v4 do
+        v1 = v1 + 1
+    end
+    v2 = next
+    v3, v4 = game.HttpService:JSONDecode(v5.DataFolder.InventoryData.BulletBeams.Value)
+    for k6, n in v2, v3, v4 do
+        v1 = v1 + 1
+    end
+    v2 = next
+    v3, v4 = game.HttpService:JSONDecode(v5.DataFolder.InventoryData.NameTags.Value)
+    for k7, m in v2, v3, v4 do
+        v1 = v1 + 1
+    end
+    v2 = next
+    v3, v4 = game.HttpService:JSONDecode(v5.DataFolder.InventoryData.Charms.Value)
+    for k8, i5 in v2, v3, v4 do
+        v1 = v1 + 1
+    end
+    v2 = next
+    v3, v4 = game.HttpService:JSONDecode(v5.DataFolder.InventoryData.Items.Value)
+    for k9, i6 in v2, v3, v4 do
+        v1 = v1 + 1
+    end
+    return v1
+end
+
+function u0.inspectItem(a1) -- Line: 716
+    local FieldOfView = workspace.CurrentCamera.FieldOfView
+    local u8 = game.Players.LocalPlayer.PlayerGui["Main Screen"]
+    local INSPECT = game.Players.LocalPlayer.PlayerGui.INSPECT
+    local u16 = a1:Clone()
+    local v1 = game.ReplicatedStorage.InspectModel.Part:Clone()
+    local v2 = next
+    local Descendants, Descendants_2 = u16.PrimaryPart:GetDescendants()
+    for k, v in v2, Descendants, Descendants_2 do
+        if v:IsA("BasePart") then
+            v.Anchored = true
+        end
+    end
+    u16.PrimaryPart.Anchored = true
+    v1.Position = u16.PrimaryPart.Position
+    v1.Parent = u16
+    u16.PrimaryPart = v1
+    u16.Parent = workspace.Ignored
+    u8.Enabled = false
+    INSPECT.Enabled = true
+    game.Players.LocalPlayer.PlayerGui.Inventory.Enabled = false
+    workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable
+    local UserInputService = game:GetService("UserInputService")
+    local Mouse = game.Players.LocalPlayer:GetMouse()
+    local u69 = nil
+    local u70 = 0
+    local u71 = 0
+    local u72 = {}
+    local u73 = 0
+    local u74 = 0
+    local u75 = false
+
+    local function updateRotation(a1) -- Line: 752 -- upvalues: u73 (ref), u69 (ref), u74 (ref)
+        u73 = a1.X - u69.X
+        u74 = a1.Y - u69.Y
+    end
+
+    local function onMouseButtonDown() -- Line: 757
+        -- upvalues: u75 (ref), u69 (ref), UserInputService (val), u70 (ref), u71 (ref), u16 (val)
+        u75 = true
+        UserInputService:GetMouseLocation()
+        local v1, v2 = u16:GetPrimaryPartCFrame():ToEulerAnglesXYZ()
+        u70 = v1
+        u71 = v2
+    end
+
+    local function onMouseButtonUp() -- Line: 763 -- upvalues: u75 (ref)
+        u75 = false
+    end
+
+    local v3 = UserInputService.InputChanged:Connect(function(a1) -- Line: 767 -- upvalues: u75 (ref), u73 (ref), u69 (ref), u74 (ref)
+        if u75 == false then
+            return
+        end
+        if a1.UserInputType == Enum.UserInputType.MouseMovement or a1.UserInputType == Enum.UserInputType.Touch then
+            local Position = a1.Position
+            u73 = Position.X - u69.X
+            u74 = Position.Y - u69.Y
+        end
+    end)
+    table.insert(u72, v3)
+    v3 = Mouse.Button1Down:Connect(function() -- Line: 774 -- upvalues: u75 (ref), u69 (ref), UserInputService (val), u70 (ref), u71 (ref), u16 (val)
+        u75 = true
+        UserInputService:GetMouseLocation()
+        local v1, v2 = u16:GetPrimaryPartCFrame():ToEulerAnglesXYZ()
+        u70 = v1
+        u71 = v2
+    end)
+    table.insert(u72, v3)
+    v3 = Mouse.Button1Up:Connect(function() -- Line: 778 -- upvalues: u75 (ref)
+        u75 = false
+    end)
+    table.insert(u72, v3)
+    v3 = INSPECT.holder.TextButton.MouseButton1Down:Connect(function() -- Line: 782 -- upvalues: u72 (ref), u16 (val), INSPECT (val), u8 (val), FieldOfView (val)
+        for k, v in next, u72 do
+            v:Disconnect()
+        end
+        u72 = nil
+        u16:Destroy()
+        INSPECT.Enabled = false
+        u8.Enabled = true
+        game.Players.LocalPlayer.PlayerGui.Inventory.Enabled = true
+        workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+        game.TweenService:Create(workspace.Camera, TweenInfo.new(0.25), {FieldOfView = FieldOfView}):Play()
+    end)
+    table.insert(u72, v3)
+    game.TweenService:Create(workspace.Camera, TweenInfo.new(0.25), {FieldOfView = FieldOfView - 10}):Play()
+    u16:SetPrimaryPartCFrame(workspace.CurrentCamera.CFrame * CFrame.new(0, 0, -5) * (CFrame.Angles(0, 0, 0)))
+    v3 = game["Run Service"].RenderStepped:Connect(function() -- Line: 797 -- upvalues: u75 (ref), u70 (ref), u74 (ref), u71 (ref), u73 (ref), u16 (val)
+        if u75 == true then
+            local v1 = u70 + u74 * 0.2
+            local v2 = u71 + u73 * 0.2
+            v1 = math.clamp(v1, -90, 90)
+            u16:SetPrimaryPartCFrame(((u16:GetPrimaryPartCFrame()):Lerp(
+                workspace.CurrentCamera.CFrame * CFrame.new(0, 0, -5) * CFrame.Angles(math.rad(v1), math.rad(v2), 0),
+                0.35
+            )))
+            return
+        end
+        u70 = 0
+        u71 = 0
+        u73 = 0
+        u74 = 0
+        u16:SetPrimaryPartCFrame(((u16:GetPrimaryPartCFrame()):Lerp(workspace.CurrentCamera.CFrame * CFrame.new(0, 0, -5), 0.15)))
+    end)
+    table.insert(u72, v3)
+end
+
+function u0.insertItemShop() -- Line: 815 -- upvalues: u0 (val), u14 (val)
+    local ViewportFrame, ViewportFrame_2, v1
+    local u4 = game.Players.LocalPlayer.PlayerGui["Main Screen"]
+
+    local function purchaseItem(a1, a2, a3) -- Line: 817 -- upvalues: u4 (val), u0 (upval)
+        local u9 = u4.ItemShop.ItemShop.PurchaseFrame:Clone()
+        u0.doButtonFunction(u9.Frame.Inspect.Frame.Button, function() -- Line: 820 -- upvalues: a3 (val), u0 (upval), a1 (val), u9 (val)
+            if a3 then
+                u0.inspectItem(game.ReplicatedStorage.Wraps[a3][a1])
+            end
+            u9:Destroy()
+        end, true)
+        u9.Visible = true
+        u9.Parent = u4.ItemShop.ItemShop
+    end
+
+    game.Players.LocalPlayer.PlayerGui["Main Screen"].ItemShop.Visible = true
+    local v2 = game.ReplicatedStorage.MainFunction:InvokeServer("RequestItemShop")
+    local v3 = next
+    local v4 = nil
+    for k, v in v3, v2, v4 do
+        local u35 = game.ReplicatedStorage.ItemShopTemplate:Clone()
+        u35.Frame.ItemName.Text = k
+        if v[1] == "GunSkin" then
+            u0.GetRarityGun(k, u35.Frame.UIStroke, u35.Frame.RarityName, u35.Shadow)
+            u35.Frame.ItemType.Text = v[2]
+            u35.Frame.ItemPrice.Text = (utf8.char(57346)) .. " " .. u14[v[2]][(string.sub(u35.Frame.RarityName.Text, 1, 1)) .. string.lower((string.sub(u35.Frame.RarityName.Text, 2)))]
+            ViewportFrame = Instance.new("ViewportFrame")
+            ViewportFrame.ZIndex = 6
+            ViewportFrame.Size = UDim2.new(1, 0, 1, 0)
+            ViewportFrame.BackgroundTransparency = 0
+            v1 = game.ReplicatedStorage.Wraps[v[2]]:FindFirstChild(k):Clone()
+            v1.Parent = ViewportFrame
+            local PrimaryPart = v1.PrimaryPart
+            local Camera = Instance.new("Camera")
+            Camera.CFrame = CFrame.new(PrimaryPart.CFrame.p + Vector3.new(1.25, 1.25, 1.25) * PrimaryPart.Size.magnitude * 0.4, PrimaryPart.CFrame.p)
+            Camera.Parent = ViewportFrame
+            ViewportFrame.CurrentCamera = Camera
+            ViewportFrame.BackgroundTransparency = 1
+            ViewportFrame.Parent = u35.Frame.Preview.Frame
+            local u121 = false
+            local u137 = PrimaryPart.CFrame:ToObjectSpace((CFrame.new(PrimaryPart.CFrame.p + Vector3.new(1.25, 1.25, 1.25) * PrimaryPart.Size.magnitude * 0.4, PrimaryPart.CFrame.p)))
+            u35.Frame.Button.MouseButton1Click:Connect(function() -- Line: 857 -- upvalues: purchaseItem (val), k (val), v (val)
+                purchaseItem(k, v[1], v[2])
+            end)
+            u35.Frame.MouseEnter:Connect(function() -- Line: 860 -- upvalues: u35 (val), u121 (ref), v (val), Camera (val), PrimaryPart (val), u137 (val)
+                local Frame = u35.Frame
+                if false then
+                    return
+                end
+                u121 = true
+                while u121 do
+                    if v[2] ~= "[SMG]" then
+                        Camera.CFrame = Camera.CFrame:Lerp(PrimaryPart.CFrame * CFrame.Angles(0, tick() * 0.5 % 3.141592653589793 * 2, 0) * u137, 0.25)
+                    else
+                        Camera.CFrame = Camera.CFrame:Lerp(PrimaryPart.CFrame * CFrame.Angles(0, 0, tick() * 0.5 % 3.141592653589793 * 2) * u137, 0.25)
+                    end
+                    task.wait()
+                end
+                Camera.CFrame = CFrame.new(PrimaryPart.CFrame.p + Vector3.new(1.25, 1.25, 1.25) * PrimaryPart.Size.magnitude * 0.4, PrimaryPart.CFrame.p)
+            end)
+            u35.MouseLeave:Connect(function() -- Line: 873 -- upvalues: u121 (ref)
+                u121 = false
+            end)
+        elseif v[1] == "BulletBeam" then
+            u0.GetRarityBeam(k, u35.Frame.UIStroke, u35.Frame.RarityName, u35.Shadow)
+            u35.Frame.ItemType.Text = v[1]
+            u35.Frame.ItemPrice.Text = (utf8.char(57346)) .. " " .. u14[v[1]][(string.sub(u35.Frame.RarityName.Text, 1, 1)) .. string.lower((string.sub(u35.Frame.RarityName.Text, 2)))]
+            ViewportFrame_2 = Instance.new("ViewportFrame")
+            ViewportFrame_2.ZIndex = 6
+            ViewportFrame_2.Size = UDim2.new(1, 0, 1, 0)
+            ViewportFrame_2.BackgroundTransparency = 0
+            v1 = game.ReplicatedStorage.BulletBeams:FindFirstChild(k):Clone()
+            v1.Parent = ViewportFrame_2
+            local PrimaryPart_2 = v1.PrimaryPart
+            local Camera_2 = Instance.new("Camera")
+            Camera_2.CFrame = CFrame.new(PrimaryPart_2.CFrame.p + Vector3.new(1.25, 1.25, 1.25) * PrimaryPart_2.Size.magnitude * 0.4, PrimaryPart_2.CFrame.p)
+            Camera_2.Parent = ViewportFrame_2
+            ViewportFrame_2.CurrentCamera = Camera_2
+            ViewportFrame_2.BackgroundTransparency = 1
+            ViewportFrame_2.Parent = u35.Frame.Preview.Frame
+            local u238 = false
+            local u254 = PrimaryPart_2.CFrame:ToObjectSpace((CFrame.new(PrimaryPart_2.CFrame.p + Vector3.new(1.25, 1.25, 1.25) * PrimaryPart_2.Size.magnitude * 0.4, PrimaryPart_2.CFrame.p)))
+            u35.Frame.Button.MouseButton1Click:Connect(function() -- Line: 897 -- upvalues: purchaseItem (val), k (val), v (val)
+                purchaseItem(k, v[1])
+            end)
+            u35.Frame.MouseEnter:Connect(function() -- Line: 901 -- upvalues: u35 (val), u238 (ref), Camera_2 (val), PrimaryPart_2 (val), u254 (val)
+                local Frame = u35.Frame
+                if false then
+                    return
+                end
+                u238 = true
+                while u238 do
+                    Camera_2.CFrame = Camera_2.CFrame:Lerp(PrimaryPart_2.CFrame * CFrame.Angles(0, tick() * 0.5 % 3.141592653589793 * 2, 0) * u254, 0.25)
+                    task.wait()
+                end
+                Camera_2.CFrame = CFrame.new(
+                    PrimaryPart_2.CFrame.p + Vector3.new(1.25, 1.25, 1.25) * PrimaryPart_2.Size.magnitude * 0.4,
+                    PrimaryPart_2.CFrame.p
+                )
+            end)
+            u35.MouseLeave:Connect(function() -- Line: 910 -- upvalues: u238 (ref)
+                u238 = false
+            end)
+        elseif v[1] ~= "NameTag" then
+            u35.Frame.ItemType.Text = v[1]
+        else
+            u0.GetRarityTag(k, u35.Frame.UIStroke, u35.Frame.RarityName, u35.Shadow)
+            u35.Frame.ItemType.Text = v[1]
+            u35.Frame.ItemPrice.Text = (utf8.char(57346)) .. " " .. u14[v[1]][(string.sub(u35.Frame.RarityName.Text, 1, 1)) .. string.lower((string.sub(u35.Frame.RarityName.Text, 2)))]
+            u35.Frame.ItemName.Text = k .. " Tag"
+            if k == "Beta" then
+                u35.Frame.Preview.Frame.ACTUAL_TAG.Text = AsmoBuildStringWithMCColor("[<Fuchsia><b>Beta</b><>]")
+            end
+            if k == "<3" then
+                u35.Frame.Preview.Frame.ACTUAL_TAG.Text = AsmoBuildStringWithMCColor("[<Pastel><b>&lt;3</b><>]")
+            end
+            if k == "Snow" then
+                u35.Frame.Preview.Frame.ACTUAL_TAG.Text = AsmoBuildStringWithMCColor("[<Snow><b>Snow</b><>]")
+            end
+            if k == "Easter" then
+                u35.Frame.Preview.Frame.ACTUAL_TAG.Text = AsmoBuildStringWithMCColor("[<Yellow><b>E</b><><Fuchsia><b>a</b><><Yellow><b>s</b><><Fuchsia><b>t</b><><Yellow><b>e</b><><Fuchsia><b>r</b><>]")
+            end
+            if k == "Ghost" then
+                u35.Frame.Preview.Frame.ACTUAL_TAG.Text = AsmoBuildStringWithMCColor("[<Gray><b>G</b><><White><b>h</b><><Gray><b>o</b><><White><b>s</b><><Gray><b>t</b><>]")
+            end
+            if k == "Meow" then
+                u35.Frame.Preview.Frame.ACTUAL_TAG.Text = "[<font color='rgb(237,148,255)'><b>meow</b></font>]"
+            end
+            u35.Frame.Preview.Frame.ACTUAL_TAG.Visible = true
+            u35.Frame.Button.MouseButton1Click:Connect(function() end)
+        end
+        u35.Parent = game.Players.LocalPlayer.PlayerGui["Main Screen"].ItemShop.ItemShop.ShopFrame
+    end
+end
+
+local function itemCards() -- Line: 948
+    return require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("ItemCards"))
+end
+
+function u0.insertNameTagFrame(a1, a2, a3, a4) -- Line: 952
+    return require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("ItemCards")).legacyFill(
+        "NameTag",
+        a2,
+        nil,
+        a4
+    )
+end
+
+function u0.insertProfileFrameFrame(a1, a2, a3, a4) -- Line: 956
+    return require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("ItemCards")).legacyFill(
+        "ProfileFrame",
+        a2,
+        nil,
+        a4
+    )
+end
+
+function u0.insertKnifeFrame(a1, a2, a3, a4) -- Line: 960
+    return require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("ItemCards")).legacyFill(
+        "KnifeSkin",
+        a2,
+        nil,
+        a4
+    )
+end
+
+function u0.insertGunSkinFrame(a1, a2, a3, a4) -- Line: 964
+    return require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("ItemCards")).legacyFill(
+        "GunSkin",
+        a2,
+        a3,
+        a4
+    )
+end
+
+function u0.insertBulletBeamFrame(a1, a2, a3, a4) -- Line: 968
+    return require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("ItemCards")).legacyFill(
+        "BulletBeam",
+        a2,
+        nil,
+        a4
+    )
+end
+
+function u0.insertItemFrame(a1, a2, a3, a4) -- Line: 972
+    return require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("ItemCards")).legacyFill(
+        "Item",
+        a2,
+        nil,
+        a4
+    )
+end
+
+function u0.insertCharmFrame(a1, a2, a3, a4) -- Line: 976
+    return require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("ItemCards")).legacyFill(
+        "Charm",
+        a2,
+        nil,
+        a4
+    )
+end
+
+function u0.getBulletColor(a1, a2, a3, a4) -- Line: 980
+    if a2 == "None" then
+        a3.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 242, 90)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 209, 41))),
+        })
+    end
+    if a2 == "Red" then
+        a3.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))),
+        })
+    end
+    if a2 == "Blue" then
+        a3.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 170, 255)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 170, 255))),
+        })
+    end
+    if a2 == "Orange" then
+        a3.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 85, 0)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 85, 0))),
+        })
+    end
+    if a2 == "Green" then
+        a3.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 0)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 0))),
+        })
+    end
+    if a2 == "Arctic" then
+        a3.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(170, 255, 255)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(170, 255, 255))),
+        })
+        a3.Transparency = NumberSequence.new(0)
+    end
+    if a2 == "Blacksteel Dragon" then
+        a3.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(85, 170, 255)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(85, 170, 255))),
+        })
+        a3.Transparency = NumberSequence.new(0)
+    end
+    if a2 == "Black Cat" then
+        a3.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(41, 255, 36)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(41, 255, 36))),
+        })
+        a3.Texture = "rbxassetid://12781848822"
+        a3.TextureSpeed = 10
+        a3.Width1 = 1
+        a3.Transparency = NumberSequence.new(0)
+    end
+    if a2 == "Cupid" then
+        a3.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(237, 148, 255)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(237, 148, 255))),
+        })
+        a3.Transparency = NumberSequence.new(0)
+        a3.Brightness = 3
+    end
+    if a2 == "Beta" then
+        a3.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 102, 204)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 102, 204))),
+        })
+        a3.Transparency = NumberSequence.new(0)
+        task.spawn(function() -- Line: 1051 -- upvalues: a3 (val)
+            local v1
+            a3.Width0 = 0.25
+            a3.Width1 = 0.25
+            task.wait(0.05)
+            a3.Width0 = 0.07
+            a3.Width1 = 0.07
+            repeat
+                v1 = a3
+                v1.Width0 = v1.Width0 - 0.01
+                v1 = a3
+                v1.Width1 = v1.Width1 - 0.01
+                task.wait(0.03)
+            until a3.Parent == nil
+        end)
+    end
+    if a2 == "Hallows" then
+        local WorldPosition = a3.Attachment0.WorldPosition
+        local WorldPosition_2 = a3.Attachment1.WorldPosition
+        local u242 = a3:Clone()
+        game.Debris:AddItem(u242, 0.4)
+        a3.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 120, 2)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 120, 2))),
+        })
+        a3.Transparency = NumberSequence.new(0)
+        a3.Brightness = 2.5
+        a3.ZOffset = 0.001
+        u242.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))),
+        })
+        u242.Transparency = NumberSequence.new(0)
+        u242.LightEmission = 0
+        u242.Width1 = 0.3
+        u242.Width0 = 0.15
+        u242.Parent = workspace.Ignored
+        task.delay(0.2, function() -- Line: 1086 -- upvalues: WorldPosition (val), WorldPosition_2 (val), a3 (val), u242 (val)
+            local u4 = script.BatParticles:Clone()
+            game.Debris:AddItem(u4, 2.5)
+            u4.Position = WorldPosition
+            u4.Parent = workspace.Ignored
+            game.TweenService:Create(u4, TweenInfo.new(0.5, Enum.EasingStyle.Linear), {Position = WorldPosition_2}):Play()
+            task.delay(0.5, function() -- Line: 1092 -- upvalues: u4 (val)
+                u4.ParticleEmitter.Enabled = false
+            end)
+            for i = 1, 10 do
+                a3.Transparency = NumberSequence.new(i * 0.1 + 0)
+                u242.Transparency = NumberSequence.new(i * 0.1 + 0)
+                task.wait()
+            end
+        end)
+    end
+    if a2 == "Kirumi" then
+        local v1 = Color3.fromRGB(160, 92, 255)
+        local WorldPosition_3 = a3.Attachment0.WorldPosition
+        local WorldPosition_4 = a3.Attachment1.WorldPosition
+        local v2 = a3:Clone()
+        game.Debris:AddItem(v2, 0.4)
+        a3.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, v1), (ColorSequenceKeypoint.new(1, v1))})
+        a3.Brightness = 5
+        a3.Transparency = NumberSequence.new(0)
+        a3.ZOffset = 0.001
+        v2.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))),
+        })
+        v2.Transparency = NumberSequence.new(0)
+        v2.LightEmission = 0
+        v2.Width1 = 0.25
+        v2.Width0 = 0.01
+        v2.Parent = workspace.Ignored
+    end
+    if a2 == "Kitty" then
+        local WorldPosition_5 = a3.Attachment0.WorldPosition
+        local WorldPosition_6 = a3.Attachment1.WorldPosition
+        a3.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(237, 148, 255)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(237, 148, 255))),
+        })
+        a3.Transparency = NumberSequence.new(0)
+        a3.Brightness = 3
+        task.spawn(function() -- Line: 1135 -- upvalues: a3 (val)
+            local v1
+            task.wait(0.05)
+            a3.Width0 = 0.15
+            a3.Width1 = 0.15
+            task.wait(0.05)
+            repeat
+                v1 = a3
+                v1.Width0 = v1.Width0 - 0.05
+                v1 = a3
+                v1.Width1 = v1.Width1 - 0.025
+                task.wait(0.022222222222222223)
+            until a3.Parent == nil
+        end)
+    end
+    if a2 == "Rainbow" then
+        local StringValue = Instance.new("StringValue")
+        game.Debris:AddItem(StringValue, 1)
+        StringValue.Name = "RGB_COUNT_DEBUG"
+        StringValue.Parent = a1
+        task.spawn(function() -- Line: 1152 -- upvalues: a3 (val), StringValue (val), a1 (val), a4 (val)
+            local Children, Children_2, v1, v2
+            for i = 0, 1, 0.003 do
+                if not a3:IsDescendantOf(workspace.Ignored) then
+                    StringValue:Destroy()
+                    return
+                end
+                v1 = false
+                v2 = next
+                Children, Children_2 = a1:GetChildren()
+                for k, v in v2, Children, Children_2 do
+                    v1 = if v.Name ~= "RGB_COUNT_DEBUG" then false else not (v ~= StringValue)
+                end
+                if v1 then
+                    v2 = a4
+                    v2.Value = v2.Value + 0.015
+                end
+                v2 = Color3.fromHSV(a4.Value, 1, 1)
+                a3.Color = ColorSequence.new(v2)
+                if v1 and 1 <= a4.Value then
+                    a4.Value = 0
+                end
+                game["Run Service"].Heartbeat:Wait()
+            end
+        end)
+        a3.Transparency = NumberSequence.new(0)
+    end
+    if a2 == "Lightning" then
+        a3.Transparency = NumberSequence.new(1)
+    end
+end
+
+function u0.getThrowingKnifeTrail(a1, a2) -- Line: 1183
+    if a2 == "None" then
+        return ColorSequence.new(Color3.fromRGB(255, 255, 255))
+    end
+    if a2 == "Beta" then
+        return ColorSequence.new(Color3.fromRGB(255, 102, 204))
+    end
+    if a2 == "Fishbone" then
+        return ColorSequence.new(Color3.fromRGB(170, 0, 0))
+    end
+    if a2 == "Nightblade" then
+        return ColorSequence.new(Color3.fromRGB(85, 85, 255))
+    end
+    return ColorSequence.new(Color3.fromRGB(255, 255, 255))
+end
+
+function u0.getGunSkinByName(a1, a2, a3) -- Line: 1196
+    local v1 = game.HttpService:JSONDecode(a1.DataFolder.InventoryData.GunSkins.Value)
+    local v2 = next
+    local v3 = nil
+    for k, v in v2, v1, v3 do
+        for k2, i in next, v do
+            if i.Name == v4 and k == v5 then
+                return true, {Id = k2}
+            end
+        end
+    end
+    return false, nil
+end
+
+function u0.getBulletBeamByName(a1, a2) -- Line: 1210
+    local v1 = game.HttpService:JSONDecode(a1.DataFolder.InventoryData.BulletBeams.Value)
+    for k, v in next, v1 do
+        if v.Name == a2 then
+            return true, {Id = k}
+        end
+    end
+    return false, nil
+end
+
+function u0.getNameTagByName(a1, a2) -- Line: 1221
+    local v1 = game.HttpService:JSONDecode(a1.DataFolder.InventoryData.NameTags.Value)
+    for k, v in next, v1 do
+        if v.Name == a2 then
+            return true, {Id = k}
+        end
+    end
+    return false, nil
+end
+
+function u0.getCharmByName(a1, a2) -- Line: 1232
+    local v1 = game.HttpService:JSONDecode(a1.DataFolder.InventoryData.Charms.Value)
+    for k, v in next, v1 do
+        if v.Name == a2 then
+            return true, {Id = k}
+        end
+    end
+    return false, nil
+end
+
+function u0.getKnifeByName(a1, a2) -- Line: 1243
+    local v1 = game.HttpService:JSONDecode(a1.DataFolder.InventoryData.KnifeSkins.Value)
+    for k, v in next, v1 do
+        if v.Name == a2 then
+            return true, {Id = k}
+        end
+    end
+    return false, nil
+end
+
+function u0.getItemByName(a1, a2) -- Line: 1254
+    local v1 = game.HttpService:JSONDecode(a1.DataFolder.InventoryData.Items.Value)
+    for k, v in next, v1 do
+        if v.Name == a2 then
+            return true, {Id = k}
+        end
+    end
+    return false, nil
+end
+
+function u0.getInventoryById(a1, a2) -- Line: 1265
+    local ItemType, v1, v2, v3
+    local v4 = next
+    local Children, Children_2 = a1.DataFolder.InventoryData:GetChildren()
+    for k, v in v4, Children, Children_2 do
+        v2 = game.HttpService:JSONDecode(v.Value)
+        v3 = v.Name:sub(1, #v.Name - 1)
+        ItemType = nil
+        if v3 == "GunSkin" then
+            for k2, i in next, v2 do
+                if i[v5] then
+                    v1 = i[v5]
+                    return true, {
+                        Id = v5,
+                        Name = v1.Name,
+                        InventoryType = v3,
+                        SkinType = k2,
+                        Enchant = v1.Enchant,
+                        EnchantBookId = v1.EnchantBookId,
+                        ItemType = ItemType,
+                    }
+                end
+            end
+        else
+            for k3, j in next, v2 do
+                if k3 == v5 then
+                    if j.ItemType then
+                        ItemType = j.ItemType
+                    end
+                    return true, {Id = v5, Name = j.Name, InventoryType = v3, ItemType = ItemType}
+                end
+            end
+        end
+    end
+    return false, nil
+end
+
+function u0.getItemByID(a1, a2) -- Line: 1292
+    local v1 = game.HttpService:JSONDecode(a1.DataFolder.InventoryData.Items.Value)
+    for k, v in next, v1 do
+        if k == a2 then
+            return true, {Id = a2, Name = v.Name, ItemType = v.ItemType}
+        end
+    end
+    return false, nil
+end
+
+function u0.getKnifeByID(a1, a2) -- Line: 1304
+    local v1 = game.HttpService:JSONDecode(a1.DataFolder.InventoryData.KnifeSkins.Value)
+    for k, v in next, v1 do
+        if k == a2 then
+            return true, {Id = a2, Name = v.Name}
+        end
+    end
+    return false, nil
+end
+
+function u0.getBulletBeamByID(a1, a2) -- Line: 1316
+    local v1 = game.HttpService:JSONDecode(a1.DataFolder.InventoryData.BulletBeams.Value)
+    for k, v in next, v1 do
+        if k == a2 then
+            return true, {Id = a2, Name = v.Name}
+        end
+    end
+    return false, nil
+end
+
+function u0.getNameTagByID(a1, a2) -- Line: 1328
+    local v1 = game.HttpService:JSONDecode(a1.DataFolder.InventoryData.NameTags.Value)
+    for k, v in next, v1 do
+        if k == a2 then
+            return true, {Id = a2, Name = v.Name}
+        end
+    end
+    return false, nil
+end
+
+function u0.getProfileFrameByID(a1, a2) -- Line: 1340
+    local v1 = game.HttpService:JSONDecode(a1.DataFolder.InventoryData.ProfileFrames.Value)
+    for k, v in next, v1 do
+        if k == a2 then
+            return true, {Id = a2, Name = v.Name}
+        end
+    end
+    return false, nil
+end
+
+function u0.getCharmByID(a1, a2) -- Line: 1352
+    local v1 = game.HttpService:JSONDecode(a1.DataFolder.InventoryData.Charms.Value)
+    for k, v in next, v1 do
+        if k == a2 then
+            return true, {Id = a2, Name = v.Name}
+        end
+    end
+    return false, nil
+end
+
+function u0.getGunSkinByID(a1, a2) -- Line: 1364
+    local v1
+    local v2 = game.HttpService:JSONDecode(a1.DataFolder.InventoryData.GunSkins.Value)
+    for k, v in next, v2 do
+        if v[a2] then
+            v1 = v[a2]
+            return true, {
+                Id = a2,
+                Name = v1.Name,
+                SkinType = k,
+                Enchant = v1.Enchant,
+                EnchantBookId = v1.EnchantBookId,
+            }
+        end
+    end
+    return false, nil
+end
+
+function u0.getPlayersByName(a1, a2) -- Line: 1376
+    if a1 == "" then
+        return nil
+    end
+    local v1 = string.lower(a1)
+    local v2 = #a1
+    local v3 = next
+    local Players, Players_2 = game.Players:GetPlayers()
+    for k, v in v3, Players, Players_2 do
+        if a2 and v == game.Players.LocalPlayer then
+            continue
+        end
+        if v1:sub(0, 1) ~= "@" then
+            if string.sub(string.lower(v.Name), 1, v2) ~= v1
+                and string.sub(string.lower(v.DisplayName), 1, v2) ~= v1 then
+                continue
+            end
+            return v
+        elseif (string.sub(string.lower(v.Name), 1, v2 - 1)) == v1:sub(2) then
+            return v
+        end
+    end
+    return nil
+end
+
+function u0.canInteract(a1, a2) -- Line: 1394 -- types: a2: boolean
+    if a2 then
+        if a1.FROZEN.Value ~= true
+            and a1["K.O"].Value ~= true
+            and a1.Attacking_CLIENT.Value ~= true
+            and a1.Reloading_CLIENT.Value ~= true
+            and a1.Grabbed.Value == nil
+            and not a1.Parent:FindFirstChild("GRABBING_CONSTRAINT")
+            and not (0 < a1.AnticheatEffects.INTERACTION_SUSPENDED.Value - workspace:GetServerTimeNow())
+            and not a1.Parent.UpperTorso:FindFirstChild("RootEffect") then
+            return true
+        end
+        return false
+    end
+    if a1.FROZEN.Value ~= true
+        and a1["K.O"].Value ~= true
+        and a1.Attacking.Value ~= true
+        and a1.Reloading.Value ~= true
+        and a1.Grabbed.Value == nil
+        and not a1.Parent:FindFirstChild("GRABBING_CONSTRAINT")
+        and not (0 < a1.AnticheatEffects.INTERACTION_SUSPENDED.Value - workspace:GetServerTimeNow())
+        and not a1.Parent.UpperTorso:FindFirstChild("RootEffect") then
+        return true
+    end
+    return false
+end
+
+local u132 = {}
+local u133 = {}
+local u134 = {}
+local u138 = setmetatable({}, {__mode = "k"})
+local u139 = {}
+local u140 = 0
+u0.GUN_PELLET_PATTERN = {
+    Vector2.new(0, 0),
+    Vector2.new(1.5, 0),
+    Vector2.new(-1.5, 0),
+    Vector2.new(0, 3),
+    (Vector2.new(0, -3)),
+}
+u0.GUN_PELLET_TILT = 8
+u0.GUN_RANGE = 200
+u0.GUN_RELOAD_TIME = 1.5
+u0.GUN_SHELL_RELOAD_TIME = 0.75
+u0.GUN_SHELL_RELOADING = {["[Shotgun]"] = true, ["[TacticalShotgun]"] = true}
+u0.KNIFE_SPEED = 1000
+u0.KNIFE_DAMAGE = 15
+u0.FOOD_HEAL = 13
+
+function u0.getGunMuzzle(a1) -- Line: 1436
+    local Handle = a1:FindFirstChild("Handle")
+    if not Handle then
+        return nil
+    end
+    local Attribute = Handle:GetAttribute("Muzzle")
+    if typeof(Attribute) ~= "CFrame" then
+        return Handle.Position
+    end
+    return Handle.CFrame * Attribute.Position
+end
+
+function u0.getGunPellets(a1, a2, a3) -- Line: 1444 -- upvalues: u0 (val)
+    local v1, v2
+    if a3 ~= true then
+        return {(a2 - a1).Unit}
+    end
+    local v3 = CFrame.new(a1, a2)
+    local v4 = math.rad(u0.GUN_PELLET_TILT)
+    local v5 = {}
+    for k, v in next, u0.GUN_PELLET_PATTERN do
+        v1 = math.rad(v.X * math.cos(v4) - v.Y * (math.sin(v4)))
+        v2 = math.rad(v.X * math.sin(v4) + v.Y * (math.cos(v4)))
+        table.insert(v5, (v3.LookVector + v3.RightVector * math.tan(v1) + v3.UpVector * (math.tan(v2))).Unit)
+    end
+    return v5
+end
+
+function u0.previewGunHit(a1, a2, a3) -- Line: 1459
+    if a1["K.O"].Value == false and a1.Parent:FindFirstChild("GRABBING_CONSTRAINT") == nil then
+        if 0 < a1.Armor.Value then
+            a3 = a3 / 10
+        end
+        if a2 - a3 <= 5 then
+            return 0.5, true, true
+        end
+        return a2 - a3, false, true
+    end
+    if not (0.5 <= a2 - a3) then
+        return a2, false, false
+    end
+    if 0 < a1.Armor.Value then
+        return a2 - a3 / 10, false, true
+    end
+    return a2 - a3, false, true
+end
+
+function u0.refreshHealth(a1) -- Line: 1478 -- upvalues: u132 (val)
+    local BodyEffects = a1 and a1:FindFirstChild("BodyEffects")
+    if BodyEffects and BodyEffects:FindFirstChild("Health") and BodyEffects:FindFirstChild("Health_CLIENT") then
+        local Value = BodyEffects.Health.Value
+        local v1 = Value
+        local v2 = Value
+        if u132[a1] then
+            local v3 = next
+            local v4 = u132[a1]
+            for k, v in v3, v4 do
+                if v.HEAL ~= true then
+                    v1 = math.min(v1, v.VALUE)
+                else
+                    v2 = math.max(v2, v.VALUE)
+                end
+            end
+        end
+        if v1 < Value then
+            BodyEffects.Health_CLIENT.Value = v1
+            return
+        end
+        BodyEffects.Health_CLIENT.Value = v2
+        return
+    end
+end
+
+function u0.watchHealth(a1) -- Line: 1499 -- upvalues: u133 (val), u0 (val)
+    if u133[a1] then
+        return
+    end
+    local BodyEffects = a1 and a1:FindFirstChild("BodyEffects")
+    if BodyEffects and BodyEffects:FindFirstChild("Health") then
+        u133[a1] = (BodyEffects.Health.Changed:Connect(function() -- Line: 1503 -- upvalues: u0 (upval), a1 (val)
+            u0.refreshHealth(a1)
+        end))
+        u0.refreshHealth(a1)
+        return
+    end
+end
+
+function u0.predictHealth(a1, a2, a3, a4) -- Line: 1509 -- upvalues: u132 (val), u0 (val)
+    if a1 and a1:FindFirstChild("BodyEffects") then
+        if not u132[a1] then
+            u132[a1] = {}
+        end
+        local v1 = u132[a1]
+        v1[a3] = {
+            VALUE = a2,
+            HEAL = a1.BodyEffects.Health_CLIENT.Value < a2,
+            EXPIRES = tick() + (a4 or 1.5),
+        }
+        u0.watchHealth(a1)
+        u0.refreshHealth(a1)
+        return
+    end
+end
+
+function u0.clearHealthPrediction(a1) -- Line: 1519 -- upvalues: u132 (val), u0 (val)
+    local v1 = next
+    local v2 = nil
+    local v3 = a1
+    for k, v in v1, u132, v2 do
+        if v[v3] then
+            v[v3] = nil
+            if next(v) == nil then
+                u132[k] = nil
+            end
+            u0.refreshHealth(k)
+        end
+    end
+end
+
+function u0.lockInteraction(a1, a2) -- Line: 1531 -- upvalues: u134 (val)
+    a1.Attacking_CLIENT.Value = true
+    u134[a1] = (math.max(u134[a1] or 0, (tick()) + a2))
+end
+
+function u0.startHealthSync() -- Line: 1536 -- upvalues: u0 (val), u132 (val), u133 (val), u134 (val)
+    local function watchCharacter(a1) -- Line: 1537 -- upvalues: u0 (upval)
+        task.spawn(function() -- Line: 1538 -- upvalues: a1 (val), u0 (upval)
+            local BodyEffects = a1:WaitForChild("BodyEffects", 20)
+            if BodyEffects
+                and BodyEffects:WaitForChild("Health", 20)
+                and BodyEffects:WaitForChild("Health_CLIENT", 20) then
+                u0.watchHealth(a1)
+            end
+        end)
+    end
+
+    local function watchPlayer(a1) -- Line: 1545 -- upvalues: u0 (upval), watchCharacter (val)
+        if a1.Character then
+            local Character = a1.Character
+            task.spawn(function() -- Line: 1538 -- upvalues: Character (val), u0 (upval)
+                local BodyEffects = Character:WaitForChild("BodyEffects", 20)
+                if BodyEffects
+                    and BodyEffects:WaitForChild("Health", 20)
+                    and BodyEffects:WaitForChild("Health_CLIENT", 20) then
+                    u0.watchHealth(Character)
+                end
+            end)
+        end
+        a1.CharacterAdded:Connect(watchCharacter)
+    end
+
+    local v1 = next
+    local Players, Players_2 = game.Players:GetPlayers()
+    for k, v in v1, Players, Players_2 do
+        if v.Character then
+            local Character = v.Character
+            task.spawn(function() -- Line: 1538 -- upvalues: Character (val), u0 (upval)
+                local BodyEffects = Character:WaitForChild("BodyEffects", 20)
+                if BodyEffects
+                    and BodyEffects:WaitForChild("Health", 20)
+                    and BodyEffects:WaitForChild("Health_CLIENT", 20) then
+                    u0.watchHealth(Character)
+                end
+            end)
+        end
+        v.CharacterAdded:Connect(watchCharacter)
+    end
+    game.Players.PlayerAdded:Connect(watchPlayer)
+    game["Run Service"].Heartbeat:Connect(function() -- Line: 1555 -- upvalues: u132 (upval), u0 (upval), u133 (upval), u134 (upval)
+        local v1
+        local v2 = tick()
+        local v3 = next
+        local v4 = nil
+        for k, v in v3, u132, v4 do
+            v1 = false
+            for k2, i in next, v do
+                if i.EXPIRES <= v2 then
+                    v[k2] = nil
+                    v1 = true
+                end
+            end
+            if next(v) == nil then
+                u132[k] = nil
+            end
+            if v1 then
+                u0.refreshHealth(k)
+            end
+        end
+        for k3, j in next, u133 do
+            if k3.Parent == nil then
+                j:Disconnect()
+                u133[k3] = nil
+                u132[k3] = nil
+            end
+        end
+        for k4, k5 in next, u134 do
+            if k5 <= v2 then
+                u134[k4] = nil
+                if k4.Parent and k4:FindFirstChild("Attacking_CLIENT") then
+                    k4.Attacking_CLIENT.Value = false
+                end
+            end
+        end
+    end)
+end
+
+function u0.changeAnarchyLighting(a1) -- Line: 1590
+    if game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == true then
+        if a1 then
+            game.Lighting.FogColor = Color3.fromRGB(100, 87, 72)
+            game.Lighting.FogEnd = 500
+            game.Lighting.FogStart = 0
+            game.Lighting.Bloom.Enabled = false
+            game.Lighting.ClockTime = game.ReplicatedStorage.AnarchyMode.ClockTime.Value
+            game.Lighting.Ambient = Color3.fromRGB(0, 0, 0)
+            game.Lighting.OutdoorAmbient = Color3.fromRGB(152, 152, 146)
+            game.Lighting.EnvironmentSpecularScale = 0
+            game.Lighting.Brightness = 1
+            game.Lighting.LOBBY_COLOR_CORRECTION.Enabled = false
+            game.Lighting.MAP_COLOR_CORRECTION.Enabled = true
+            return
+        end
+        game.Lighting.Bloom.Enabled = true
+        game.Lighting.FogColor = Color3.fromRGB(0, 0, 0)
+        game.Lighting.FogEnd = 1000
+        game.Lighting.FogStart = 0
+        game.Lighting.ClockTime = 3.7
+        game.Lighting.Ambient = Color3.fromRGB(182, 182, 182)
+        game.Lighting.OutdoorAmbient = Color3.fromRGB(152, 152, 146)
+        game.Lighting.EnvironmentSpecularScale = 1
+        game.Lighting.Brightness = 2
+        game.Lighting.LOBBY_COLOR_CORRECTION.Enabled = true
+        game.Lighting.MAP_COLOR_CORRECTION.Enabled = false
+    end
+end
+
+function u0.initFoodTool(a1) -- Line: 1625 -- upvalues: u139 (val), u0 (val), u140 (ref)
+    if game["Run Service"]:IsClient() == false then
+        a1:SetAttribute("Food", true)
+        return
+    end
+    local u11 = nil
+    a1.Equipped:Connect(function() -- Line: 1633 -- upvalues: u11 (ref), a1 (val)
+        game.Players:GetPlayerFromCharacter(a1.Parent)
+    end)
+    local Uses = a1:WaitForChild("Uses")
+    local CLIENT = Uses:WaitForChild("CLIENT")
+    CLIENT.Value = Uses.Value
+    Uses.Changed:Connect(function() -- Line: 1641 -- upvalues: u139 (upval), a1 (val), CLIENT (val), Uses (val)
+        if u139[a1] == nil then
+            CLIENT.Value = Uses.Value
+        end
+    end)
+    a1.Activated:Connect(function() -- Line: 1648 -- upvalues: u11 (ref), u0 (upval), CLIENT (val), u140 (upval), u139 (upval), a1 (val)
+        local Character = u11
+        if Character then
+            Character = u11.Character
+        end
+        if Character and Character:FindFirstChild("BodyEffects") then
+            if u0.canInteract(Character.BodyEffects, true) and not (CLIENT.Value <= 0) then
+                u0.lockInteraction(Character.BodyEffects, 0.8)
+                u140 = u140 + 1
+                local v1 = u140
+                u139[a1] = (u139[a1] or 0) + 1
+                local v2 = CLIENT
+                v2.Value = v2.Value - 1
+                game.ReplicatedStorage.MainBindedEvent:Fire("PlayAnimation", "EatAnimation")
+                v2 = game.ReplicatedStorage.Assets.Sounds.Eat:Clone()
+                game.Debris:AddItem(v2, 1)
+                v2.Parent = Character.UpperTorso
+                v2:Play()
+                local u65 = a1.Handle:Clone()
+                game.Debris:AddItem(u65, 2)
+                u65.Anchored = true
+                u65.Transparency = 1
+                u65.Position = Character.Head.Position
+                u65.Parent = workspace.Ignored
+                u65.EatingParticle:Emit(10)
+                task.delay(0.5, function() -- Line: 1671 -- upvalues: u65 (val), Character (val)
+                    u65.Position = Character.Head.Position
+                    u65.EatingParticle:Emit(10)
+                end)
+                u0.predictHealth(
+                    Character,
+                    math.min(Character.BodyEffects.Health_CLIENT.Value + u0.FOOD_HEAL, Character.BodyEffects.MaxHealth.Value),
+                    "FOOD_" .. v1
+                )
+                game.ReplicatedStorage.MainEvent:FireServer("EatFood", a1, v1)
+                return
+            end
+            return
+        end
+    end)
+end
+
+function u0.eatFood(a1, a2, a3) -- Line: 1680 -- upvalues: u138 (val), u0 (val)
+    if type(a3) ~= "number" then
+        return
+    end
+    local Character = a1.Character
+    local BodyEffects = Character and Character:FindFirstChild("BodyEffects")
+    local ServerTimeNow = workspace:GetServerTimeNow()
+    local v1 = u138[a1] or 0
+    if BodyEffects
+        and typeof(a2) == "Instance"
+        and a2:GetAttribute("Food") == true
+        and a2.Parent == Character
+        and BodyEffects["K.O"].Value ~= true
+        and BodyEffects.FROZEN.Value ~= true
+        and BodyEffects.Grabbed.Value == nil
+        and not Character:FindFirstChild("GRABBING_CONSTRAINT")
+        and not (0 < BodyEffects.AnticheatEffects.INTERACTION_SUSPENDED.Value - ServerTimeNow)
+        and Character:FindFirstChild("UpperTorso") ~= nil
+        and not Character.UpperTorso:FindFirstChild("RootEffect")
+        and not (a2.Uses.Value <= 0)
+        and not (ServerTimeNow < v1 - 0.3) then
+        u138[a1] = math.max(ServerTimeNow, v1) + 0.8
+        BodyEffects.Attacking.Value = true
+        local Uses = a2.Uses
+        Uses.Value = Uses.Value - 1
+        game.ReplicatedStorage.UnreliableMainEvent:FireAllClients(
+            "ReplicateCloneSound",
+            {a1},
+            game.ReplicatedStorage.Assets.Sounds.Eat,
+            Character.UpperTorso,
+            1
+        )
+        game.ReplicatedStorage.UnreliableMainEvent:FireAllClients("ReplicateEatParticles", {a1}, a2, a1)
+        BodyEffects.Health.Value = math.min(BodyEffects.Health.Value + u0.FOOD_HEAL, BodyEffects.MaxHealth.Value)
+        game.ReplicatedStorage.MainEvent:FireClient(a1, "HealthResult", a2, a3)
+        task.wait(0.7)
+        BodyEffects.Attacking.Value = false
+        if a2.Uses.Value <= 0 then
+            a2:Destroy()
+        end
+        return
+    end
+    game.ReplicatedStorage.MainEvent:FireClient(a1, "HealthResult", a2, a3)
+end
+
+function u0.settleFood(a1, a2) -- Line: 1706 -- upvalues: u0 (val), u139 (val)
+    u0.clearHealthPrediction("FOOD_" .. tostring(a2))
+    if u139[a1] == nil then
+        return
+    end
+    local v1 = u139
+    v1[a1] = v1[a1] - 1
+    if u139[a1] <= 0 then
+        u139[a1] = nil
+    end
+    if a1:FindFirstChild("Uses") and a1.Uses:FindFirstChild("CLIENT") then
+        a1.Uses.CLIENT.Value = a1.Uses.Value - (u139[a1] or 0)
+    end
+end
+
+function u0.getRarityPercentages(a1) -- Line: 1718
+    local v1
+    local v2 = {"Misc", "Common", "Epic", "Legendary", "Mythical"}
+    local v3 = 0
+    for k, v in next, v2 do
+        v3 = v3 + (a1[v] or 0)
+    end
+    local v4 = {}
+    if v3 == 0 then
+        for k3, j in next, v2 do
+            v4[j] = 0
+        end
+        v4.Common = 100
+        return v4
+    end
+    for k2, i in next, v2 do
+        v1 = (a1[i] or 0) / v3 * 100 * 100 + 0.5
+        v4[i] = math.floor(v1) / 100
+    end
+    return v4
+end
+
+function u0.DoCaseReel(a1, a2, a3, a4) -- Line: 2103
+    local AbsoluteSize, CAPSULE_TICK, Children_3, Children_4, Descendants, Descendants_2, Frame, Frame_2, Frame_3, Frame_4, Frame_5, Frame_6, Frame_7, Frame_8, Shadow, Shadow_2, TextLabel, TextLabel_2, TextLabel_3, TextLabel_4, UIStroke, UIStroke_2, cellCenterX, setCellScale, u1216, u1221, u1225, u1235, u1586, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24
+    local TweenService = game:GetService("TweenService")
+    local UserInputService = game:GetService("UserInputService")
+    local LocalPlayer = game.Players.LocalPlayer
+    local OPENING = (LocalPlayer:WaitForChild("PlayerGui")):WaitForChild("OPENING")
+    local Card = OPENING:FindFirstChild("Card")
+    local u29 = {"[Revolver]", "[DoubleBarrel]", "[Shotgun]", "[Silencer]", "[TacticalShotgun]", "[SMG]"}
+    local u36 = {
+        Common = {Wrap = {}, Frame = {}, Beam = {}},
+        Epic = {Wrap = {}, Frame = {}, Beam = {}},
+        Legendary = {Wrap = {}, Frame = {}, Beam = {}},
+        Mythical = {EnchantingBook = {}},
+        Misc = {Misc = {}},
+    }
+    local v25 = next
+    local Guns = _G.Guns
+    for k21, i21 in v25, Guns do
+        if u36[i21[1]] then
+            table.insert(u36[i21[1]].Wrap, {Name = k21, Type = "Wrap", Rarity = i21[1], Weight = 1})
+        end
+    end
+    v25 = next
+    local Frames = _G.Frames
+    for k22, i22 in v25, Frames do
+        if u36[i22[1]] then
+            table.insert(u36[i22[1]].Frame, {Name = k22, Type = "Frame", Rarity = i22[1], Weight = 1})
+        end
+    end
+    v25 = next
+    local BulletBeams = _G.BulletBeams
+    for k23, i23 in v25, BulletBeams do
+        if u36[i23[1]] then
+            table.insert(u36[i23[1]].Beam, {Name = k23, Type = "Beam", Rarity = i23[1], Weight = 1})
+        end
+    end
+    v25 = next
+    local Children, Children_2 = game.ReplicatedStorage.EnchantingBooks:GetChildren()
+    for k24, i24 in v25, Children, Children_2 do
+        table.insert(u36.Mythical.EnchantingBook, {Name = i24.Name, Type = "EnchantingBook", Rarity = "Mythical", Weight = 1})
+    end
+    v25 = {["Common Shard"] = 50, Coin = 35, ["Epic Shard"] = 30, ["Legendary Shard"] = 25}
+    local v26 = next
+    local Misc = _G.Misc
+    for k25, i25 in v26, Misc do
+        table.insert(u36.Misc.Misc, {Name = k25, Type = "Misc", Rarity = i25[1], Weight = v25[k25] or 1})
+    end
+    local u186 = {{"Misc", 100}, {"Common", 12.2}, {"Epic", 5.8}, {"Legendary", 2.9}, {"Mythical", 1.4}}
+    if a4 then
+        local success, err = pcall(function() -- Line: 2144 -- upvalues: a4 (val)
+            return (game:GetService("HttpService")):JSONDecode(a4)
+        end)
+        if success and type(err) == "table" then
+            local v27, v28
+            u186 = {}
+            for k26, i26 in next, {"Misc", "Common", "Epic", "Legendary", "Mythical"} do
+                v27 = {}
+                v28 = err[i26]
+                v27[1] = i26
+                v27[2] = tonumber(v28) or 0
+                table.insert(u186, v27)
+            end
+        end
+    end
+    local u187 = 0
+    for k27, i27 in next, u186 do
+        u187 = u187 + i27[2]
+    end
+    if u187 <= 0 then
+        u186 = {{"Misc", 100}}
+        u187 = 100
+    end
+
+    local function rollPool(a1) -- Line: 2163
+        local v1 = 0
+        for k, v in next, a1 do
+            v1 = v1 + v.Weight
+        end
+        local v2 = math.random() * v1
+        local v3 = 0
+        for k2, i in next, a1 do
+            v3 = v3 + i.Weight
+            if v2 <= v3 then
+                return i
+            end
+        end
+        return a1[#a1]
+    end
+
+    local function rollFiller() -- Line: 2179 -- upvalues: u187 (ref), u186 (ref), u36 (val), rollPool (val)
+        local v1, v2, v3
+        local v4 = math.random() * u187
+        local v5 = 0
+        for k, v in next, u186 do
+            v5 = v5 + v[2]
+            if v4 <= v5 then
+                v1 = {}
+                v2 = next
+                v3 = u36[v[1]]
+                for k2, i in v2, v3 do
+                    if #i > 0 then
+                        table.insert(v1, k2)
+                    end
+                end
+                if not (#v1 > 0) then
+                    break
+                end
+                return (rollPool(u36[v[1]][v1[math.random(1, #v1)]]))
+            end
+        end
+        return (rollPool(u36.Misc.Misc))
+    end
+
+    local function makeCellEntry(a1) -- Line: 2200 -- upvalues: u29 (val)
+        local v1 = {Name = a1.Name, Type = a1.Type, Rarity = a1.Rarity}
+        if v1.Type == "Wrap" then
+            v1.GunType = u29[math.random(1, #u29)]
+        end
+        return v1
+    end
+
+    local function buildPreview(a1, a2) -- Line: 2208
+        local v1 = nil
+        if a2.Type == "Wrap" then
+            v1 = game.ReplicatedStorage.Wraps[a2.GunType]:FindFirstChild(a2.Name)
+        elseif a2.Type == "Beam" then
+            v1 = game.ReplicatedStorage.BulletBeams:FindFirstChild(a2.Name)
+        elseif a2.Type == "Frame" then
+            v1 = game.ReplicatedStorage.Frames:FindFirstChild(a2.Name)
+        elseif a2.Type == "EnchantingBook" then
+            v1 = game.ReplicatedStorage.EnchantingBooks:FindFirstChild(a2.Name)
+        elseif a2.Type == "Misc" then
+            v1 = game.ReplicatedStorage.Assets.Unboxing.CapsuleDisplay.Misc:FindFirstChild(a2.Name)
+        end
+        if v1 ~= nil and v1.PrimaryPart ~= nil then
+            local ViewportFrame = Instance.new("ViewportFrame")
+            ViewportFrame.Position = UDim2.new(0, 0, 0.14, 0)
+            ViewportFrame.Size = UDim2.new(1, 0, 0.72, 0)
+            ViewportFrame.BackgroundTransparency = 1
+            ViewportFrame.ZIndex = 5
+            local v2 = v1:Clone()
+            v2.Parent = ViewportFrame
+            local PrimaryPart = v2.PrimaryPart
+            local v3 = Vector3.new(1.25, 1.25, 1.25)
+            if a2.Type == "Frame" then
+                v3 = Vector3.new(-1.25, 1.25, -1.25)
+            end
+            local Camera = Instance.new("Camera")
+            Camera.CFrame = CFrame.new(PrimaryPart.CFrame.p + v3 * PrimaryPart.Size.magnitude * 0.4, PrimaryPart.CFrame.p)
+            Camera.Parent = ViewportFrame
+            ViewportFrame.CurrentCamera = Camera
+            ViewportFrame.Parent = a1
+            return
+        end
+    end
+
+    if a2 == nil then
+        AbsoluteSize = OPENING.AbsoluteSize
+        v2 = math.floor(AbsoluteSize.Y * 0.34)
+        u1216 = math.floor(v2 * 0.84)
+        u1221 = math.floor(u1216 * 0.75)
+        u1225 = u1221 + math.max(6, (math.floor(u1221 * 0.12)))
+        OPENING.Enabled = true
+        if OPENING:FindFirstChild("holder") then
+            OPENING.holder.info1.Skip.Visible = false
+        end
+        Frame = Instance.new("Frame")
+        Frame.Name = "CaseReel"
+        Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+        Frame.Size = UDim2.new(1, 0, 0, 0)
+        Frame.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+        Frame.BackgroundTransparency = 0.15
+        Frame.BorderSizePixel = 0
+        Frame.ClipsDescendants = true
+        Frame.ZIndex = 1
+        Frame.Parent = OPENING
+        Frame_2 = Instance.new("Frame")
+        Frame_2.Name = "Track"
+        Frame_2.BackgroundTransparency = 1
+        Frame_2.Size = UDim2.new(0, u1225 * 52, 1, 0)
+        Frame_2.Parent = Frame
+        u1235 = {}
+        v3 = nil
+        for i53 = 1, 52 do
+            v4 = if i53 ~= 43 then makeCellEntry((rollFiller())) else {Name = "Nothing", Type = "Nothing"}
+            Frame_3 = Instance.new("Frame")
+            Frame_3.Name = "Cell_" .. i53
+            Frame_3.AnchorPoint = Vector2.new(0.5, 0.5)
+            Frame_3.Position = UDim2.new(0, (i53 - 1) * u1225 + u1221 * 0.5, 0.5, 0)
+            Frame_3.Size = UDim2.new(0, u1221, 0, u1216)
+            Frame_3.BackgroundTransparency = 1
+            Frame_3.ZIndex = 2
+            Frame_3.Parent = Frame_2
+            Frame_4 = Instance.new("Frame")
+            Frame_4.Name = "Body"
+            Frame_4.Size = UDim2.new(1, 0, 1, 0)
+            Frame_4.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            Frame_4.BorderSizePixel = 0
+            Frame_4.ZIndex = 3
+            Frame_4.Parent = Frame_3
+            UIStroke = Instance.new("UIStroke")
+            UIStroke.Color = Color3.fromRGB(255, 255, 255)
+            UIStroke.Thickness = 3
+            UIStroke.Parent = Frame_4
+            if Card then
+                v6 = Card.Shadow:Clone()
+                v7 = next
+                Children_3, Children_4 = v6:GetChildren()
+                for k48, i54 in v7, Children_3, Children_4 do
+                    if i54:IsA("UIGradient") then
+                        i54:Destroy()
+                    end
+                end
+                v6.ZIndex = 2
+                v6.ImageTransparency = 0.25
+                v6.Parent = Frame_3
+                v7 = Card.Card.Pattern:Clone()
+                v7.TileSize = UDim2.new(0, 60, 0, 60)
+                v7.ZIndex = 4
+                v7.Parent = Frame_4
+            end
+            Frame_5 = Instance.new("Frame")
+            Frame_5.Name = "Dimmer"
+            Frame_5.Size = UDim2.new(1, 0, 1, 0)
+            Frame_5.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+            Frame_5.BackgroundTransparency = 1
+            Frame_5.BorderSizePixel = 0
+            Frame_5.ZIndex = 7
+            Frame_5.Parent = Frame_4
+            if v4.Type ~= "Nothing" then
+                TextLabel_2 = Instance.new("TextLabel")
+                TextLabel_2.Name = "RarityName"
+                TextLabel_2.Size = UDim2.new(1, 0, 0.12, 0)
+                TextLabel_2.BackgroundTransparency = 1
+                TextLabel_2.Font = Enum.Font.SourceSansBold
+                TextLabel_2.TextScaled = true
+                TextLabel_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+                TextLabel_2.Text = string.upper(v4.Rarity or "")
+                TextLabel_2.ZIndex = 6
+                TextLabel_2.Parent = Frame_4
+                TextLabel_3 = Instance.new("TextLabel")
+                TextLabel_3.Name = "ItemName"
+                TextLabel_3.AnchorPoint = Vector2.new(0, 1)
+                TextLabel_3.Position = UDim2.new(0, 0, 1, -2)
+                TextLabel_3.Size = UDim2.new(1, 0, 0.12, 0)
+                TextLabel_3.BackgroundTransparency = 1
+                TextLabel_3.Font = Enum.Font.SourceSansBold
+                TextLabel_3.TextScaled = true
+                TextLabel_3.TextColor3 = Color3.fromRGB(255, 255, 255)
+                TextLabel_3.Text = v4.Name
+                TextLabel_3.ZIndex = 6
+                TextLabel_3.Parent = Frame_4
+                v9 = if v4.Type ~= "EnchantingBook" then script:FindFirstChild(v4.Rarity or "") else script:FindFirstChild("Enchant")
+                if v9 then
+                    v9:Clone().Parent = UIStroke
+                    v9:Clone().Parent = TextLabel_2
+                    Shadow = Frame_3:FindFirstChild("Shadow")
+                    if Shadow then
+                        v9:Clone().Parent = Shadow
+                    end
+                end
+                buildPreview(Frame_4, v4)
+            else
+                UIStroke.Color = Color3.fromRGB(75, 75, 75)
+                TextLabel = Instance.new("TextLabel")
+                TextLabel.Size = UDim2.new(1, 0, 1, 0)
+                TextLabel.BackgroundTransparency = 1
+                TextLabel.Font = Enum.Font.SourceSansBold
+                TextLabel.TextScaled = true
+                TextLabel.TextColor3 = Color3.fromRGB(120, 120, 120)
+                TextLabel.Text = "?"
+                TextLabel.ZIndex = 6
+                TextLabel.Parent = Frame_4
+            end
+            u1235[i53] = Frame_3
+            if i53 == 43 then
+                v3 = Frame_3
+            end
+        end
+        Frame_6 = Instance.new("Frame")
+        Frame_6.Name = "Marker"
+        Frame_6.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame_6.Position = UDim2.new(0.5, 0, 0.5, 0)
+        Frame_6.Size = UDim2.new(0, 4, 1, 0)
+        Frame_6.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+        Frame_6.BackgroundTransparency = 0.15
+        Frame_6.BorderSizePixel = 0
+        Frame_6.ZIndex = 8
+        Frame_6.Parent = Frame
+        Frame_7 = Instance.new("Frame")
+        Frame_7.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame_7.Position = UDim2.new(0.5, 0, 0, 10)
+        Frame_7.Size = UDim2.new(0, 14, 0, 14)
+        Frame_7.Rotation = 45
+        Frame_7.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+        Frame_7.BorderSizePixel = 0
+        Frame_7.ZIndex = 8
+        Frame_7.Parent = Frame
+        Frame_8 = Instance.new("Frame")
+        Frame_8.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame_8.Position = UDim2.new(0.5, 0, 1, -10)
+        Frame_8.Size = UDim2.new(0, 14, 0, 14)
+        Frame_8.Rotation = 45
+        Frame_8.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+        Frame_8.BorderSizePixel = 0
+        Frame_8.ZIndex = 8
+        Frame_8.Parent = Frame
+        TextLabel_4 = Instance.new("TextLabel")
+        TextLabel_4.Name = "ReelSkipHint"
+        TextLabel_4.AnchorPoint = Vector2.new(0.5, 0)
+        TextLabel_4.Position = UDim2.new(0.5, 0, 0.5, math.floor(v2 * 0.5) + 8)
+        TextLabel_4.Size = UDim2.new(1, 0, 0, 16)
+        TextLabel_4.BackgroundTransparency = 1
+        TextLabel_4.Font = Enum.Font.SourceSansBold
+        TextLabel_4.TextSize = 15
+        TextLabel_4.TextColor3 = Color3.fromRGB(220, 220, 220)
+        TextLabel_4.TextTransparency = 0.35
+        TextLabel_4.Text = "click to skip"
+        TextLabel_4.ZIndex = 10
+        TextLabel_4.Parent = OPENING
+        TweenService:Create(Frame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, v2)}):Play()
+        task.wait(0.45)
+
+        function cellCenterX(a1) -- Line: 2458 -- upvalues: u1225 (val), u1221 (val)
+            return (a1 - 1) * u1225 + u1221 * 0.5
+        end
+
+        function setCellScale(a1, a2) -- Line: 2462 -- upvalues: u1235 (val), u1221 (val), u1216 (val)
+            local v1 = u1235[a1]
+            if v1 == nil then
+                return
+            end
+            v1.Size = UDim2.new(0, math.floor(u1221 * a2 + 0.5), 0, (math.floor(u1216 * a2 + 0.5)))
+            if a2 > 1.001 then
+                v1.ZIndex = 3
+                return
+            end
+            v1.ZIndex = 2
+        end
+
+        v5 = AbsoluteSize.X * 0.5
+        v6 = (math.random() * 2 - 1) * u1221 * 0.33
+        v7 = v5 - (7 * u1225 + u1221 * 0.5)
+        v8 = 42 * u1225 + u1221 * 0.5 - (7 * u1225 + u1221 * 0.5) + v6
+        Frame_2.Position = UDim2.new(0, v7, 0, 0)
+        u1586 = false
+        v10 = UserInputService.InputBegan:Connect(function(a1) -- Line: 2482 -- upvalues: u1586 (ref)
+            if a1.UserInputType == Enum.UserInputType.MouseButton1
+                or a1.UserInputType == Enum.UserInputType.Touch then
+                u1586 = true
+            end
+        end)
+        CAPSULE_TICK = LocalPlayer.PlayerScripts.Framework:FindFirstChild("CAPSULE_TICK")
+        if CAPSULE_TICK then
+            CAPSULE_TICK.PlaybackSpeed = 1
+        end
+        v11 = {}
+        v12 = 8
+        v13 = 0
+        v14 = tick()
+        while true do
+            v15 = math.min((tick() - v14) / 5.5, 1)
+            if u1586 then
+                v15 = 1
+            end
+            v17 = v7 - v8 * (1 - (1 - v15) ^ 5)
+            Frame_2.Position = UDim2.new(0, v17, 0, 0)
+            v18 = v5 - v17
+            v19 = {}
+            v20 = math.floor((v18 - u1221 * 0.5) / u1225 + 0.5) + 1
+            v22 = v20 - 2
+            v21 = v20 + 2
+            for i55 = v22, v21 do
+                if i55 >= 1 and i55 <= 52 then
+                    v23 = math.clamp(1 - math.abs((i55 - 1) * u1225 + u1221 * 0.5 - v18) / (u1225 * 1.2), 0, 1) * 0.1 + 1
+                    v19[i55] = v23
+                    v24 = u1235[i55]
+                    if v24 ~= nil then
+                        v24.Size = UDim2.new(0, math.floor(u1221 * v23 + 0.5), 0, (math.floor(u1216 * v23 + 0.5)))
+                        if not (v23 > 1.001) then
+                            v24.ZIndex = 2
+                        else
+                            v24.ZIndex = 3
+                        end
+                    end
+                end
+            end
+            for k49 in next, v11 do
+                if v19[k49] == nil then
+                    v23 = u1235[k49]
+                    if v23 ~= nil then
+                        v23.Size = UDim2.new(0, math.floor(u1221 * 1 + 0.5), 0, (math.floor(u1216 * 1 + 0.5)))
+                        v23.ZIndex = 2
+                    end
+                end
+            end
+            v11 = v19
+            v21 = math.floor(v18 / u1225) + 1
+            if v21 ~= v12 then
+                v12 = v21
+                if CAPSULE_TICK then
+                    CAPSULE_TICK.TimePosition = 0
+                    CAPSULE_TICK:Play()
+                end
+                if 0.12 < tick() - v13 then
+                    Frame_7.Size = UDim2.new(0, 20, 0, 20)
+                    Frame_8.Size = UDim2.new(0, 20, 0, 20)
+                    TweenService:Create(Frame_7, TweenInfo.new(0.15), {Size = UDim2.new(0, 14, 0, 14)}):Play()
+                    TweenService:Create(Frame_8, TweenInfo.new(0.15), {Size = UDim2.new(0, 14, 0, 14)}):Play()
+                end
+                v13 = tick()
+            end
+            if v15 >= 1 then
+                break
+            end
+            task.wait()
+        end
+        v10:Disconnect()
+        if CAPSULE_TICK then
+            CAPSULE_TICK.PlaybackSpeed = 0.55
+            CAPSULE_TICK.TimePosition = 0
+            CAPSULE_TICK:Play()
+        end
+        task.wait(0.3)
+        v15 = next
+        v16 = u1235
+        for k50, i56 in v15, v16 do
+            if k50 ~= 43 then
+                TweenService:Create(i56.Body.Dimmer, TweenInfo.new(0.35), {BackgroundTransparency = 0.45}):Play()
+                Shadow_2 = i56:FindFirstChild("Shadow")
+                if Shadow_2 then
+                    TweenService:Create(Shadow_2, TweenInfo.new(0.35), {ImageTransparency = 0.8}):Play()
+                end
+            end
+        end
+        if v3 then
+            v3.ZIndex = 11
+            v15 = next
+            Descendants, Descendants_2 = v3:GetDescendants()
+            for k51, i57 in v15, Descendants, Descendants_2 do
+                if i57:IsA("GuiObject") then
+                    i57.ZIndex = i57.ZIndex + 10
+                end
+            end
+            TweenService:Create(v3, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0, math.floor(u1221 * 1.18), 0, (math.floor(u1216 * 1.18))),
+            }):Play()
+            UIStroke_2 = v3.Body:FindFirstChildOfClass("UIStroke")
+            if UIStroke_2 then
+                TweenService:Create(
+                    UIStroke_2,
+                    TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, true),
+                    {Thickness = 6}
+                ):Play()
+            end
+            if Card then
+                v16 = Card.Frame:Clone()
+                v16.ZIndex = 18
+                v16.Parent = v3.Body
+                TweenService:Create(v16.UIGradient, TweenInfo.new(0.6), {Offset = Vector2.new(2, 0)}):Play()
+                game.Debris:AddItem(v16, 0.8)
+            end
+        end
+        task.wait(1)
+        if CAPSULE_TICK then
+            CAPSULE_TICK.PlaybackSpeed = 1
+        end
+        TextLabel_4:Destroy()
+        TweenService:Create(Frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(1, 0, 0, 0)}):Play()
+        task.wait(0.3)
+        Frame:Destroy()
+        return
+    end
+    if a2 == "Wrap" then
+        v1 = {Name = a1, Type = "Wrap"}
+        v2 = _G.Guns[a1] and _G.Guns[a1][1]
+        v1.Rarity = v2
+        v1.GunType = a3
+        AbsoluteSize = OPENING.AbsoluteSize
+        v2 = math.floor(AbsoluteSize.Y * 0.34)
+        u1216 = math.floor(v2 * 0.84)
+        u1221 = math.floor(u1216 * 0.75)
+        u1225 = u1221 + math.max(6, (math.floor(u1221 * 0.12)))
+        OPENING.Enabled = true
+        if OPENING:FindFirstChild("holder") then
+            OPENING.holder.info1.Skip.Visible = false
+        end
+        Frame = Instance.new("Frame")
+        Frame.Name = "CaseReel"
+        Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+        Frame.Size = UDim2.new(1, 0, 0, 0)
+        Frame.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+        Frame.BackgroundTransparency = 0.15
+        Frame.BorderSizePixel = 0
+        Frame.ClipsDescendants = true
+        Frame.ZIndex = 1
+        Frame.Parent = OPENING
+        Frame_2 = Instance.new("Frame")
+        Frame_2.Name = "Track"
+        Frame_2.BackgroundTransparency = 1
+        Frame_2.Size = UDim2.new(0, u1225 * 52, 1, 0)
+        Frame_2.Parent = Frame
+        u1235 = {}
+        v3 = nil
+        for i48 = 1, 52 do
+            v4 = if i48 ~= 43 then makeCellEntry((rollFiller())) else v1
+            Frame_3 = Instance.new("Frame")
+            Frame_3.Name = "Cell_" .. i48
+            Frame_3.AnchorPoint = Vector2.new(0.5, 0.5)
+            Frame_3.Position = UDim2.new(0, (i48 - 1) * u1225 + u1221 * 0.5, 0.5, 0)
+            Frame_3.Size = UDim2.new(0, u1221, 0, u1216)
+            Frame_3.BackgroundTransparency = 1
+            Frame_3.ZIndex = 2
+            Frame_3.Parent = Frame_2
+            Frame_4 = Instance.new("Frame")
+            Frame_4.Name = "Body"
+            Frame_4.Size = UDim2.new(1, 0, 1, 0)
+            Frame_4.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            Frame_4.BorderSizePixel = 0
+            Frame_4.ZIndex = 3
+            Frame_4.Parent = Frame_3
+            UIStroke = Instance.new("UIStroke")
+            UIStroke.Color = Color3.fromRGB(255, 255, 255)
+            UIStroke.Thickness = 3
+            UIStroke.Parent = Frame_4
+            if Card then
+                v6 = Card.Shadow:Clone()
+                v7 = next
+                Children_3, Children_4 = v6:GetChildren()
+                for k44, i49 in v7, Children_3, Children_4 do
+                    if i49:IsA("UIGradient") then
+                        i49:Destroy()
+                    end
+                end
+                v6.ZIndex = 2
+                v6.ImageTransparency = 0.25
+                v6.Parent = Frame_3
+                v7 = Card.Card.Pattern:Clone()
+                v7.TileSize = UDim2.new(0, 60, 0, 60)
+                v7.ZIndex = 4
+                v7.Parent = Frame_4
+            end
+            Frame_5 = Instance.new("Frame")
+            Frame_5.Name = "Dimmer"
+            Frame_5.Size = UDim2.new(1, 0, 1, 0)
+            Frame_5.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+            Frame_5.BackgroundTransparency = 1
+            Frame_5.BorderSizePixel = 0
+            Frame_5.ZIndex = 7
+            Frame_5.Parent = Frame_4
+            if v4.Type ~= "Nothing" then
+                TextLabel_2 = Instance.new("TextLabel")
+                TextLabel_2.Name = "RarityName"
+                TextLabel_2.Size = UDim2.new(1, 0, 0.12, 0)
+                TextLabel_2.BackgroundTransparency = 1
+                TextLabel_2.Font = Enum.Font.SourceSansBold
+                TextLabel_2.TextScaled = true
+                TextLabel_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+                TextLabel_2.Text = string.upper(v4.Rarity or "")
+                TextLabel_2.ZIndex = 6
+                TextLabel_2.Parent = Frame_4
+                TextLabel_3 = Instance.new("TextLabel")
+                TextLabel_3.Name = "ItemName"
+                TextLabel_3.AnchorPoint = Vector2.new(0, 1)
+                TextLabel_3.Position = UDim2.new(0, 0, 1, -2)
+                TextLabel_3.Size = UDim2.new(1, 0, 0.12, 0)
+                TextLabel_3.BackgroundTransparency = 1
+                TextLabel_3.Font = Enum.Font.SourceSansBold
+                TextLabel_3.TextScaled = true
+                TextLabel_3.TextColor3 = Color3.fromRGB(255, 255, 255)
+                TextLabel_3.Text = v4.Name
+                TextLabel_3.ZIndex = 6
+                TextLabel_3.Parent = Frame_4
+                v9 = if v4.Type ~= "EnchantingBook" then script:FindFirstChild(v4.Rarity or "") else script:FindFirstChild("Enchant")
+                if v9 then
+                    v9:Clone().Parent = UIStroke
+                    v9:Clone().Parent = TextLabel_2
+                    Shadow = Frame_3:FindFirstChild("Shadow")
+                    if Shadow then
+                        v9:Clone().Parent = Shadow
+                    end
+                end
+                buildPreview(Frame_4, v4)
+            else
+                UIStroke.Color = Color3.fromRGB(75, 75, 75)
+                TextLabel = Instance.new("TextLabel")
+                TextLabel.Size = UDim2.new(1, 0, 1, 0)
+                TextLabel.BackgroundTransparency = 1
+                TextLabel.Font = Enum.Font.SourceSansBold
+                TextLabel.TextScaled = true
+                TextLabel.TextColor3 = Color3.fromRGB(120, 120, 120)
+                TextLabel.Text = "?"
+                TextLabel.ZIndex = 6
+                TextLabel.Parent = Frame_4
+            end
+            u1235[i48] = Frame_3
+            if i48 == 43 then
+                v3 = Frame_3
+            end
+        end
+        Frame_6 = Instance.new("Frame")
+        Frame_6.Name = "Marker"
+        Frame_6.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame_6.Position = UDim2.new(0.5, 0, 0.5, 0)
+        Frame_6.Size = UDim2.new(0, 4, 1, 0)
+        Frame_6.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+        Frame_6.BackgroundTransparency = 0.15
+        Frame_6.BorderSizePixel = 0
+        Frame_6.ZIndex = 8
+        Frame_6.Parent = Frame
+        Frame_7 = Instance.new("Frame")
+        Frame_7.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame_7.Position = UDim2.new(0.5, 0, 0, 10)
+        Frame_7.Size = UDim2.new(0, 14, 0, 14)
+        Frame_7.Rotation = 45
+        Frame_7.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+        Frame_7.BorderSizePixel = 0
+        Frame_7.ZIndex = 8
+        Frame_7.Parent = Frame
+        Frame_8 = Instance.new("Frame")
+        Frame_8.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame_8.Position = UDim2.new(0.5, 0, 1, -10)
+        Frame_8.Size = UDim2.new(0, 14, 0, 14)
+        Frame_8.Rotation = 45
+        Frame_8.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+        Frame_8.BorderSizePixel = 0
+        Frame_8.ZIndex = 8
+        Frame_8.Parent = Frame
+        TextLabel_4 = Instance.new("TextLabel")
+        TextLabel_4.Name = "ReelSkipHint"
+        TextLabel_4.AnchorPoint = Vector2.new(0.5, 0)
+        TextLabel_4.Position = UDim2.new(0.5, 0, 0.5, math.floor(v2 * 0.5) + 8)
+        TextLabel_4.Size = UDim2.new(1, 0, 0, 16)
+        TextLabel_4.BackgroundTransparency = 1
+        TextLabel_4.Font = Enum.Font.SourceSansBold
+        TextLabel_4.TextSize = 15
+        TextLabel_4.TextColor3 = Color3.fromRGB(220, 220, 220)
+        TextLabel_4.TextTransparency = 0.35
+        TextLabel_4.Text = "click to skip"
+        TextLabel_4.ZIndex = 10
+        TextLabel_4.Parent = OPENING
+        TweenService:Create(Frame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, v2)}):Play()
+        task.wait(0.45)
+
+        function cellCenterX(a1) -- Line: 2458 -- upvalues: u1225 (val), u1221 (val)
+            return (a1 - 1) * u1225 + u1221 * 0.5
+        end
+
+        function setCellScale(a1, a2) -- Line: 2462 -- upvalues: u1235 (val), u1221 (val), u1216 (val)
+            local v1 = u1235[a1]
+            if v1 == nil then
+                return
+            end
+            v1.Size = UDim2.new(0, math.floor(u1221 * a2 + 0.5), 0, (math.floor(u1216 * a2 + 0.5)))
+            if a2 > 1.001 then
+                v1.ZIndex = 3
+                return
+            end
+            v1.ZIndex = 2
+        end
+
+        v5 = AbsoluteSize.X * 0.5
+        v6 = (math.random() * 2 - 1) * u1221 * 0.33
+        v7 = v5 - (7 * u1225 + u1221 * 0.5)
+        v8 = 42 * u1225 + u1221 * 0.5 - (7 * u1225 + u1221 * 0.5) + v6
+        Frame_2.Position = UDim2.new(0, v7, 0, 0)
+        u1586 = false
+        v10 = UserInputService.InputBegan:Connect(function(a1) -- Line: 2482 -- upvalues: u1586 (ref)
+            if a1.UserInputType == Enum.UserInputType.MouseButton1
+                or a1.UserInputType == Enum.UserInputType.Touch then
+                u1586 = true
+            end
+        end)
+        CAPSULE_TICK = LocalPlayer.PlayerScripts.Framework:FindFirstChild("CAPSULE_TICK")
+        if CAPSULE_TICK then
+            CAPSULE_TICK.PlaybackSpeed = 1
+        end
+        v11 = {}
+        v12 = 8
+        v13 = 0
+        v14 = tick()
+        while true do
+            v15 = math.min((tick() - v14) / 5.5, 1)
+            if u1586 then
+                v15 = 1
+            end
+            v17 = v7 - v8 * (1 - (1 - v15) ^ 5)
+            Frame_2.Position = UDim2.new(0, v17, 0, 0)
+            v18 = v5 - v17
+            v19 = {}
+            v20 = math.floor((v18 - u1221 * 0.5) / u1225 + 0.5) + 1
+            v22 = v20 - 2
+            v21 = v20 + 2
+            for i50 = v22, v21 do
+                if i50 >= 1 and i50 <= 52 then
+                    v23 = math.clamp(1 - math.abs((i50 - 1) * u1225 + u1221 * 0.5 - v18) / (u1225 * 1.2), 0, 1) * 0.1 + 1
+                    v19[i50] = v23
+                    v24 = u1235[i50]
+                    if v24 ~= nil then
+                        v24.Size = UDim2.new(0, math.floor(u1221 * v23 + 0.5), 0, (math.floor(u1216 * v23 + 0.5)))
+                        if not (v23 > 1.001) then
+                            v24.ZIndex = 2
+                        else
+                            v24.ZIndex = 3
+                        end
+                    end
+                end
+            end
+            for k45 in next, v11 do
+                if v19[k45] == nil then
+                    v23 = u1235[k45]
+                    if v23 ~= nil then
+                        v23.Size = UDim2.new(0, math.floor(u1221 * 1 + 0.5), 0, (math.floor(u1216 * 1 + 0.5)))
+                        v23.ZIndex = 2
+                    end
+                end
+            end
+            v11 = v19
+            v21 = math.floor(v18 / u1225) + 1
+            if v21 ~= v12 then
+                v12 = v21
+                if CAPSULE_TICK then
+                    CAPSULE_TICK.TimePosition = 0
+                    CAPSULE_TICK:Play()
+                end
+                if 0.12 < tick() - v13 then
+                    Frame_7.Size = UDim2.new(0, 20, 0, 20)
+                    Frame_8.Size = UDim2.new(0, 20, 0, 20)
+                    TweenService:Create(Frame_7, TweenInfo.new(0.15), {Size = UDim2.new(0, 14, 0, 14)}):Play()
+                    TweenService:Create(Frame_8, TweenInfo.new(0.15), {Size = UDim2.new(0, 14, 0, 14)}):Play()
+                end
+                v13 = tick()
+            end
+            if v15 >= 1 then
+                break
+            end
+            task.wait()
+        end
+        v10:Disconnect()
+        if CAPSULE_TICK then
+            CAPSULE_TICK.PlaybackSpeed = 0.55
+            CAPSULE_TICK.TimePosition = 0
+            CAPSULE_TICK:Play()
+        end
+        task.wait(0.3)
+        v15 = next
+        v16 = u1235
+        for k46, i51 in v15, v16 do
+            if k46 ~= 43 then
+                TweenService:Create(i51.Body.Dimmer, TweenInfo.new(0.35), {BackgroundTransparency = 0.45}):Play()
+                Shadow_2 = i51:FindFirstChild("Shadow")
+                if Shadow_2 then
+                    TweenService:Create(Shadow_2, TweenInfo.new(0.35), {ImageTransparency = 0.8}):Play()
+                end
+            end
+        end
+        if v3 then
+            v3.ZIndex = 11
+            v15 = next
+            Descendants, Descendants_2 = v3:GetDescendants()
+            for k47, i52 in v15, Descendants, Descendants_2 do
+                if i52:IsA("GuiObject") then
+                    i52.ZIndex = i52.ZIndex + 10
+                end
+            end
+            TweenService:Create(v3, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0, math.floor(u1221 * 1.18), 0, (math.floor(u1216 * 1.18))),
+            }):Play()
+            UIStroke_2 = v3.Body:FindFirstChildOfClass("UIStroke")
+            if UIStroke_2 then
+                TweenService:Create(
+                    UIStroke_2,
+                    TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, true),
+                    {Thickness = 6}
+                ):Play()
+            end
+            if Card then
+                v16 = Card.Frame:Clone()
+                v16.ZIndex = 18
+                v16.Parent = v3.Body
+                TweenService:Create(v16.UIGradient, TweenInfo.new(0.6), {Offset = Vector2.new(2, 0)}):Play()
+                game.Debris:AddItem(v16, 0.8)
+            end
+        end
+        task.wait(1)
+        if CAPSULE_TICK then
+            CAPSULE_TICK.PlaybackSpeed = 1
+        end
+        TextLabel_4:Destroy()
+        TweenService:Create(Frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(1, 0, 0, 0)}):Play()
+        task.wait(0.3)
+        Frame:Destroy()
+        return
+    end
+    if a2 == "Frame" then
+        v1 = {Name = a1, Type = "Frame"}
+        v2 = _G.Frames[a1] and _G.Frames[a1][1]
+        v1.Rarity = v2
+        AbsoluteSize = OPENING.AbsoluteSize
+        v2 = math.floor(AbsoluteSize.Y * 0.34)
+        u1216 = math.floor(v2 * 0.84)
+        u1221 = math.floor(u1216 * 0.75)
+        u1225 = u1221 + math.max(6, (math.floor(u1221 * 0.12)))
+        OPENING.Enabled = true
+        if OPENING:FindFirstChild("holder") then
+            OPENING.holder.info1.Skip.Visible = false
+        end
+        Frame = Instance.new("Frame")
+        Frame.Name = "CaseReel"
+        Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+        Frame.Size = UDim2.new(1, 0, 0, 0)
+        Frame.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+        Frame.BackgroundTransparency = 0.15
+        Frame.BorderSizePixel = 0
+        Frame.ClipsDescendants = true
+        Frame.ZIndex = 1
+        Frame.Parent = OPENING
+        Frame_2 = Instance.new("Frame")
+        Frame_2.Name = "Track"
+        Frame_2.BackgroundTransparency = 1
+        Frame_2.Size = UDim2.new(0, u1225 * 52, 1, 0)
+        Frame_2.Parent = Frame
+        u1235 = {}
+        v3 = nil
+        for i43 = 1, 52 do
+            v4 = if i43 ~= 43 then makeCellEntry((rollFiller())) else v1
+            Frame_3 = Instance.new("Frame")
+            Frame_3.Name = "Cell_" .. i43
+            Frame_3.AnchorPoint = Vector2.new(0.5, 0.5)
+            Frame_3.Position = UDim2.new(0, (i43 - 1) * u1225 + u1221 * 0.5, 0.5, 0)
+            Frame_3.Size = UDim2.new(0, u1221, 0, u1216)
+            Frame_3.BackgroundTransparency = 1
+            Frame_3.ZIndex = 2
+            Frame_3.Parent = Frame_2
+            Frame_4 = Instance.new("Frame")
+            Frame_4.Name = "Body"
+            Frame_4.Size = UDim2.new(1, 0, 1, 0)
+            Frame_4.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            Frame_4.BorderSizePixel = 0
+            Frame_4.ZIndex = 3
+            Frame_4.Parent = Frame_3
+            UIStroke = Instance.new("UIStroke")
+            UIStroke.Color = Color3.fromRGB(255, 255, 255)
+            UIStroke.Thickness = 3
+            UIStroke.Parent = Frame_4
+            if Card then
+                v6 = Card.Shadow:Clone()
+                v7 = next
+                Children_3, Children_4 = v6:GetChildren()
+                for k40, i44 in v7, Children_3, Children_4 do
+                    if i44:IsA("UIGradient") then
+                        i44:Destroy()
+                    end
+                end
+                v6.ZIndex = 2
+                v6.ImageTransparency = 0.25
+                v6.Parent = Frame_3
+                v7 = Card.Card.Pattern:Clone()
+                v7.TileSize = UDim2.new(0, 60, 0, 60)
+                v7.ZIndex = 4
+                v7.Parent = Frame_4
+            end
+            Frame_5 = Instance.new("Frame")
+            Frame_5.Name = "Dimmer"
+            Frame_5.Size = UDim2.new(1, 0, 1, 0)
+            Frame_5.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+            Frame_5.BackgroundTransparency = 1
+            Frame_5.BorderSizePixel = 0
+            Frame_5.ZIndex = 7
+            Frame_5.Parent = Frame_4
+            if v4.Type ~= "Nothing" then
+                TextLabel_2 = Instance.new("TextLabel")
+                TextLabel_2.Name = "RarityName"
+                TextLabel_2.Size = UDim2.new(1, 0, 0.12, 0)
+                TextLabel_2.BackgroundTransparency = 1
+                TextLabel_2.Font = Enum.Font.SourceSansBold
+                TextLabel_2.TextScaled = true
+                TextLabel_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+                TextLabel_2.Text = string.upper(v4.Rarity or "")
+                TextLabel_2.ZIndex = 6
+                TextLabel_2.Parent = Frame_4
+                TextLabel_3 = Instance.new("TextLabel")
+                TextLabel_3.Name = "ItemName"
+                TextLabel_3.AnchorPoint = Vector2.new(0, 1)
+                TextLabel_3.Position = UDim2.new(0, 0, 1, -2)
+                TextLabel_3.Size = UDim2.new(1, 0, 0.12, 0)
+                TextLabel_3.BackgroundTransparency = 1
+                TextLabel_3.Font = Enum.Font.SourceSansBold
+                TextLabel_3.TextScaled = true
+                TextLabel_3.TextColor3 = Color3.fromRGB(255, 255, 255)
+                TextLabel_3.Text = v4.Name
+                TextLabel_3.ZIndex = 6
+                TextLabel_3.Parent = Frame_4
+                v9 = if v4.Type ~= "EnchantingBook" then script:FindFirstChild(v4.Rarity or "") else script:FindFirstChild("Enchant")
+                if v9 then
+                    v9:Clone().Parent = UIStroke
+                    v9:Clone().Parent = TextLabel_2
+                    Shadow = Frame_3:FindFirstChild("Shadow")
+                    if Shadow then
+                        v9:Clone().Parent = Shadow
+                    end
+                end
+                buildPreview(Frame_4, v4)
+            else
+                UIStroke.Color = Color3.fromRGB(75, 75, 75)
+                TextLabel = Instance.new("TextLabel")
+                TextLabel.Size = UDim2.new(1, 0, 1, 0)
+                TextLabel.BackgroundTransparency = 1
+                TextLabel.Font = Enum.Font.SourceSansBold
+                TextLabel.TextScaled = true
+                TextLabel.TextColor3 = Color3.fromRGB(120, 120, 120)
+                TextLabel.Text = "?"
+                TextLabel.ZIndex = 6
+                TextLabel.Parent = Frame_4
+            end
+            u1235[i43] = Frame_3
+            if i43 == 43 then
+                v3 = Frame_3
+            end
+        end
+        Frame_6 = Instance.new("Frame")
+        Frame_6.Name = "Marker"
+        Frame_6.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame_6.Position = UDim2.new(0.5, 0, 0.5, 0)
+        Frame_6.Size = UDim2.new(0, 4, 1, 0)
+        Frame_6.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+        Frame_6.BackgroundTransparency = 0.15
+        Frame_6.BorderSizePixel = 0
+        Frame_6.ZIndex = 8
+        Frame_6.Parent = Frame
+        Frame_7 = Instance.new("Frame")
+        Frame_7.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame_7.Position = UDim2.new(0.5, 0, 0, 10)
+        Frame_7.Size = UDim2.new(0, 14, 0, 14)
+        Frame_7.Rotation = 45
+        Frame_7.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+        Frame_7.BorderSizePixel = 0
+        Frame_7.ZIndex = 8
+        Frame_7.Parent = Frame
+        Frame_8 = Instance.new("Frame")
+        Frame_8.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame_8.Position = UDim2.new(0.5, 0, 1, -10)
+        Frame_8.Size = UDim2.new(0, 14, 0, 14)
+        Frame_8.Rotation = 45
+        Frame_8.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+        Frame_8.BorderSizePixel = 0
+        Frame_8.ZIndex = 8
+        Frame_8.Parent = Frame
+        TextLabel_4 = Instance.new("TextLabel")
+        TextLabel_4.Name = "ReelSkipHint"
+        TextLabel_4.AnchorPoint = Vector2.new(0.5, 0)
+        TextLabel_4.Position = UDim2.new(0.5, 0, 0.5, math.floor(v2 * 0.5) + 8)
+        TextLabel_4.Size = UDim2.new(1, 0, 0, 16)
+        TextLabel_4.BackgroundTransparency = 1
+        TextLabel_4.Font = Enum.Font.SourceSansBold
+        TextLabel_4.TextSize = 15
+        TextLabel_4.TextColor3 = Color3.fromRGB(220, 220, 220)
+        TextLabel_4.TextTransparency = 0.35
+        TextLabel_4.Text = "click to skip"
+        TextLabel_4.ZIndex = 10
+        TextLabel_4.Parent = OPENING
+        TweenService:Create(Frame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, v2)}):Play()
+        task.wait(0.45)
+
+        function cellCenterX(a1) -- Line: 2458 -- upvalues: u1225 (val), u1221 (val)
+            return (a1 - 1) * u1225 + u1221 * 0.5
+        end
+
+        function setCellScale(a1, a2) -- Line: 2462 -- upvalues: u1235 (val), u1221 (val), u1216 (val)
+            local v1 = u1235[a1]
+            if v1 == nil then
+                return
+            end
+            v1.Size = UDim2.new(0, math.floor(u1221 * a2 + 0.5), 0, (math.floor(u1216 * a2 + 0.5)))
+            if a2 > 1.001 then
+                v1.ZIndex = 3
+                return
+            end
+            v1.ZIndex = 2
+        end
+
+        v5 = AbsoluteSize.X * 0.5
+        v6 = (math.random() * 2 - 1) * u1221 * 0.33
+        v7 = v5 - (7 * u1225 + u1221 * 0.5)
+        v8 = 42 * u1225 + u1221 * 0.5 - (7 * u1225 + u1221 * 0.5) + v6
+        Frame_2.Position = UDim2.new(0, v7, 0, 0)
+        u1586 = false
+        v10 = UserInputService.InputBegan:Connect(function(a1) -- Line: 2482 -- upvalues: u1586 (ref)
+            if a1.UserInputType == Enum.UserInputType.MouseButton1
+                or a1.UserInputType == Enum.UserInputType.Touch then
+                u1586 = true
+            end
+        end)
+        CAPSULE_TICK = LocalPlayer.PlayerScripts.Framework:FindFirstChild("CAPSULE_TICK")
+        if CAPSULE_TICK then
+            CAPSULE_TICK.PlaybackSpeed = 1
+        end
+        v11 = {}
+        v12 = 8
+        v13 = 0
+        v14 = tick()
+        while true do
+            v15 = math.min((tick() - v14) / 5.5, 1)
+            if u1586 then
+                v15 = 1
+            end
+            v17 = v7 - v8 * (1 - (1 - v15) ^ 5)
+            Frame_2.Position = UDim2.new(0, v17, 0, 0)
+            v18 = v5 - v17
+            v19 = {}
+            v20 = math.floor((v18 - u1221 * 0.5) / u1225 + 0.5) + 1
+            v22 = v20 - 2
+            v21 = v20 + 2
+            for i45 = v22, v21 do
+                if i45 >= 1 and i45 <= 52 then
+                    v23 = math.clamp(1 - math.abs((i45 - 1) * u1225 + u1221 * 0.5 - v18) / (u1225 * 1.2), 0, 1) * 0.1 + 1
+                    v19[i45] = v23
+                    v24 = u1235[i45]
+                    if v24 ~= nil then
+                        v24.Size = UDim2.new(0, math.floor(u1221 * v23 + 0.5), 0, (math.floor(u1216 * v23 + 0.5)))
+                        if not (v23 > 1.001) then
+                            v24.ZIndex = 2
+                        else
+                            v24.ZIndex = 3
+                        end
+                    end
+                end
+            end
+            for k41 in next, v11 do
+                if v19[k41] == nil then
+                    v23 = u1235[k41]
+                    if v23 ~= nil then
+                        v23.Size = UDim2.new(0, math.floor(u1221 * 1 + 0.5), 0, (math.floor(u1216 * 1 + 0.5)))
+                        v23.ZIndex = 2
+                    end
+                end
+            end
+            v11 = v19
+            v21 = math.floor(v18 / u1225) + 1
+            if v21 ~= v12 then
+                v12 = v21
+                if CAPSULE_TICK then
+                    CAPSULE_TICK.TimePosition = 0
+                    CAPSULE_TICK:Play()
+                end
+                if 0.12 < tick() - v13 then
+                    Frame_7.Size = UDim2.new(0, 20, 0, 20)
+                    Frame_8.Size = UDim2.new(0, 20, 0, 20)
+                    TweenService:Create(Frame_7, TweenInfo.new(0.15), {Size = UDim2.new(0, 14, 0, 14)}):Play()
+                    TweenService:Create(Frame_8, TweenInfo.new(0.15), {Size = UDim2.new(0, 14, 0, 14)}):Play()
+                end
+                v13 = tick()
+            end
+            if v15 >= 1 then
+                break
+            end
+            task.wait()
+        end
+        v10:Disconnect()
+        if CAPSULE_TICK then
+            CAPSULE_TICK.PlaybackSpeed = 0.55
+            CAPSULE_TICK.TimePosition = 0
+            CAPSULE_TICK:Play()
+        end
+        task.wait(0.3)
+        v15 = next
+        v16 = u1235
+        for k42, i46 in v15, v16 do
+            if k42 ~= 43 then
+                TweenService:Create(i46.Body.Dimmer, TweenInfo.new(0.35), {BackgroundTransparency = 0.45}):Play()
+                Shadow_2 = i46:FindFirstChild("Shadow")
+                if Shadow_2 then
+                    TweenService:Create(Shadow_2, TweenInfo.new(0.35), {ImageTransparency = 0.8}):Play()
+                end
+            end
+        end
+        if v3 then
+            v3.ZIndex = 11
+            v15 = next
+            Descendants, Descendants_2 = v3:GetDescendants()
+            for k43, i47 in v15, Descendants, Descendants_2 do
+                if i47:IsA("GuiObject") then
+                    i47.ZIndex = i47.ZIndex + 10
+                end
+            end
+            TweenService:Create(v3, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0, math.floor(u1221 * 1.18), 0, (math.floor(u1216 * 1.18))),
+            }):Play()
+            UIStroke_2 = v3.Body:FindFirstChildOfClass("UIStroke")
+            if UIStroke_2 then
+                TweenService:Create(
+                    UIStroke_2,
+                    TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, true),
+                    {Thickness = 6}
+                ):Play()
+            end
+            if Card then
+                v16 = Card.Frame:Clone()
+                v16.ZIndex = 18
+                v16.Parent = v3.Body
+                TweenService:Create(v16.UIGradient, TweenInfo.new(0.6), {Offset = Vector2.new(2, 0)}):Play()
+                game.Debris:AddItem(v16, 0.8)
+            end
+        end
+        task.wait(1)
+        if CAPSULE_TICK then
+            CAPSULE_TICK.PlaybackSpeed = 1
+        end
+        TextLabel_4:Destroy()
+        TweenService:Create(Frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(1, 0, 0, 0)}):Play()
+        task.wait(0.3)
+        Frame:Destroy()
+        return
+    end
+    if a2 == "Beam" then
+        v1 = {Name = a1, Type = "Beam"}
+        v2 = _G.BulletBeams[a1] and _G.BulletBeams[a1][1]
+        v1.Rarity = v2
+        AbsoluteSize = OPENING.AbsoluteSize
+        v2 = math.floor(AbsoluteSize.Y * 0.34)
+        u1216 = math.floor(v2 * 0.84)
+        u1221 = math.floor(u1216 * 0.75)
+        u1225 = u1221 + math.max(6, (math.floor(u1221 * 0.12)))
+        OPENING.Enabled = true
+        if OPENING:FindFirstChild("holder") then
+            OPENING.holder.info1.Skip.Visible = false
+        end
+        Frame = Instance.new("Frame")
+        Frame.Name = "CaseReel"
+        Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+        Frame.Size = UDim2.new(1, 0, 0, 0)
+        Frame.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+        Frame.BackgroundTransparency = 0.15
+        Frame.BorderSizePixel = 0
+        Frame.ClipsDescendants = true
+        Frame.ZIndex = 1
+        Frame.Parent = OPENING
+        Frame_2 = Instance.new("Frame")
+        Frame_2.Name = "Track"
+        Frame_2.BackgroundTransparency = 1
+        Frame_2.Size = UDim2.new(0, u1225 * 52, 1, 0)
+        Frame_2.Parent = Frame
+        u1235 = {}
+        v3 = nil
+        for i38 = 1, 52 do
+            v4 = if i38 ~= 43 then makeCellEntry((rollFiller())) else v1
+            Frame_3 = Instance.new("Frame")
+            Frame_3.Name = "Cell_" .. i38
+            Frame_3.AnchorPoint = Vector2.new(0.5, 0.5)
+            Frame_3.Position = UDim2.new(0, (i38 - 1) * u1225 + u1221 * 0.5, 0.5, 0)
+            Frame_3.Size = UDim2.new(0, u1221, 0, u1216)
+            Frame_3.BackgroundTransparency = 1
+            Frame_3.ZIndex = 2
+            Frame_3.Parent = Frame_2
+            Frame_4 = Instance.new("Frame")
+            Frame_4.Name = "Body"
+            Frame_4.Size = UDim2.new(1, 0, 1, 0)
+            Frame_4.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            Frame_4.BorderSizePixel = 0
+            Frame_4.ZIndex = 3
+            Frame_4.Parent = Frame_3
+            UIStroke = Instance.new("UIStroke")
+            UIStroke.Color = Color3.fromRGB(255, 255, 255)
+            UIStroke.Thickness = 3
+            UIStroke.Parent = Frame_4
+            if Card then
+                v6 = Card.Shadow:Clone()
+                v7 = next
+                Children_3, Children_4 = v6:GetChildren()
+                for k36, i39 in v7, Children_3, Children_4 do
+                    if i39:IsA("UIGradient") then
+                        i39:Destroy()
+                    end
+                end
+                v6.ZIndex = 2
+                v6.ImageTransparency = 0.25
+                v6.Parent = Frame_3
+                v7 = Card.Card.Pattern:Clone()
+                v7.TileSize = UDim2.new(0, 60, 0, 60)
+                v7.ZIndex = 4
+                v7.Parent = Frame_4
+            end
+            Frame_5 = Instance.new("Frame")
+            Frame_5.Name = "Dimmer"
+            Frame_5.Size = UDim2.new(1, 0, 1, 0)
+            Frame_5.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+            Frame_5.BackgroundTransparency = 1
+            Frame_5.BorderSizePixel = 0
+            Frame_5.ZIndex = 7
+            Frame_5.Parent = Frame_4
+            if v4.Type ~= "Nothing" then
+                TextLabel_2 = Instance.new("TextLabel")
+                TextLabel_2.Name = "RarityName"
+                TextLabel_2.Size = UDim2.new(1, 0, 0.12, 0)
+                TextLabel_2.BackgroundTransparency = 1
+                TextLabel_2.Font = Enum.Font.SourceSansBold
+                TextLabel_2.TextScaled = true
+                TextLabel_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+                TextLabel_2.Text = string.upper(v4.Rarity or "")
+                TextLabel_2.ZIndex = 6
+                TextLabel_2.Parent = Frame_4
+                TextLabel_3 = Instance.new("TextLabel")
+                TextLabel_3.Name = "ItemName"
+                TextLabel_3.AnchorPoint = Vector2.new(0, 1)
+                TextLabel_3.Position = UDim2.new(0, 0, 1, -2)
+                TextLabel_3.Size = UDim2.new(1, 0, 0.12, 0)
+                TextLabel_3.BackgroundTransparency = 1
+                TextLabel_3.Font = Enum.Font.SourceSansBold
+                TextLabel_3.TextScaled = true
+                TextLabel_3.TextColor3 = Color3.fromRGB(255, 255, 255)
+                TextLabel_3.Text = v4.Name
+                TextLabel_3.ZIndex = 6
+                TextLabel_3.Parent = Frame_4
+                v9 = if v4.Type ~= "EnchantingBook" then script:FindFirstChild(v4.Rarity or "") else script:FindFirstChild("Enchant")
+                if v9 then
+                    v9:Clone().Parent = UIStroke
+                    v9:Clone().Parent = TextLabel_2
+                    Shadow = Frame_3:FindFirstChild("Shadow")
+                    if Shadow then
+                        v9:Clone().Parent = Shadow
+                    end
+                end
+                buildPreview(Frame_4, v4)
+            else
+                UIStroke.Color = Color3.fromRGB(75, 75, 75)
+                TextLabel = Instance.new("TextLabel")
+                TextLabel.Size = UDim2.new(1, 0, 1, 0)
+                TextLabel.BackgroundTransparency = 1
+                TextLabel.Font = Enum.Font.SourceSansBold
+                TextLabel.TextScaled = true
+                TextLabel.TextColor3 = Color3.fromRGB(120, 120, 120)
+                TextLabel.Text = "?"
+                TextLabel.ZIndex = 6
+                TextLabel.Parent = Frame_4
+            end
+            u1235[i38] = Frame_3
+            if i38 == 43 then
+                v3 = Frame_3
+            end
+        end
+        Frame_6 = Instance.new("Frame")
+        Frame_6.Name = "Marker"
+        Frame_6.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame_6.Position = UDim2.new(0.5, 0, 0.5, 0)
+        Frame_6.Size = UDim2.new(0, 4, 1, 0)
+        Frame_6.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+        Frame_6.BackgroundTransparency = 0.15
+        Frame_6.BorderSizePixel = 0
+        Frame_6.ZIndex = 8
+        Frame_6.Parent = Frame
+        Frame_7 = Instance.new("Frame")
+        Frame_7.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame_7.Position = UDim2.new(0.5, 0, 0, 10)
+        Frame_7.Size = UDim2.new(0, 14, 0, 14)
+        Frame_7.Rotation = 45
+        Frame_7.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+        Frame_7.BorderSizePixel = 0
+        Frame_7.ZIndex = 8
+        Frame_7.Parent = Frame
+        Frame_8 = Instance.new("Frame")
+        Frame_8.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame_8.Position = UDim2.new(0.5, 0, 1, -10)
+        Frame_8.Size = UDim2.new(0, 14, 0, 14)
+        Frame_8.Rotation = 45
+        Frame_8.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+        Frame_8.BorderSizePixel = 0
+        Frame_8.ZIndex = 8
+        Frame_8.Parent = Frame
+        TextLabel_4 = Instance.new("TextLabel")
+        TextLabel_4.Name = "ReelSkipHint"
+        TextLabel_4.AnchorPoint = Vector2.new(0.5, 0)
+        TextLabel_4.Position = UDim2.new(0.5, 0, 0.5, math.floor(v2 * 0.5) + 8)
+        TextLabel_4.Size = UDim2.new(1, 0, 0, 16)
+        TextLabel_4.BackgroundTransparency = 1
+        TextLabel_4.Font = Enum.Font.SourceSansBold
+        TextLabel_4.TextSize = 15
+        TextLabel_4.TextColor3 = Color3.fromRGB(220, 220, 220)
+        TextLabel_4.TextTransparency = 0.35
+        TextLabel_4.Text = "click to skip"
+        TextLabel_4.ZIndex = 10
+        TextLabel_4.Parent = OPENING
+        TweenService:Create(Frame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, v2)}):Play()
+        task.wait(0.45)
+
+        function cellCenterX(a1) -- Line: 2458 -- upvalues: u1225 (val), u1221 (val)
+            return (a1 - 1) * u1225 + u1221 * 0.5
+        end
+
+        function setCellScale(a1, a2) -- Line: 2462 -- upvalues: u1235 (val), u1221 (val), u1216 (val)
+            local v1 = u1235[a1]
+            if v1 == nil then
+                return
+            end
+            v1.Size = UDim2.new(0, math.floor(u1221 * a2 + 0.5), 0, (math.floor(u1216 * a2 + 0.5)))
+            if a2 > 1.001 then
+                v1.ZIndex = 3
+                return
+            end
+            v1.ZIndex = 2
+        end
+
+        v5 = AbsoluteSize.X * 0.5
+        v6 = (math.random() * 2 - 1) * u1221 * 0.33
+        v7 = v5 - (7 * u1225 + u1221 * 0.5)
+        v8 = 42 * u1225 + u1221 * 0.5 - (7 * u1225 + u1221 * 0.5) + v6
+        Frame_2.Position = UDim2.new(0, v7, 0, 0)
+        u1586 = false
+        v10 = UserInputService.InputBegan:Connect(function(a1) -- Line: 2482 -- upvalues: u1586 (ref)
+            if a1.UserInputType == Enum.UserInputType.MouseButton1
+                or a1.UserInputType == Enum.UserInputType.Touch then
+                u1586 = true
+            end
+        end)
+        CAPSULE_TICK = LocalPlayer.PlayerScripts.Framework:FindFirstChild("CAPSULE_TICK")
+        if CAPSULE_TICK then
+            CAPSULE_TICK.PlaybackSpeed = 1
+        end
+        v11 = {}
+        v12 = 8
+        v13 = 0
+        v14 = tick()
+        while true do
+            v15 = math.min((tick() - v14) / 5.5, 1)
+            if u1586 then
+                v15 = 1
+            end
+            v17 = v7 - v8 * (1 - (1 - v15) ^ 5)
+            Frame_2.Position = UDim2.new(0, v17, 0, 0)
+            v18 = v5 - v17
+            v19 = {}
+            v20 = math.floor((v18 - u1221 * 0.5) / u1225 + 0.5) + 1
+            v22 = v20 - 2
+            v21 = v20 + 2
+            for i40 = v22, v21 do
+                if i40 >= 1 and i40 <= 52 then
+                    v23 = math.clamp(1 - math.abs((i40 - 1) * u1225 + u1221 * 0.5 - v18) / (u1225 * 1.2), 0, 1) * 0.1 + 1
+                    v19[i40] = v23
+                    v24 = u1235[i40]
+                    if v24 ~= nil then
+                        v24.Size = UDim2.new(0, math.floor(u1221 * v23 + 0.5), 0, (math.floor(u1216 * v23 + 0.5)))
+                        if not (v23 > 1.001) then
+                            v24.ZIndex = 2
+                        else
+                            v24.ZIndex = 3
+                        end
+                    end
+                end
+            end
+            for k37 in next, v11 do
+                if v19[k37] == nil then
+                    v23 = u1235[k37]
+                    if v23 ~= nil then
+                        v23.Size = UDim2.new(0, math.floor(u1221 * 1 + 0.5), 0, (math.floor(u1216 * 1 + 0.5)))
+                        v23.ZIndex = 2
+                    end
+                end
+            end
+            v11 = v19
+            v21 = math.floor(v18 / u1225) + 1
+            if v21 ~= v12 then
+                v12 = v21
+                if CAPSULE_TICK then
+                    CAPSULE_TICK.TimePosition = 0
+                    CAPSULE_TICK:Play()
+                end
+                if 0.12 < tick() - v13 then
+                    Frame_7.Size = UDim2.new(0, 20, 0, 20)
+                    Frame_8.Size = UDim2.new(0, 20, 0, 20)
+                    TweenService:Create(Frame_7, TweenInfo.new(0.15), {Size = UDim2.new(0, 14, 0, 14)}):Play()
+                    TweenService:Create(Frame_8, TweenInfo.new(0.15), {Size = UDim2.new(0, 14, 0, 14)}):Play()
+                end
+                v13 = tick()
+            end
+            if v15 >= 1 then
+                break
+            end
+            task.wait()
+        end
+        v10:Disconnect()
+        if CAPSULE_TICK then
+            CAPSULE_TICK.PlaybackSpeed = 0.55
+            CAPSULE_TICK.TimePosition = 0
+            CAPSULE_TICK:Play()
+        end
+        task.wait(0.3)
+        v15 = next
+        v16 = u1235
+        for k38, i41 in v15, v16 do
+            if k38 ~= 43 then
+                TweenService:Create(i41.Body.Dimmer, TweenInfo.new(0.35), {BackgroundTransparency = 0.45}):Play()
+                Shadow_2 = i41:FindFirstChild("Shadow")
+                if Shadow_2 then
+                    TweenService:Create(Shadow_2, TweenInfo.new(0.35), {ImageTransparency = 0.8}):Play()
+                end
+            end
+        end
+        if v3 then
+            v3.ZIndex = 11
+            v15 = next
+            Descendants, Descendants_2 = v3:GetDescendants()
+            for k39, i42 in v15, Descendants, Descendants_2 do
+                if i42:IsA("GuiObject") then
+                    i42.ZIndex = i42.ZIndex + 10
+                end
+            end
+            TweenService:Create(v3, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0, math.floor(u1221 * 1.18), 0, (math.floor(u1216 * 1.18))),
+            }):Play()
+            UIStroke_2 = v3.Body:FindFirstChildOfClass("UIStroke")
+            if UIStroke_2 then
+                TweenService:Create(
+                    UIStroke_2,
+                    TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, true),
+                    {Thickness = 6}
+                ):Play()
+            end
+            if Card then
+                v16 = Card.Frame:Clone()
+                v16.ZIndex = 18
+                v16.Parent = v3.Body
+                TweenService:Create(v16.UIGradient, TweenInfo.new(0.6), {Offset = Vector2.new(2, 0)}):Play()
+                game.Debris:AddItem(v16, 0.8)
+            end
+        end
+        task.wait(1)
+        if CAPSULE_TICK then
+            CAPSULE_TICK.PlaybackSpeed = 1
+        end
+        TextLabel_4:Destroy()
+        TweenService:Create(Frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(1, 0, 0, 0)}):Play()
+        task.wait(0.3)
+        Frame:Destroy()
+        return
+    end
+    if a2 == "EnchantingBook" then
+        local v29 = {Name = a1, Type = "EnchantingBook", Rarity = "Mythical"}
+        AbsoluteSize = OPENING.AbsoluteSize
+        v2 = math.floor(AbsoluteSize.Y * 0.34)
+        u1216 = math.floor(v2 * 0.84)
+        u1221 = math.floor(u1216 * 0.75)
+        u1225 = u1221 + math.max(6, (math.floor(u1221 * 0.12)))
+        OPENING.Enabled = true
+        if OPENING:FindFirstChild("holder") then
+            OPENING.holder.info1.Skip.Visible = false
+        end
+        Frame = Instance.new("Frame")
+        Frame.Name = "CaseReel"
+        Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+        Frame.Size = UDim2.new(1, 0, 0, 0)
+        Frame.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+        Frame.BackgroundTransparency = 0.15
+        Frame.BorderSizePixel = 0
+        Frame.ClipsDescendants = true
+        Frame.ZIndex = 1
+        Frame.Parent = OPENING
+        Frame_2 = Instance.new("Frame")
+        Frame_2.Name = "Track"
+        Frame_2.BackgroundTransparency = 1
+        Frame_2.Size = UDim2.new(0, u1225 * 52, 1, 0)
+        Frame_2.Parent = Frame
+        u1235 = {}
+        v3 = nil
+        for i33 = 1, 52 do
+            v4 = if i33 ~= 43 then makeCellEntry((rollFiller())) else v29
+            Frame_3 = Instance.new("Frame")
+            Frame_3.Name = "Cell_" .. i33
+            Frame_3.AnchorPoint = Vector2.new(0.5, 0.5)
+            Frame_3.Position = UDim2.new(0, (i33 - 1) * u1225 + u1221 * 0.5, 0.5, 0)
+            Frame_3.Size = UDim2.new(0, u1221, 0, u1216)
+            Frame_3.BackgroundTransparency = 1
+            Frame_3.ZIndex = 2
+            Frame_3.Parent = Frame_2
+            Frame_4 = Instance.new("Frame")
+            Frame_4.Name = "Body"
+            Frame_4.Size = UDim2.new(1, 0, 1, 0)
+            Frame_4.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            Frame_4.BorderSizePixel = 0
+            Frame_4.ZIndex = 3
+            Frame_4.Parent = Frame_3
+            UIStroke = Instance.new("UIStroke")
+            UIStroke.Color = Color3.fromRGB(255, 255, 255)
+            UIStroke.Thickness = 3
+            UIStroke.Parent = Frame_4
+            if Card then
+                v6 = Card.Shadow:Clone()
+                v7 = next
+                Children_3, Children_4 = v6:GetChildren()
+                for k32, i34 in v7, Children_3, Children_4 do
+                    if i34:IsA("UIGradient") then
+                        i34:Destroy()
+                    end
+                end
+                v6.ZIndex = 2
+                v6.ImageTransparency = 0.25
+                v6.Parent = Frame_3
+                v7 = Card.Card.Pattern:Clone()
+                v7.TileSize = UDim2.new(0, 60, 0, 60)
+                v7.ZIndex = 4
+                v7.Parent = Frame_4
+            end
+            Frame_5 = Instance.new("Frame")
+            Frame_5.Name = "Dimmer"
+            Frame_5.Size = UDim2.new(1, 0, 1, 0)
+            Frame_5.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+            Frame_5.BackgroundTransparency = 1
+            Frame_5.BorderSizePixel = 0
+            Frame_5.ZIndex = 7
+            Frame_5.Parent = Frame_4
+            if v4.Type ~= "Nothing" then
+                TextLabel_2 = Instance.new("TextLabel")
+                TextLabel_2.Name = "RarityName"
+                TextLabel_2.Size = UDim2.new(1, 0, 0.12, 0)
+                TextLabel_2.BackgroundTransparency = 1
+                TextLabel_2.Font = Enum.Font.SourceSansBold
+                TextLabel_2.TextScaled = true
+                TextLabel_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+                TextLabel_2.Text = string.upper(v4.Rarity or "")
+                TextLabel_2.ZIndex = 6
+                TextLabel_2.Parent = Frame_4
+                TextLabel_3 = Instance.new("TextLabel")
+                TextLabel_3.Name = "ItemName"
+                TextLabel_3.AnchorPoint = Vector2.new(0, 1)
+                TextLabel_3.Position = UDim2.new(0, 0, 1, -2)
+                TextLabel_3.Size = UDim2.new(1, 0, 0.12, 0)
+                TextLabel_3.BackgroundTransparency = 1
+                TextLabel_3.Font = Enum.Font.SourceSansBold
+                TextLabel_3.TextScaled = true
+                TextLabel_3.TextColor3 = Color3.fromRGB(255, 255, 255)
+                TextLabel_3.Text = v4.Name
+                TextLabel_3.ZIndex = 6
+                TextLabel_3.Parent = Frame_4
+                v9 = if v4.Type ~= "EnchantingBook" then script:FindFirstChild(v4.Rarity or "") else script:FindFirstChild("Enchant")
+                if v9 then
+                    v9:Clone().Parent = UIStroke
+                    v9:Clone().Parent = TextLabel_2
+                    Shadow = Frame_3:FindFirstChild("Shadow")
+                    if Shadow then
+                        v9:Clone().Parent = Shadow
+                    end
+                end
+                buildPreview(Frame_4, v4)
+            else
+                UIStroke.Color = Color3.fromRGB(75, 75, 75)
+                TextLabel = Instance.new("TextLabel")
+                TextLabel.Size = UDim2.new(1, 0, 1, 0)
+                TextLabel.BackgroundTransparency = 1
+                TextLabel.Font = Enum.Font.SourceSansBold
+                TextLabel.TextScaled = true
+                TextLabel.TextColor3 = Color3.fromRGB(120, 120, 120)
+                TextLabel.Text = "?"
+                TextLabel.ZIndex = 6
+                TextLabel.Parent = Frame_4
+            end
+            u1235[i33] = Frame_3
+            if i33 == 43 then
+                v3 = Frame_3
+            end
+        end
+        Frame_6 = Instance.new("Frame")
+        Frame_6.Name = "Marker"
+        Frame_6.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame_6.Position = UDim2.new(0.5, 0, 0.5, 0)
+        Frame_6.Size = UDim2.new(0, 4, 1, 0)
+        Frame_6.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+        Frame_6.BackgroundTransparency = 0.15
+        Frame_6.BorderSizePixel = 0
+        Frame_6.ZIndex = 8
+        Frame_6.Parent = Frame
+        Frame_7 = Instance.new("Frame")
+        Frame_7.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame_7.Position = UDim2.new(0.5, 0, 0, 10)
+        Frame_7.Size = UDim2.new(0, 14, 0, 14)
+        Frame_7.Rotation = 45
+        Frame_7.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+        Frame_7.BorderSizePixel = 0
+        Frame_7.ZIndex = 8
+        Frame_7.Parent = Frame
+        Frame_8 = Instance.new("Frame")
+        Frame_8.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame_8.Position = UDim2.new(0.5, 0, 1, -10)
+        Frame_8.Size = UDim2.new(0, 14, 0, 14)
+        Frame_8.Rotation = 45
+        Frame_8.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+        Frame_8.BorderSizePixel = 0
+        Frame_8.ZIndex = 8
+        Frame_8.Parent = Frame
+        TextLabel_4 = Instance.new("TextLabel")
+        TextLabel_4.Name = "ReelSkipHint"
+        TextLabel_4.AnchorPoint = Vector2.new(0.5, 0)
+        TextLabel_4.Position = UDim2.new(0.5, 0, 0.5, math.floor(v2 * 0.5) + 8)
+        TextLabel_4.Size = UDim2.new(1, 0, 0, 16)
+        TextLabel_4.BackgroundTransparency = 1
+        TextLabel_4.Font = Enum.Font.SourceSansBold
+        TextLabel_4.TextSize = 15
+        TextLabel_4.TextColor3 = Color3.fromRGB(220, 220, 220)
+        TextLabel_4.TextTransparency = 0.35
+        TextLabel_4.Text = "click to skip"
+        TextLabel_4.ZIndex = 10
+        TextLabel_4.Parent = OPENING
+        TweenService:Create(Frame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, v2)}):Play()
+        task.wait(0.45)
+
+        function cellCenterX(a1) -- Line: 2458 -- upvalues: u1225 (val), u1221 (val)
+            return (a1 - 1) * u1225 + u1221 * 0.5
+        end
+
+        function setCellScale(a1, a2) -- Line: 2462 -- upvalues: u1235 (val), u1221 (val), u1216 (val)
+            local v1 = u1235[a1]
+            if v1 == nil then
+                return
+            end
+            v1.Size = UDim2.new(0, math.floor(u1221 * a2 + 0.5), 0, (math.floor(u1216 * a2 + 0.5)))
+            if a2 > 1.001 then
+                v1.ZIndex = 3
+                return
+            end
+            v1.ZIndex = 2
+        end
+
+        v5 = AbsoluteSize.X * 0.5
+        v6 = (math.random() * 2 - 1) * u1221 * 0.33
+        v7 = v5 - (7 * u1225 + u1221 * 0.5)
+        v8 = 42 * u1225 + u1221 * 0.5 - (7 * u1225 + u1221 * 0.5) + v6
+        Frame_2.Position = UDim2.new(0, v7, 0, 0)
+        u1586 = false
+        v10 = UserInputService.InputBegan:Connect(function(a1) -- Line: 2482 -- upvalues: u1586 (ref)
+            if a1.UserInputType == Enum.UserInputType.MouseButton1
+                or a1.UserInputType == Enum.UserInputType.Touch then
+                u1586 = true
+            end
+        end)
+        CAPSULE_TICK = LocalPlayer.PlayerScripts.Framework:FindFirstChild("CAPSULE_TICK")
+        if CAPSULE_TICK then
+            CAPSULE_TICK.PlaybackSpeed = 1
+        end
+        v11 = {}
+        v12 = 8
+        v13 = 0
+        v14 = tick()
+        while true do
+            v15 = math.min((tick() - v14) / 5.5, 1)
+            if u1586 then
+                v15 = 1
+            end
+            v17 = v7 - v8 * (1 - (1 - v15) ^ 5)
+            Frame_2.Position = UDim2.new(0, v17, 0, 0)
+            v18 = v5 - v17
+            v19 = {}
+            v20 = math.floor((v18 - u1221 * 0.5) / u1225 + 0.5) + 1
+            v22 = v20 - 2
+            v21 = v20 + 2
+            for i35 = v22, v21 do
+                if i35 >= 1 and i35 <= 52 then
+                    v23 = math.clamp(1 - math.abs((i35 - 1) * u1225 + u1221 * 0.5 - v18) / (u1225 * 1.2), 0, 1) * 0.1 + 1
+                    v19[i35] = v23
+                    v24 = u1235[i35]
+                    if v24 ~= nil then
+                        v24.Size = UDim2.new(0, math.floor(u1221 * v23 + 0.5), 0, (math.floor(u1216 * v23 + 0.5)))
+                        if not (v23 > 1.001) then
+                            v24.ZIndex = 2
+                        else
+                            v24.ZIndex = 3
+                        end
+                    end
+                end
+            end
+            for k33 in next, v11 do
+                if v19[k33] == nil then
+                    v23 = u1235[k33]
+                    if v23 ~= nil then
+                        v23.Size = UDim2.new(0, math.floor(u1221 * 1 + 0.5), 0, (math.floor(u1216 * 1 + 0.5)))
+                        v23.ZIndex = 2
+                    end
+                end
+            end
+            v11 = v19
+            v21 = math.floor(v18 / u1225) + 1
+            if v21 ~= v12 then
+                v12 = v21
+                if CAPSULE_TICK then
+                    CAPSULE_TICK.TimePosition = 0
+                    CAPSULE_TICK:Play()
+                end
+                if 0.12 < tick() - v13 then
+                    Frame_7.Size = UDim2.new(0, 20, 0, 20)
+                    Frame_8.Size = UDim2.new(0, 20, 0, 20)
+                    TweenService:Create(Frame_7, TweenInfo.new(0.15), {Size = UDim2.new(0, 14, 0, 14)}):Play()
+                    TweenService:Create(Frame_8, TweenInfo.new(0.15), {Size = UDim2.new(0, 14, 0, 14)}):Play()
+                end
+                v13 = tick()
+            end
+            if v15 >= 1 then
+                break
+            end
+            task.wait()
+        end
+        v10:Disconnect()
+        if CAPSULE_TICK then
+            CAPSULE_TICK.PlaybackSpeed = 0.55
+            CAPSULE_TICK.TimePosition = 0
+            CAPSULE_TICK:Play()
+        end
+        task.wait(0.3)
+        v15 = next
+        v16 = u1235
+        for k34, i36 in v15, v16 do
+            if k34 ~= 43 then
+                TweenService:Create(i36.Body.Dimmer, TweenInfo.new(0.35), {BackgroundTransparency = 0.45}):Play()
+                Shadow_2 = i36:FindFirstChild("Shadow")
+                if Shadow_2 then
+                    TweenService:Create(Shadow_2, TweenInfo.new(0.35), {ImageTransparency = 0.8}):Play()
+                end
+            end
+        end
+        if v3 then
+            v3.ZIndex = 11
+            v15 = next
+            Descendants, Descendants_2 = v3:GetDescendants()
+            for k35, i37 in v15, Descendants, Descendants_2 do
+                if i37:IsA("GuiObject") then
+                    i37.ZIndex = i37.ZIndex + 10
+                end
+            end
+            TweenService:Create(v3, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0, math.floor(u1221 * 1.18), 0, (math.floor(u1216 * 1.18))),
+            }):Play()
+            UIStroke_2 = v3.Body:FindFirstChildOfClass("UIStroke")
+            if UIStroke_2 then
+                TweenService:Create(
+                    UIStroke_2,
+                    TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, true),
+                    {Thickness = 6}
+                ):Play()
+            end
+            if Card then
+                v16 = Card.Frame:Clone()
+                v16.ZIndex = 18
+                v16.Parent = v3.Body
+                TweenService:Create(v16.UIGradient, TweenInfo.new(0.6), {Offset = Vector2.new(2, 0)}):Play()
+                game.Debris:AddItem(v16, 0.8)
+            end
+        end
+        task.wait(1)
+        if CAPSULE_TICK then
+            CAPSULE_TICK.PlaybackSpeed = 1
+        end
+        TextLabel_4:Destroy()
+        TweenService:Create(Frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(1, 0, 0, 0)}):Play()
+        task.wait(0.3)
+        Frame:Destroy()
+        return
+    end
+    if a2 ~= "Misc" then
+        return
+    end
+    v1 = {Name = a1, Type = "Misc"}
+    v2 = _G.Misc[a1] and _G.Misc[a1][1]
+    v1.Rarity = v2
+    AbsoluteSize = OPENING.AbsoluteSize
+    v2 = math.floor(AbsoluteSize.Y * 0.34)
+    u1216 = math.floor(v2 * 0.84)
+    u1221 = math.floor(u1216 * 0.75)
+    u1225 = u1221 + math.max(6, (math.floor(u1221 * 0.12)))
+    OPENING.Enabled = true
+    if OPENING:FindFirstChild("holder") then
+        OPENING.holder.info1.Skip.Visible = false
+    end
+    Frame = Instance.new("Frame")
+    Frame.Name = "CaseReel"
+    Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    Frame.Size = UDim2.new(1, 0, 0, 0)
+    Frame.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+    Frame.BackgroundTransparency = 0.15
+    Frame.BorderSizePixel = 0
+    Frame.ClipsDescendants = true
+    Frame.ZIndex = 1
+    Frame.Parent = OPENING
+    Frame_2 = Instance.new("Frame")
+    Frame_2.Name = "Track"
+    Frame_2.BackgroundTransparency = 1
+    Frame_2.Size = UDim2.new(0, u1225 * 52, 1, 0)
+    Frame_2.Parent = Frame
+    u1235 = {}
+    v3 = nil
+    for i28 = 1, 52 do
+        v4 = if i28 ~= 43 then makeCellEntry((rollFiller())) else v1
+        Frame_3 = Instance.new("Frame")
+        Frame_3.Name = "Cell_" .. i28
+        Frame_3.AnchorPoint = Vector2.new(0.5, 0.5)
+        Frame_3.Position = UDim2.new(0, (i28 - 1) * u1225 + u1221 * 0.5, 0.5, 0)
+        Frame_3.Size = UDim2.new(0, u1221, 0, u1216)
+        Frame_3.BackgroundTransparency = 1
+        Frame_3.ZIndex = 2
+        Frame_3.Parent = Frame_2
+        Frame_4 = Instance.new("Frame")
+        Frame_4.Name = "Body"
+        Frame_4.Size = UDim2.new(1, 0, 1, 0)
+        Frame_4.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        Frame_4.BorderSizePixel = 0
+        Frame_4.ZIndex = 3
+        Frame_4.Parent = Frame_3
+        UIStroke = Instance.new("UIStroke")
+        UIStroke.Color = Color3.fromRGB(255, 255, 255)
+        UIStroke.Thickness = 3
+        UIStroke.Parent = Frame_4
+        if Card then
+            v6 = Card.Shadow:Clone()
+            v7 = next
+            Children_3, Children_4 = v6:GetChildren()
+            for k28, i29 in v7, Children_3, Children_4 do
+                if i29:IsA("UIGradient") then
+                    i29:Destroy()
+                end
+            end
+            v6.ZIndex = 2
+            v6.ImageTransparency = 0.25
+            v6.Parent = Frame_3
+            v7 = Card.Card.Pattern:Clone()
+            v7.TileSize = UDim2.new(0, 60, 0, 60)
+            v7.ZIndex = 4
+            v7.Parent = Frame_4
+        end
+        Frame_5 = Instance.new("Frame")
+        Frame_5.Name = "Dimmer"
+        Frame_5.Size = UDim2.new(1, 0, 1, 0)
+        Frame_5.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        Frame_5.BackgroundTransparency = 1
+        Frame_5.BorderSizePixel = 0
+        Frame_5.ZIndex = 7
+        Frame_5.Parent = Frame_4
+        if v4.Type ~= "Nothing" then
+            TextLabel_2 = Instance.new("TextLabel")
+            TextLabel_2.Name = "RarityName"
+            TextLabel_2.Size = UDim2.new(1, 0, 0.12, 0)
+            TextLabel_2.BackgroundTransparency = 1
+            TextLabel_2.Font = Enum.Font.SourceSansBold
+            TextLabel_2.TextScaled = true
+            TextLabel_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+            TextLabel_2.Text = string.upper(v4.Rarity or "")
+            TextLabel_2.ZIndex = 6
+            TextLabel_2.Parent = Frame_4
+            TextLabel_3 = Instance.new("TextLabel")
+            TextLabel_3.Name = "ItemName"
+            TextLabel_3.AnchorPoint = Vector2.new(0, 1)
+            TextLabel_3.Position = UDim2.new(0, 0, 1, -2)
+            TextLabel_3.Size = UDim2.new(1, 0, 0.12, 0)
+            TextLabel_3.BackgroundTransparency = 1
+            TextLabel_3.Font = Enum.Font.SourceSansBold
+            TextLabel_3.TextScaled = true
+            TextLabel_3.TextColor3 = Color3.fromRGB(255, 255, 255)
+            TextLabel_3.Text = v4.Name
+            TextLabel_3.ZIndex = 6
+            TextLabel_3.Parent = Frame_4
+            v9 = if v4.Type ~= "EnchantingBook" then script:FindFirstChild(v4.Rarity or "") else script:FindFirstChild("Enchant")
+            if v9 then
+                v9:Clone().Parent = UIStroke
+                v9:Clone().Parent = TextLabel_2
+                Shadow = Frame_3:FindFirstChild("Shadow")
+                if Shadow then
+                    v9:Clone().Parent = Shadow
+                end
+            end
+            buildPreview(Frame_4, v4)
+        else
+            UIStroke.Color = Color3.fromRGB(75, 75, 75)
+            TextLabel = Instance.new("TextLabel")
+            TextLabel.Size = UDim2.new(1, 0, 1, 0)
+            TextLabel.BackgroundTransparency = 1
+            TextLabel.Font = Enum.Font.SourceSansBold
+            TextLabel.TextScaled = true
+            TextLabel.TextColor3 = Color3.fromRGB(120, 120, 120)
+            TextLabel.Text = "?"
+            TextLabel.ZIndex = 6
+            TextLabel.Parent = Frame_4
+        end
+        u1235[i28] = Frame_3
+        if i28 == 43 then
+            v3 = Frame_3
+        end
+    end
+    Frame_6 = Instance.new("Frame")
+    Frame_6.Name = "Marker"
+    Frame_6.AnchorPoint = Vector2.new(0.5, 0.5)
+    Frame_6.Position = UDim2.new(0.5, 0, 0.5, 0)
+    Frame_6.Size = UDim2.new(0, 4, 1, 0)
+    Frame_6.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+    Frame_6.BackgroundTransparency = 0.15
+    Frame_6.BorderSizePixel = 0
+    Frame_6.ZIndex = 8
+    Frame_6.Parent = Frame
+    Frame_7 = Instance.new("Frame")
+    Frame_7.AnchorPoint = Vector2.new(0.5, 0.5)
+    Frame_7.Position = UDim2.new(0.5, 0, 0, 10)
+    Frame_7.Size = UDim2.new(0, 14, 0, 14)
+    Frame_7.Rotation = 45
+    Frame_7.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+    Frame_7.BorderSizePixel = 0
+    Frame_7.ZIndex = 8
+    Frame_7.Parent = Frame
+    Frame_8 = Instance.new("Frame")
+    Frame_8.AnchorPoint = Vector2.new(0.5, 0.5)
+    Frame_8.Position = UDim2.new(0.5, 0, 1, -10)
+    Frame_8.Size = UDim2.new(0, 14, 0, 14)
+    Frame_8.Rotation = 45
+    Frame_8.BackgroundColor3 = Color3.fromRGB(255, 205, 60)
+    Frame_8.BorderSizePixel = 0
+    Frame_8.ZIndex = 8
+    Frame_8.Parent = Frame
+    TextLabel_4 = Instance.new("TextLabel")
+    TextLabel_4.Name = "ReelSkipHint"
+    TextLabel_4.AnchorPoint = Vector2.new(0.5, 0)
+    TextLabel_4.Position = UDim2.new(0.5, 0, 0.5, math.floor(v2 * 0.5) + 8)
+    TextLabel_4.Size = UDim2.new(1, 0, 0, 16)
+    TextLabel_4.BackgroundTransparency = 1
+    TextLabel_4.Font = Enum.Font.SourceSansBold
+    TextLabel_4.TextSize = 15
+    TextLabel_4.TextColor3 = Color3.fromRGB(220, 220, 220)
+    TextLabel_4.TextTransparency = 0.35
+    TextLabel_4.Text = "click to skip"
+    TextLabel_4.ZIndex = 10
+    TextLabel_4.Parent = OPENING
+    TweenService:Create(Frame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, v2)}):Play()
+    task.wait(0.45)
+
+    function cellCenterX(a1) -- Line: 2458 -- upvalues: u1225 (val), u1221 (val)
+        return (a1 - 1) * u1225 + u1221 * 0.5
+    end
+
+    function setCellScale(a1, a2) -- Line: 2462 -- upvalues: u1235 (val), u1221 (val), u1216 (val)
+        local v1 = u1235[a1]
+        if v1 == nil then
+            return
+        end
+        v1.Size = UDim2.new(0, math.floor(u1221 * a2 + 0.5), 0, (math.floor(u1216 * a2 + 0.5)))
+        if a2 > 1.001 then
+            v1.ZIndex = 3
+            return
+        end
+        v1.ZIndex = 2
+    end
+
+    v5 = AbsoluteSize.X * 0.5
+    v6 = (math.random() * 2 - 1) * u1221 * 0.33
+    v7 = v5 - (7 * u1225 + u1221 * 0.5)
+    v8 = 42 * u1225 + u1221 * 0.5 - (7 * u1225 + u1221 * 0.5) + v6
+    Frame_2.Position = UDim2.new(0, v7, 0, 0)
+    u1586 = false
+    v10 = UserInputService.InputBegan:Connect(function(a1) -- Line: 2482 -- upvalues: u1586 (ref)
+        if a1.UserInputType == Enum.UserInputType.MouseButton1 or a1.UserInputType == Enum.UserInputType.Touch then
+            u1586 = true
+        end
+    end)
+    CAPSULE_TICK = LocalPlayer.PlayerScripts.Framework:FindFirstChild("CAPSULE_TICK")
+    if CAPSULE_TICK then
+        CAPSULE_TICK.PlaybackSpeed = 1
+    end
+    v11 = {}
+    v12 = 8
+    v13 = 0
+    v14 = tick()
+    while true do
+        v15 = math.min((tick() - v14) / 5.5, 1)
+        if u1586 then
+            v15 = 1
+        end
+        v17 = v7 - v8 * (1 - (1 - v15) ^ 5)
+        Frame_2.Position = UDim2.new(0, v17, 0, 0)
+        v18 = v5 - v17
+        v19 = {}
+        v20 = math.floor((v18 - u1221 * 0.5) / u1225 + 0.5) + 1
+        v22 = v20 - 2
+        v21 = v20 + 2
+        for i30 = v22, v21 do
+            if i30 >= 1 and i30 <= 52 then
+                v23 = math.clamp(1 - math.abs((i30 - 1) * u1225 + u1221 * 0.5 - v18) / (u1225 * 1.2), 0, 1) * 0.1 + 1
+                v19[i30] = v23
+                v24 = u1235[i30]
+                if v24 ~= nil then
+                    v24.Size = UDim2.new(0, math.floor(u1221 * v23 + 0.5), 0, (math.floor(u1216 * v23 + 0.5)))
+                    if not (v23 > 1.001) then
+                        v24.ZIndex = 2
+                    else
+                        v24.ZIndex = 3
+                    end
+                end
+            end
+        end
+        for k29 in next, v11 do
+            if v19[k29] == nil then
+                v23 = u1235[k29]
+                if v23 ~= nil then
+                    v23.Size = UDim2.new(0, math.floor(u1221 * 1 + 0.5), 0, (math.floor(u1216 * 1 + 0.5)))
+                    v23.ZIndex = 2
+                end
+            end
+        end
+        v21 = math.floor(v18 / u1225) + 1
+        if v21 ~= v12 then
+            if CAPSULE_TICK then
+                CAPSULE_TICK.TimePosition = 0
+                CAPSULE_TICK:Play()
+            end
+            if 0.12 < tick() - v13 then
+                Frame_7.Size = UDim2.new(0, 20, 0, 20)
+                Frame_8.Size = UDim2.new(0, 20, 0, 20)
+                TweenService:Create(Frame_7, TweenInfo.new(0.15), {Size = UDim2.new(0, 14, 0, 14)}):Play()
+                TweenService:Create(Frame_8, TweenInfo.new(0.15), {Size = UDim2.new(0, 14, 0, 14)}):Play()
+            end
+            tick()
+        end
+        if v15 >= 1 then
+            break
+        end
+        task.wait()
+    end
+    v10:Disconnect()
+    if CAPSULE_TICK then
+        CAPSULE_TICK.PlaybackSpeed = 0.55
+        CAPSULE_TICK.TimePosition = 0
+        CAPSULE_TICK:Play()
+    end
+    task.wait(0.3)
+    v15 = next
+    v16 = u1235
+    for k30, i31 in v15, v16 do
+        if k30 ~= 43 then
+            TweenService:Create(i31.Body.Dimmer, TweenInfo.new(0.35), {BackgroundTransparency = 0.45}):Play()
+            Shadow_2 = i31:FindFirstChild("Shadow")
+            if Shadow_2 then
+                TweenService:Create(Shadow_2, TweenInfo.new(0.35), {ImageTransparency = 0.8}):Play()
+            end
+        end
+    end
+    if v3 then
+        v3.ZIndex = 11
+        v15 = next
+        Descendants, Descendants_2 = v3:GetDescendants()
+        for k31, i32 in v15, Descendants, Descendants_2 do
+            if i32:IsA("GuiObject") then
+                i32.ZIndex = i32.ZIndex + 10
+            end
+        end
+        TweenService:Create(v3, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, math.floor(u1221 * 1.18), 0, (math.floor(u1216 * 1.18))),
+        }):Play()
+        UIStroke_2 = v3.Body:FindFirstChildOfClass("UIStroke")
+        if UIStroke_2 then
+            TweenService:Create(UIStroke_2, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, true), {Thickness = 6}):Play()
+        end
+        if Card then
+            v16 = Card.Frame:Clone()
+            v16.ZIndex = 18
+            v16.Parent = v3.Body
+            TweenService:Create(v16.UIGradient, TweenInfo.new(0.6), {Offset = Vector2.new(2, 0)}):Play()
+            game.Debris:AddItem(v16, 0.8)
+        end
+    end
+    task.wait(1)
+    if CAPSULE_TICK then
+        CAPSULE_TICK.PlaybackSpeed = 1
+    end
+    TextLabel_4:Destroy()
+    TweenService:Create(Frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(1, 0, 0, 0)}):Play()
+    task.wait(0.3)
+    Frame:Destroy()
+end
+
+function u0.DoOpeningAnimation(a1, a2, a3, a4, a5) -- Line: 2595 -- upvalues: u0 (val)
+    local v1, v2, v3, v4
+    game.Players.LocalPlayer.CameraMinZoomDistance = 10
+    game.Lighting.DepthOfField.Enabled = false
+    game.Lighting.OPENING_BLUR.Enabled = true
+    local v5 = game.Players.LocalPlayer.PlayerGui["Main Screen"]
+    v5.Enabled = false
+    local Players = game:GetService("Players")
+    local RunService = game:GetService("RunService")
+    local TweenService = game:GetService("TweenService")
+    game:GetService("Debris")
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local LocalPlayer = Players.LocalPlayer
+    local CurrentCamera = workspace.CurrentCamera
+    local Capsule = ((ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Unboxing")):WaitForChild("Capsule")
+    local v6 = ((ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Unboxing")):WaitForChild("Capsule Key")
+    local u367 = Capsule:Clone()
+    u367.Name = "Case"
+    u367.Parent = workspace.Ignored
+    assert(u367.PrimaryPart, "Case model must have a PrimaryPart set!")
+    local u218 = v6:Clone()
+    u218.Name = "Key"
+    u218.Parent = workspace.Ignored
+    assert(u218.PrimaryPart, "Key model must have a PrimaryPart set!")
+    local u99 = CFrame.new(0, 0, -8)
+    local u101 = CFrame.new()
+    local u103 = CFrame.new()
+    local u108 = CFrame.new(0, 0, 4)
+    local u109 = true
+    local u110 = 0
+
+    local function easeInOut(a1) -- Line: 2633
+        return a1 < 0.5 and 2 * a1 * a1 or -1 + (4 - 2 * a1) * a1
+    end
+
+    local function easeOutCubic(a1) -- Line: 2637
+        return 1 - (1 - a1) ^ 3
+    end
+
+    local function quadBezier(a1, a2, a3, a4) -- Line: 2641
+        return (a1:Lerp(a2, a4)):Lerp(a2:Lerp(a3, a4), a4)
+    end
+
+    RunService:BindToRenderStep("CaseAnimation", Enum.RenderPriority.Camera.Value + 1, function(a1) -- Line: 2647
+        -- upvalues: u109 (ref), u110 (ref), CurrentCamera (val), u99 (ref), u103 (ref), u101 (ref), u367 (val)
+        -- upvalues: u108 (ref), u218 (val)
+        if not u109 then
+            return
+        end
+        u110 = u110 + a1
+        local v1 = CurrentCamera.CFrame * u99 * u103 * u101
+        u367:PivotTo(v1)
+        u218:PivotTo(v1 * u108)
+    end)
+    local v7 = tick()
+    while true do
+        if not (tick() - v7 < 0.5) then
+            break
+        end
+        v1 = 1 - (1 - (tick() - v7) / 0.5) ^ 3
+        v2 = CFrame.new(((Vector3.new(0, 0, -20):Lerp(Vector3.new(0, 4, -14), v1)):Lerp(Vector3.new(0, 4, -14):Lerp(Vector3.new(0, 0, -8), v1), v1)))
+        task.wait()
+    end
+    CFrame.new((Vector3.new(0, 0, -8)))
+    v7 = tick()
+    local v8 = CFrame.new()
+    v1 = CFrame.Angles(-0.2617993877991494, 0.6108652381980153, 0)
+    local v9, v10, v11, v12 = a1, a2, a3, a5
+    while true do
+        if not (tick() - v7 < 0.35) then
+            break
+        end
+        v2 = (tick() - v7) / 0.35
+        v2 = v8:Lerp(v1, v2 < 0.5 and 2 * v2 * v2 or -1 + (4 - 2 * v2) * v2)
+        task.wait()
+    end
+    game.TweenService:Create(u218.Union, TweenInfo.new(0.08), {Transparency = 0}):Play()
+    task.wait(0.08)
+    task.delay(0.1, function() -- Line: 2696
+        game.Players.LocalPlayer.PlayerScripts.Framework.CAPSULE_INSERT.TimePosition = 0.15
+        game.Players.LocalPlayer.PlayerScripts.Framework.CAPSULE_INSERT:Play()
+    end)
+    v7 = tick()
+    local v13 = CFrame.new(0, 0, 4)
+    v2 = CFrame.new(0, 0, 1.8)
+    while true do
+        if not (tick() - v7 < 0.2) then
+            break
+        end
+        v3 = v13:Lerp(v2, 1 - (math.cos(((tick()) - v7) / 0.2 * 3.141592653589793 / 2)))
+        task.wait()
+    end
+    local v14 = tick()
+    while true do
+        if not (tick() - v14 < 0.05) then
+            break
+        end
+        CFrame.new(0, 0, -0.2 * ((tick() - v14) / 0.05))
+        task.wait()
+    end
+    CFrame.new(0, 0, -0.2)
+    v3 = tick()
+    while true do
+        if not (tick() - v3 < 0.1) then
+            break
+        end
+        CFrame.new(0, 0, -0.2 * (1 - (tick() - v3) / 0.1))
+        task.wait()
+    end
+    CFrame.new()
+    v7 = tick()
+    while true do
+        if not (tick() - v7 < 0.1) then
+            break
+        end
+        u108 = v2 * CFrame.Angles(0, 0, (math.sin(((tick()) - v7) / 0.1 * 3.141592653589793 * 0.5)) * 1.9198621771937625)
+        task.wait()
+    end
+    local Brightness = game.Lighting.ColorCorrection.Brightness
+    local FieldOfView = workspace.CurrentCamera.FieldOfView
+    u367.Part.Capsule.UsePartColor = true
+    u367.Part.Capsule.Material = Enum.Material.Neon
+    u367.Part.Capsule.Color = Color3.fromRGB(94, 94, 94)
+    game.TweenService:Create(
+        u367.Part.Capsule,
+        TweenInfo.new(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.In),
+        {Color = Color3.fromRGB(153, 153, 153)}
+    ):Play()
+    game.TweenService:Create(game.Lighting.ColorCorrection, TweenInfo.new(0.3), {Brightness = 1.2}):Play()
+    game.TweenService:Create(workspace.CurrentCamera, TweenInfo.new(0.3), {FieldOfView = FieldOfView - 30}):Play()
+    v7 = tick()
+    while true do
+        if not (tick() - v7 < 0.1) then
+            break
+        end
+        u108 = v2 * CFrame.Angles(0, 0, 1.9198621771937625 - (1 - math.cos(((tick()) - v7) / 0.1 * 3.141592653589793 * 0.5)) * 0.34906585039886595)
+        task.wait()
+    end
+    u108 = v2 * CFrame.Angles(0, 0, 1.5707963267948966)
+    task.wait(0.2)
+    game.Players.LocalPlayer.PlayerScripts.Framework.CAPSULE_OPEN:Play()
+    ;(function(a1) -- Line: 2772 -- upvalues: TweenService (val)
+        local Position = a1.PrimaryPart.Position
+        local Part = Instance.new("Part")
+        Part.Anchored = true
+        Part.CanCollide = false
+        Part.Size = Vector3.new(1, 0.10000000149011612, 1)
+        Part.CFrame = (CFrame.new(Position)) * CFrame.Angles(0, 0, 1.5707963267948966)
+        Part.Shape = Enum.PartType.Cylinder
+        Part.Color = Color3.new(1, 1, 1)
+        Part.Material = Enum.Material.Neon
+        Part.Transparency = 0.3
+        Part.Parent = workspace.Ignored
+        TweenService:Create(
+            Part,
+            TweenInfo.new(1, Enum.EasingStyle.Quad),
+            {Size = Vector3.new(25, 0.10000000149011612, 25), Transparency = 1}
+        ):Play()
+        game.Debris:AddItem(Part, 1.2)
+        ;(function(a1) -- Line: 2793 -- upvalues: Position (val), TweenService (upval)
+            local Part, Trail, Unit, v1, v2, v3, v4
+            for i = 1, a1 or 40 do
+                Part = Instance.new("Part")
+                Part.Anchored = true
+                Part.CanCollide = false
+                Part.Size = Vector3.new(0.20000000298023224, 0.20000000298023224, 2)
+                Part.Material = Enum.Material.Neon
+                Part.Color = Color3.new(1, 1, 1)
+                Part.CFrame = CFrame.new(Position)
+                Part.Transparency = 0
+                Part.Parent = workspace.Ignored
+                Trail = Instance.new("Trail")
+                Trail.Color = ColorSequence.new(Color3.new(1, 1, 1))
+                Trail.LightEmission = 1
+                Trail.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.1), (NumberSequenceKeypoint.new(1, 1))})
+                Trail.Lifetime = 0.4
+                Trail.Attachment0 = Instance.new("Attachment", Part)
+                Trail.Attachment1 = Instance.new("Attachment", Part)
+                Trail.Attachment0.Position = Vector3.new(0, 0, -1)
+                Trail.Attachment1.Position = Vector3.new(0, 0, 1)
+                Trail.Parent = Part
+                Unit = Vector3.new(math.random() - 0.5, math.random() - 0.5, (math.random()) - 0.5).Unit
+                v2 = math.random(6, 12)
+                v3 = math.random() * 0.3 + 0.4
+                v4 = Position + Unit * v2
+                v1 = {CFrame = CFrame.new(v4, v4 + Unit)}
+                TweenService:Create(Part, TweenInfo.new(v3), v1):Play()
+                TweenService:Create(Part, TweenInfo.new(v3), {Transparency = 1}):Play()
+                game.Debris:AddItem(Part, v3 + 0.2)
+            end
+        end)(60)
+    end)(u367)
+    u367:Destroy()
+    u218:Destroy()
+    game.TweenService:Create(game.Lighting.ColorCorrection, TweenInfo.new(0.15), {Brightness = Brightness}):Play()
+    local TweenService_7 = game.TweenService
+    local CurrentCamera_3 = workspace.CurrentCamera
+    local v15 = {FieldOfView = FieldOfView}
+    TweenService_7:Create(CurrentCamera_3, TweenInfo.new(0.15), v15):Play()
+    RunService:UnbindFromRenderStep("CaseAnimation")
+    u0.DoCaseReel(v9, v10, v11, v12)
+    local OPENING = (Players.LocalPlayer:WaitForChild("PlayerGui")):WaitForChild("OPENING")
+    local u615 = OPENING:WaitForChild("Card"):Clone()
+    u615.Parent = OPENING
+    local u616 = nil
+    OPENING.Enabled = true
+    u615.Visible = true
+    u615.Position = UDim2.new(0.5, 0, 1.2, 0)
+    u615.Size = UDim2.new(0, 0, 0, 0)
+    u615.Rotation = -20
+    u615.BackgroundTransparency = 1
+    if v10 == "Misc" then
+        local ViewportFrame = Instance.new("ViewportFrame")
+        ViewportFrame.ZIndex = 6
+        ViewportFrame.Size = UDim2.new(1, 0, 1, 0)
+        ViewportFrame.BackgroundTransparency = 0
+        v4 = game.ReplicatedStorage.Assets.Unboxing.CapsuleDisplay.Misc:FindFirstChild(v9):Clone()
+        v4.Parent = ViewportFrame
+        local PrimaryPart_3 = v4.PrimaryPart
+        local Camera = Instance.new("Camera")
+        Camera.CFrame = CFrame.new(PrimaryPart_3.CFrame.p + Vector3.new(1.25, 1.25, 1.25) * PrimaryPart_3.Size.magnitude * 0.4, PrimaryPart_3.CFrame.p)
+        Camera.Parent = ViewportFrame
+        ViewportFrame.CurrentCamera = Camera
+        ViewportFrame.BackgroundTransparency = 1
+        ViewportFrame.Parent = u615.Card.Preview.Frame
+        u0.GetRarityMisc(v9, u615.Card.UIStroke, u615.Card.RarityName, u615.Shadow)
+    elseif v10 == "Wrap" then
+        local ViewportFrame_2 = Instance.new("ViewportFrame")
+        ViewportFrame_2.ZIndex = 6
+        ViewportFrame_2.Size = UDim2.new(1, 0, 1, 0)
+        ViewportFrame_2.BackgroundTransparency = 0
+        v4 = game.ReplicatedStorage.Wraps[v11]:FindFirstChild(v9):Clone()
+        v4.Parent = ViewportFrame_2
+        local PrimaryPart_4 = v4.PrimaryPart
+        local Camera_2 = Instance.new("Camera")
+        Camera_2.CFrame = CFrame.new(PrimaryPart_4.CFrame.p + Vector3.new(1.25, 1.25, 1.25) * PrimaryPart_4.Size.magnitude * 0.4, PrimaryPart_4.CFrame.p)
+        Camera_2.Parent = ViewportFrame_2
+        ViewportFrame_2.CurrentCamera = Camera_2
+        ViewportFrame_2.BackgroundTransparency = 1
+        ViewportFrame_2.Parent = u615.Card.Preview.Frame
+        u0.GetRarityGun(v9, u615.Card.UIStroke, u615.Card.RarityName, u615.Shadow)
+    elseif v10 == "Beam" then
+        local ViewportFrame_3 = Instance.new("ViewportFrame")
+        ViewportFrame_3.ZIndex = 6
+        ViewportFrame_3.Size = UDim2.new(1, 0, 1, 0)
+        ViewportFrame_3.BackgroundTransparency = 0
+        v4 = game.ReplicatedStorage.BulletBeams:FindFirstChild(v9):Clone()
+        v4.Parent = ViewportFrame_3
+        local PrimaryPart_5 = v4.PrimaryPart
+        local Camera_3 = Instance.new("Camera")
+        Camera_3.CFrame = CFrame.new(PrimaryPart_5.CFrame.p + Vector3.new(1.25, 1.25, 1.25) * PrimaryPart_5.Size.magnitude * 0.4, PrimaryPart_5.CFrame.p)
+        Camera_3.Parent = ViewportFrame_3
+        ViewportFrame_3.CurrentCamera = Camera_3
+        ViewportFrame_3.BackgroundTransparency = 1
+        ViewportFrame_3.Parent = u615.Card.Preview.Frame
+        u0.GetRarityBeam(v9, u615.Card.UIStroke, u615.Card.RarityName, u615.Shadow)
+    elseif v10 == "Frame" then
+        local ViewportFrame_4 = Instance.new("ViewportFrame")
+        ViewportFrame_4.ZIndex = 6
+        ViewportFrame_4.Size = UDim2.new(1, 0, 1, 0)
+        ViewportFrame_4.BackgroundTransparency = 0
+        v4 = game.ReplicatedStorage.Frames:FindFirstChild(v9):Clone()
+        v4.Parent = ViewportFrame_4
+        local PrimaryPart_6 = v4.PrimaryPart
+        local Camera_4 = Instance.new("Camera")
+        Camera_4.CFrame = CFrame.new(PrimaryPart_6.CFrame.p + Vector3.new(-1.25, 1.25, -1.25) * PrimaryPart_6.Size.magnitude * 0.4, PrimaryPart_6.CFrame.p)
+        Camera_4.Parent = ViewportFrame_4
+        ViewportFrame_4.CurrentCamera = Camera_4
+        ViewportFrame_4.BackgroundTransparency = 1
+        ViewportFrame_4.Parent = u615.Card.Preview.Frame
+        u0.GetRarityFrame(v9, u615.Card.UIStroke, u615.Card.RarityName, u615.Shadow)
+    elseif v10 == "EnchantingBook" then
+        v15 = game.ReplicatedStorage.MainModule.Enchant:Clone()
+        v15.Parent = u615.Card.UIStroke
+        v15 = game.ReplicatedStorage.MainModule.Enchant:Clone()
+        v15.Parent = u615.Shadow
+        v15 = game.ReplicatedStorage.MainModule.Enchant:Clone()
+        v15.Parent = u615.Card.RarityName
+        u615.Card.RarityName.Text = "Enchanting Book"
+        local ViewportFrame_5 = Instance.new("ViewportFrame")
+        ViewportFrame_5.ZIndex = 6
+        ViewportFrame_5.Size = UDim2.new(1, 0, 1, 0)
+        ViewportFrame_5.BackgroundTransparency = 0
+        v4 = game.ReplicatedStorage.EnchantingBooks:FindFirstChild(v9):Clone()
+        v4.Parent = ViewportFrame_5
+        local PrimaryPart_7 = v4.PrimaryPart
+        local Camera_5 = Instance.new("Camera")
+        Camera_5.CFrame = CFrame.new(PrimaryPart_7.CFrame.p + Vector3.new(1.25, 1.25, 1.25) * PrimaryPart_7.Size.magnitude * 0.4, PrimaryPart_7.CFrame.p)
+        Camera_5.Parent = ViewportFrame_5
+        ViewportFrame_5.CurrentCamera = Camera_5
+        ViewportFrame_5.BackgroundTransparency = 1
+        ViewportFrame_5.Parent = u615.Card.Preview.Frame
+    end
+    if v9 ~= "Coin" then
+        u615.Card.ItemName.Text = v9
+    else
+        u615.Card.ItemName.Text = "5 Coins"
+    end
+    game.TweenService:Create(u615.Frame.UIGradient, TweenInfo.new(1), {Offset = Vector2.new(2, 0)}):Play()
+    TweenService:Create(u615, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Rotation = 0,
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        Size = UDim2.new(0.144, 0, 0.442, 0),
+    }):Play()
+    if OPENING:FindFirstChild("holder") then
+        OPENING.holder.info1.Skip.Visible = true
+    end
+    game.UserInputService.InputBegan:Connect(function(a1) -- Line: 2965 -- upvalues: u616 (ref), TweenService (val), u615 (val), OPENING (val)
+        if a1.UserInputType == Enum.UserInputType.MouseButton1 or a1.UserInputType == Enum.UserInputType.Touch then
+            u616:Disconnect()
+            local v1 = TweenService:Create(
+                u615,
+                TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+                {Rotation = -25, Size = UDim2.new(0, 0, 0, 0)}
+            )
+            v1:Play()
+            v1.Completed:Connect(function() -- Line: 2974 -- upvalues: OPENING (upval), u615 (upval)
+                OPENING.Enabled = false
+                u615:Destroy()
+                local v1 = game.Players.LocalPlayer.PlayerGui["Main Screen"]
+                v1.Enabled = true
+                game.Lighting.DepthOfField.Enabled = true
+                game.Lighting.OPENING_BLUR.Enabled = false
+                game.Players.LocalPlayer.CameraMinZoomDistance = 0
+            end)
+        end
+    end)
+end
+
+return u0
+13:36:13 -- [dump] wrote MainModule.txt
+13:36:13 -- [dump] FAILED to decompile: Shotgun_Script (Script)
+13:36:13 -- 
+===== Shotgun_GunData :: Players.IlIIIlIIlIIIllIIIlII.Backpack.[Shotgun].GunData =====
+13:36:13 -- -- Script path: Players.IlIIIlIIlIIIllIIIlII.Backpack.[Shotgun].GunData
+-- Decompile time: 0.09 ms
+
+return {
+    is_shotgun = true,
+    cooldown = 1.35,
+    slowdown_time = 1.35,
+    damage = 20,
+    headshot_damage = 40,
+}
+13:36:13 -- [dump] wrote Shotgun_GunData.txt
+13:36:13 -- [dump] FAILED to decompile: Revolver_Script (Script)
+13:36:13 -- 
+===== Revolver_GunData :: Players.IlIIIlIIlIIIllIIIlII.Backpack.[Revolver].GunData =====
+13:36:13 -- -- Script path: Players.IlIIIlIIlIIIllIIIlII.Backpack.[Revolver].GunData
+-- Decompile time: 0.07 ms
+
+return {cooldown = 0.2, slowdown_time = 0.2, damage = 35, headshot_damage = 70}
+13:36:13 -- [dump] wrote Revolver_GunData.txt
+13:36:13 -- 
+########## GREP ##########
+13:36:13 -- 
+--[getGunPellets]--
+e")
+    if not Handle then
+        return nil
+    end
+    local Attribute = Handle:GetAttribute("Muzzle")
+    if typeof(Attribute) ~= "CFrame" then
+        return Handle.Position
+    end
+    return Handle.CFrame * Attribute.Position
+end
+
+function u0.getGunPellets(a1, a2, a3) -- Line: 1444 -- upvalues: u0 (val)
+    local v1, v2
+    if a3 ~= true then
+        return {(a2 - a1).Unit}
+    end
+    local v3 = CFrame.new(a1, a2)
+    local v4 = math.rad(u0.GUN_PELLET_TILT)
+    local v5 = {}
+    for k, v in next, u0.GUN_PELLET_PATTERN do
+        v1 = math.rad(v.X * math.cos(v4) - v.Y * (math.sin(v4)))
+        v2 = math.rad(v.X * math.sin(v4) + v.Y * (math.cos(v4)))
+        table.insert(v5, (v3.LookVec
+13:36:13 -- 
+--[getGunMuzzle]--
+0.GUN_PELLET_TILT = 8
+u0.GUN_RANGE = 200
+u0.GUN_RELOAD_TIME = 1.5
+u0.GUN_SHELL_RELOAD_TIME = 0.75
+u0.GUN_SHELL_RELOADING = {["[Shotgun]"] = true, ["[TacticalShotgun]"] = true}
+u0.KNIFE_SPEED = 1000
+u0.KNIFE_DAMAGE = 15
+u0.FOOD_HEAL = 13
+
+function u0.getGunMuzzle(a1) -- Line: 1436
+    local Handle = a1:FindFirstChild("Handle")
+    if not Handle then
+        return nil
+    end
+    local Attribute = Handle:GetAttribute("Muzzle")
+    if typeof(Attribute) ~= "CFrame" then
+        return Handle.Position
+    end
+    return Handle.CFrame * Attribute.Position
+end
+
+function u0.getGunPellets(a1, a2, a3) -- Line: 1444 -- upvalues: u0 (val)
+    local v1, v2
+    if a3 ~= true then
+        return {(a2 - a1)
+13:36:13 -- 
+--[GUN_RANGE]--
+l u138 = setmetatable({}, {__mode = "k"})
+local u139 = {}
+local u140 = 0
+u0.GUN_PELLET_PATTERN = {
+    Vector2.new(0, 0),
+    Vector2.new(1.5, 0),
+    Vector2.new(-1.5, 0),
+    Vector2.new(0, 3),
+    (Vector2.new(0, -3)),
+}
+u0.GUN_PELLET_TILT = 8
+u0.GUN_RANGE = 200
+u0.GUN_RELOAD_TIME = 1.5
+u0.GUN_SHELL_RELOAD_TIME = 0.75
+u0.GUN_SHELL_RELOADING = {["[Shotgun]"] = true, ["[TacticalShotgun]"] = true}
+u0.KNIFE_SPEED = 1000
+u0.KNIFE_DAMAGE = 15
+u0.FOOD_HEAL = 13
+
+function u0.getGunMuzzle(a1) -- Line: 1436
+    local Handle = a1:FindFirstChild("Handle")
+    if not Handle then
+        return nil
+    end
+    local Attribute = Handle:GetAttribute("Muzzle")
+    if typeof(Attribute) ~= "CFrame" then
+    
