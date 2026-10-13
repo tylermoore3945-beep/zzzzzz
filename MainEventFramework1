@@ -1,0 +1,3338 @@
+-- Script path: Players.IlIIIlIIlIIIllIIIlII.PlayerScripts.Framework
+-- Decompile time: 68.86 ms
+
+local v1, v2
+local u2951 = require((game.ReplicatedStorage:WaitForChild("MainModule")):WaitForChild("Maid")).new()
+local u2952 = {}
+task.wait()
+
+function u2952.prologue() -- Line: 13
+    _G.GUN_EQUIPPED = false
+    if game.ReplicatedStorage.SERVER_IS_FFA.Value == true and game.Workspace.Ignored:FindFirstChild("HALLOWEEN") then
+        game.Workspace.Ignored:FindFirstChild("HALLOWEEN"):Destroy()
+    end
+    if game.Lighting:FindFirstChild("CACHE_!REMOVE!") then
+        game.Lighting:FindFirstChild("CACHE_!REMOVE!"):Destroy()
+    end
+    if workspace:FindFirstChild("HOVER_HIGHLIGHT") then
+        workspace.HOVER_HIGHLIGHT.Enabled = false
+        workspace.HOVER_HIGHLIGHT.Adornee = nil
+    end
+end
+
+function u2952.isCurrent(a1) -- Line: 29
+    local v1 = false
+    if a1 == game.Players.LocalPlayer.Character then
+        v1 = a1.Parent ~= nil
+    end
+    return v1
+end
+
+function u2952.awaitCharacter(a1) -- Line: 33 -- upvalues: u2952 (val)
+    while u2952.isCurrent(a1) do
+        if _G.CharacterLoadedForMenu == true and a1:FindFirstChild("FULLY_LOADED_CHAR") then
+            break
+        end
+        task.wait()
+    end
+    return u2952.isCurrent(a1)
+end
+
+function u2952.applyCharacterScaling(a1) -- Line: 40
+    local Humanoid = a1:WaitForChild("Humanoid")
+    local v1 = _G
+    v1.Moodex = math.clamp(math.map(Humanoid.BodyWidthScale.Value, 0.65, 1, 0.65, 0), 0, 0.65)
+    if game:GetService("UserInputService").TouchEnabled then
+        if workspace.CurrentCamera.ViewportSize.Y < 500 or workspace.CurrentCamera.ViewportSize.X < 700 then
+            Humanoid.CameraOffset = Vector3.new(0, 2, 0)
+        end
+    end
+end
+
+repeat
+    task.wait()
+until _G.CharacterLoadedForMenu == true
+    and game.Players.LocalPlayer.Character
+    and game.Players.LocalPlayer.Character:FindFirstChild("FULLY_LOADED_CHAR")
+
+local function rayWithIgnoreList(a1, a2, a3) -- Line: 53
+    local v1 = RaycastParams.new()
+    v1.FilterType = Enum.RaycastFilterType.Exclude
+    v1.FilterDescendantsInstances = a3 or {}
+    v1.IgnoreWater = true
+    local v2 = workspace:Raycast(a1, a2, v1)
+    if v2 then
+        return v2.Instance, v2.Position, v2.Normal
+    end
+    return nil, a1 + a2, (Vector3.new())
+end
+
+_G.PICKING_CHARM_ID = nil
+_G.PICKING_BULLETBEAM_ID = nil
+local TweenService = game:GetService("TweenService")
+local u50 = setmetatable({}, {__mode = "k"})
+
+local function playTween(a1, a2, a3) -- Line: 82 -- upvalues: u50 (val), TweenService (val)
+    local v1
+    if a1 == nil then
+        return nil
+    end
+    local v2 = u50[a1]
+    if not v2 then
+        u50[a1] = {}
+    end
+    local v3 = {}
+    for k in next, a3 do
+        v1 = v2[k]
+        if v1 and not v3[v1] then
+            v3[v1] = true
+            v1:Cancel()
+        end
+    end
+    local v4 = TweenService:Create(a1, a2, a3)
+    for k2 in next, a3 do
+        v2[k2] = v4
+    end
+    v4:Play()
+    return v4
+end
+
+local function CalculateWorldToScreenPointUI(a1, a2, a3, a4) -- Line: 110
+    local CurrentCamera = workspace.CurrentCamera
+    local AbsoluteSize = a1.AbsoluteSize
+    local AbsolutePosition = a1.AbsolutePosition
+    local v1 = a4 or a2.AbsoluteSize
+    local v2 = v1.X / 2
+    local v3 = v1.Y / 2
+    local v4 = math.max(v2, AbsoluteSize.X - v2)
+    local v5 = math.max(v3, AbsoluteSize.Y - v3)
+    local v6 = (a2.AnchorPoint.X - 0.5) * v1.X
+    local v7 = (a2.AnchorPoint.Y - 0.5) * v1.Y
+    local v8 = CurrentCamera:WorldToScreenPoint(a3)
+    local v9 = v8.X - AbsolutePosition.X
+    local v10 = v8.Y - AbsolutePosition.Y
+    if 0 < v8.Z and v2 <= v9 and v9 <= v4 and v3 <= v10 and v10 <= v5 then
+        return (UDim2.new(0, v9 + v6, 0, v10 + v7)), true
+    end
+    local v11 = CurrentCamera:WorldToScreenPoint(CurrentCamera.CFrame.Position + CurrentCamera.CFrame.LookVector)
+    local v12 = math.clamp(v11.X - AbsolutePosition.X, v2, v4)
+    local v13 = math.clamp(v11.Y - AbsolutePosition.Y, v3, v5)
+    local v14 = CurrentCamera.CFrame:PointToObjectSpace(a3)
+    local X_2 = v14.X
+    local v15 = -v14.Y
+    if (math.abs(X_2)) < 0.001 and (math.abs(v15)) < 0.001 then
+        X_2 = 0
+        v15 = 1
+    end
+    local v16 = (1 / 0)
+    if X_2 > 0 then
+        v16 = math.min(v16, (v4 - v12) / X_2)
+    elseif X_2 < 0 then
+        v16 = math.min(v16, (v2 - v12) / X_2)
+    end
+    if v15 > 0 then
+        v16 = math.min(v16, (v5 - v13) / v15)
+    elseif v15 < 0 then
+        v16 = math.min(v16, (v3 - v13) / v15)
+    end
+    return (UDim2.new(0, v12 + X_2 * v16 + v6, 0, v13 + v15 * v16 + v7)), false
+end
+
+local function doClick() -- Line: 149
+    local v1 = game.ReplicatedStorage.CLICK_EXPLOSION:Clone()
+    v1.Position = UDim2.new(0, game.Players.LocalPlayer:GetMouse().X, 0, game.Players.LocalPlayer:GetMouse().Y)
+    v1.Parent = MainScreen
+    game.TweenService:Create(v1, TweenInfo.new(0.15), {Transparency = 1, Size = UDim2.new(0.019, 0, 0.039, 0)}):Play()
+end
+
+local u54 = false
+local u55 = 4
+local u56 = false
+local u57 = false
+_G.MobileShiftlock = false
+_G.Aimed = false
+_G.CURRENT_GUN = nil
+local u64 = {
+    "[Revolver]",
+    "[DoubleBarrel]",
+    "[Shotgun]",
+    "[Silencer]",
+    "[TacticalShotgun]",
+    "[SMG]",
+    "[Flintlock]",
+    "[Firework Launcher]",
+}
+local LocalPlayer = game.Players.LocalPlayer
+repeat
+    task.wait()
+until LocalPlayer:FindFirstChild("LOAD_SAVE_DATA")
+LocalPlayer.Character:WaitForChild("Humanoid")
+LocalPlayer.Character:WaitForChild("BodyEffects")
+local u97 = LocalPlayer.PlayerGui:WaitForChild("Main Screen")
+LocalPlayer.PlayerGui:WaitForChild("CustomCoreGUI")
+local u103 = false
+local Mouse = LocalPlayer:GetMouse()
+local u107 = false
+local u108 = false
+local u109 = false
+Mouse.TargetFilter = workspace.Ignored
+local u112 = false
+local Aim = u97.Aim
+local u114 = false
+local u115 = false
+local u116 = false
+local u117 = 15
+local u118 = 15
+local u119 = 15
+local u120 = 15
+local u121 = 1
+local u986 = false
+local MaxHealth = LocalPlayer.Character.Humanoid.MaxHealth
+local u126 = nil
+local u127 = nil
+local u128 = nil
+local u129 = nil
+local u130 = nil
+local u131 = nil
+local u132 = nil
+local u133 = nil
+local u134 = nil
+local u135 = nil
+local u136 = nil
+local u137 = nil
+local u138 = nil
+local u139 = {Time = 0}
+u139.Timer = tick()
+local u142 = false
+local u143 = false
+_G.AimviewerPlayer = nil
+local u146 = nil
+_G.MM_QUEUED = false
+local u149 = 0
+local u150 = ""
+
+local function inFFAQueue() -- Line: 228 -- upvalues: LocalPlayer (val)
+    local DataFolder = LocalPlayer:FindFirstChild("DataFolder")
+    if DataFolder and DataFolder:FindFirstChild("InServerQueue") then
+        return DataFolder.InServerQueue.Value == true
+    end
+    return false
+end
+
+local function notify(a1) -- Line: 236
+    require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("Notify")).push(a1)
+end
+
+local function inMatchBox() -- Line: 240 -- upvalues: LocalPlayer (val)
+    local Character = LocalPlayer.Character
+    if not Character then
+        return false
+    end
+    local Players = workspace:FindFirstChild("Players")
+    local InBox = Players and Players:FindFirstChild("InBox")
+    local v1 = false
+    if InBox ~= nil then
+        v1 = Character.Parent == InBox
+    end
+    return v1
+end
+
+local function shouldShowQueueButton() -- Line: 252 -- upvalues: LocalPlayer (val)
+    local v1
+    if game.ReplicatedStorage.SERVER_TYPE.Value == "PrivateServer" then
+        return
+    end
+    if game.ReplicatedStorage.SERVER_IS_FFA.Value == true
+        or game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == true
+        or game.ReplicatedStorage.SERVER_IS_TRYOUT.Value == true
+        or game.ReplicatedStorage.SERVER_IS_THE_PIT.Value == true then
+        return false
+    end
+    local Character = LocalPlayer.Character
+    if Character then
+        local Players = workspace:FindFirstChild("Players")
+        local InBox = Players and Players:FindFirstChild("InBox")
+        v1 = false
+        if InBox ~= nil then
+            v1 = Character.Parent == InBox
+        end
+    else
+        v1 = false
+    end
+    if v1 then
+        return false
+    end
+    return true
+end
+
+local SpringMotionLibrary = require(game.ReplicatedStorage.SpringMotionLibrary)
+local Kit = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("Kit"))
+local u184 = Color3.fromRGB(20, 20, 20)
+local u189 = Color3.fromRGB(255, 70, 70)
+
+local function setQueueButtonText(a1) -- Line: 281
+    require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("HudMotion")).setQueueText(
+        a1,
+        _G.MM_QUEUED == true
+    )
+end
+
+local function setMatchmakingQueued(a1, a2) -- Line: 285
+    -- upvalues: u150 (ref), u97 (val), SpringMotionLibrary (val), u189 (val), u184 (val), u149 (ref)
+    -- upvalues: setQueueButtonText (val)
+    _G.MM_QUEUED = a1
+    u150 = a2 or ""
+    SpringMotionLibrary.target(u97.QueueMatchFrame.QueueMatch.Button, 1, 12, {BackgroundColor3 = a1 and u189 or u184})
+    if a1 then
+        os.clock()
+        setQueueButtonText("Cancel Queue")
+        return
+    end
+    u149 = 0
+    setQueueButtonText("Queue Match")
+end
+
+local u192 = {
+    DAMPING = 0.7,
+    FREQUENCY = 5.2,
+    CLOSE_DAMPING = 1,
+    CLOSE_FREQUENCY = 5.5,
+    CLOSE_TIME = 0.2,
+    START_SCALE = 0.66,
+    CLOSE_SCALE = 0.95,
+    RISE = 0.2,
+    CLOSE_RISE = 0.02,
+}
+u192.CLOSE_TOKEN = setmetatable({}, {__mode = "k"})
+u192.CLOSE_FADE = setmetatable({}, {__mode = "k"})
+u192.HOME = setmetatable({}, {__mode = "k"})
+u192.PAGES = {}
+for k, v in next, {
+    "Inventory",
+    "Shop",
+    "Stats",
+    "Settings",
+    "Loadout",
+    "Achievements",
+    "GameModes",
+    "HalloweenEventPass",
+    "CursorConfig",
+} do
+    v1 = u97:FindFirstChild(v)
+    if v1 then
+        u192.PAGES[v1] = true
+    end
+end
+
+local function menuOpenSize() -- Line: 351 -- upvalues: u121 (ref)
+    return UDim2.new(u121 * 0.397, 0, u121 * 0.522, 0)
+end
+
+local function menuScale(a1) -- Line: 357
+    local UIScale = a1:FindFirstChildOfClass("UIScale")
+    if not UIScale then
+        UIScale = Instance.new("UIScale")
+        UIScale.Name = "MENU_TRANSITION_SCALE"
+        UIScale.Parent = a1
+    end
+    return UIScale
+end
+
+local function menuHome(a1) -- Line: 367 -- upvalues: u192 (val)
+    if not u192.HOME[a1] then
+        u192.HOME[a1] = a1.Position
+    end
+    return u192.HOME[a1]
+end
+
+local function menuRisenPosition(a1, a2) -- Line: 374 -- upvalues: u192 (val)
+    return UDim2.new(a1.X.Scale, a1.X.Offset, a1.Y.Scale + (a2 or u192.RISE), a1.Y.Offset)
+end
+
+local function closeMenu(a1) -- Line: 383 -- upvalues: u192 (val), Kit (val), SpringMotionLibrary (val)
+    if a1 ~= nil and a1.Visible ~= false and not u192.CLOSE_TOKEN[a1] then
+        if not u192.HOME[a1] then
+            u192.HOME[a1] = a1.Position
+        end
+        local u14 = u192.HOME[a1]
+        local UIScale = a1:FindFirstChildOfClass("UIScale")
+        if not UIScale then
+            UIScale = Instance.new("UIScale")
+            UIScale.Name = "MENU_TRANSITION_SCALE"
+            UIScale.Parent = a1
+        end
+        local u24 = {}
+        u192.CLOSE_TOKEN[a1] = u24
+        u192.CLOSE_FADE[a1] = (Kit.dissolveMenu(a1, u192.CLOSE_TIME))
+        SpringMotionLibrary.target(UIScale, u192.CLOSE_DAMPING, u192.CLOSE_FREQUENCY, {Scale = u192.CLOSE_SCALE})
+        SpringMotionLibrary.target(a1, u192.CLOSE_DAMPING, u192.CLOSE_FREQUENCY, {
+            Position = UDim2.new(u14.X.Scale, u14.X.Offset, u14.Y.Scale + (u192.CLOSE_RISE or u192.RISE), u14.Y.Offset),
+        })
+        task.delay(u192.CLOSE_TIME, function() -- Line: 397
+            -- upvalues: u192 (upval), a1 (val), u24 (val), SpringMotionLibrary (upval), UIScale (val), u14 (val)
+            if u192.CLOSE_TOKEN[a1] == u24 then
+                u192.CLOSE_TOKEN[a1] = nil
+                a1.Visible = false
+                if u192.CLOSE_FADE[a1] then
+                    u192.CLOSE_FADE[a1].restore()
+                    u192.CLOSE_FADE[a1] = nil
+                end
+                SpringMotionLibrary.stop(UIScale)
+                SpringMotionLibrary.stop(a1, "Position")
+                UIScale.Scale = 1
+                a1.Position = u14
+            end
+        end)
+        return
+    end
+end
+
+local function closeOtherPages(a1) -- Line: 414 -- upvalues: u192 (val), closeMenu (val)
+    for k in next, u192.PAGES do
+        if k ~= a1 and k.Visible == true then
+            closeMenu(k)
+        end
+    end
+end
+
+local function openMenu(a1, a2) -- Line: 422
+    -- upvalues: u192 (val), closeOtherPages (val), SpringMotionLibrary (val), u121 (ref)
+    if a1 == nil then
+        return
+    end
+    if u192.PAGES[a1] then
+        closeOtherPages(a1)
+    end
+    u192.CLOSE_TOKEN[a1] = nil
+    if u192.CLOSE_FADE[a1] then
+        u192.CLOSE_FADE[a1].restore()
+        u192.CLOSE_FADE[a1] = nil
+    end
+    if not u192.HOME[a1] then
+        u192.HOME[a1] = a1.Position
+    end
+    local v1 = u192.HOME[a1]
+    local UIScale = a1:FindFirstChildOfClass("UIScale")
+    if not UIScale then
+        UIScale = Instance.new("UIScale")
+        UIScale.Name = "MENU_TRANSITION_SCALE"
+        UIScale.Parent = a1
+    end
+    SpringMotionLibrary.stop(UIScale)
+    SpringMotionLibrary.stop(a1, "Position")
+    a1.Size = a2 or UDim2.new(u121 * 0.397, 0, u121 * 0.522, 0)
+    a1.Active = true
+    UIScale.Scale = u192.START_SCALE
+    a1.Position = UDim2.new(v1.X.Scale, v1.X.Offset, v1.Y.Scale + u192.RISE, v1.Y.Offset)
+    a1.Visible = true
+    SpringMotionLibrary.target(UIScale, u192.DAMPING, u192.FREQUENCY, {Scale = 1})
+    SpringMotionLibrary.target(a1, u192.DAMPING, u192.FREQUENCY, {Position = v1})
+end
+
+u192.LAYOUT_DEFAULTS = {
+    QuickPlayerMenuPosition = u97.QuickPlayerMenu.Position,
+    NotificationSize = u97.Notification.Size,
+    NotificationPosition = u97.Notification.Position,
+    NotificationPadding = u97.Notification.UIListLayout.Padding,
+}
+u192.MULTIPLIER_FRAMES = {
+    WinstreakLost = true,
+    QuickPlayerMenu = true,
+    Playerlist = true,
+    ConfirmPrompt = true,
+    Enchant = true,
+    LootCapsule = true,
+    Logs = true,
+}
+
+function u192.updateMultiplier() -- Line: 473 -- upvalues: u121 (ref), u97 (val), u192 (val)
+    local new, new_2, v1, v2
+    local v3 = 1
+    if workspace.CurrentCamera.ViewportSize.X < 900 then
+        v3 = 1.75
+    end
+    if v3 == u121 then
+        return
+    end
+    local v4 = v3 / u121
+    u121 = v3
+    if u121 ~= 1.75 then
+        u97.QuickPlayerMenu.Position = u192.LAYOUT_DEFAULTS.QuickPlayerMenuPosition
+    else
+        u97.QuickPlayerMenu.Position = UDim2.new(0.5, 0, 0.5, 0)
+    end
+    local v5 = next
+    local Children, Children_2 = u97:GetChildren()
+    for k, v in v5, Children, Children_2 do
+        if v:IsA("GuiObject") and v.Visible == true then
+            if not u192.HOME[v] then
+                if u192.MULTIPLIER_FRAMES[v.Name] then
+                    new_2 = UDim2.new
+                    v2 = v.Size.X.Scale * v4
+                    v1 = v.Size.Y.Scale * v4
+                    v.Size = new_2(v2, 0, v1, 0)
+                end
+            elseif u192.CLOSE_TOKEN[v] == nil then
+                new = UDim2.new
+                v2 = u121 * 0.397
+                v1 = u121 * 0.522
+                v.Size = new(v2, 0, v1, 0)
+            elseif u192.MULTIPLIER_FRAMES[v.Name] then
+                new_2 = UDim2.new
+                v2 = v.Size.X.Scale * v4
+                v1 = v.Size.Y.Scale * v4
+                v.Size = new_2(v2, 0, v1, 0)
+            end
+        end
+    end
+end
+
+u192.updateMultiplier()
+;(workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize")):Connect(u192.updateMultiplier)
+
+function u192.updateNotificationLayout() -- Line: 504 -- upvalues: u97 (val), u192 (val)
+    if (tonumber((game.Players.LocalPlayer:GetMouse()).ViewSizeY + 72)) < 450 then
+        u97.Notification.Size = UDim2.new(0.155, 0, 0.64, 0)
+        u97.Notification.Position = UDim2.new(0.5, 0, 0.365, 0)
+        u97.Notification:SetAttribute("Gap", (UDim.new(0.03, 0)))
+        return
+    end
+    u97.Notification.Size = u192.LAYOUT_DEFAULTS.NotificationSize
+    u97.Notification.Position = u192.LAYOUT_DEFAULTS.NotificationPosition
+    u97.Notification:SetAttribute("Gap", u192.LAYOUT_DEFAULTS.NotificationPadding)
+end
+
+u192.updateNotificationLayout()
+;(u97:GetPropertyChangedSignal("AbsoluteSize")):Connect(u192.updateNotificationLayout)
+local MainModule = require(game.ReplicatedStorage.MainModule)
+local AsmoLoadSpin = require(game.ReplicatedStorage.AsmoLoadSpin)
+local InventoryHandler = require(LocalPlayer.PlayerScripts.CoreGuiHandler.InventoryHandler)
+local u295 = {}
+u295.InventoryScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("InventoryScreen"))
+u295.Prompts = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("Prompts"))
+u295.Purchase = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("Purchase"))
+u295.ShopScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("ShopScreen"))
+u295.CapsuleScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("CapsuleScreen"))
+u295.TipJarScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("TipJarScreen"))
+u295.MenuBar = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("MenuBar"))
+u295.Notify = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("Notify"))
+u295.SettingsScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("SettingsScreen"))
+u295.CursorScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("CursorScreen"))
+u295.ProfileScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("ProfileScreen"))
+u295.AchievementsScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("AchievementsScreen"))
+u295.QuestsScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("QuestsScreen"))
+u295.WinstreakScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("WinstreakScreen"))
+u295.ServerBrowserScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("ServerBrowserScreen"))
+u295.LoadoutScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("LoadoutScreen"))
+u295.EnchantScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("EnchantScreen"))
+u295.WorkbenchScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("WorkbenchScreen"))
+u295.TradeScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("TradeScreen"))
+u295.LogsScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("LogsScreen"))
+u295.QuickMenu = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("QuickMenu"))
+u295.SpectateScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("SpectateScreen"))
+u295.CrewScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("CrewScreen"))
+u295.ModScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("ModScreen"))
+u295.PrivateServerScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("PrivateServerScreen"))
+u295.HudMotion = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("HudMotion"))
+u295.Context = {
+    MainScreen = u97,
+    openMenu = openMenu,
+    closeMenu = closeMenu,
+    worldToScreen = CalculateWorldToScreenPointUI,
+    multiplier = function() -- Line: 557 -- upvalues: u121 (ref)
+        return u121
+    end,
+    notify = function(a1) -- Line: 560 -- upvalues: u295 (val)
+        u295.Notify.push(a1)
+    end,
+    openCursor = function() -- Line: 563 -- upvalues: u295 (val)
+        u295.CursorScreen.open()
+    end,
+    Prompts = u295.Prompts,
+    UI = u295,
+}
+u295.Notify.init(u295.Context)
+u295.Prompts.init(u295.Context)
+u295.Purchase.init(u295.Context)
+u295.ShopScreen.init(u295.Context)
+u295.CapsuleScreen.init(u295.Context)
+u295.TipJarScreen.init(u295.Context)
+u295.SettingsScreen.init(u295.Context)
+u295.CursorScreen.init(u295.Context)
+u295.ProfileScreen.init(u295.Context)
+u295.AchievementsScreen.init(u295.Context)
+u295.QuestsScreen.init(u295.Context)
+u295.WinstreakScreen.init(u295.Context)
+u295.ServerBrowserScreen.init(u295.Context)
+u295.LoadoutScreen.init(u295.Context)
+u295.EnchantScreen.init(u295.Context)
+u295.WorkbenchScreen.init(u295.Context)
+u295.TradeScreen.init(u295.Context)
+u295.LogsScreen.init(u295.Context)
+u295.QuickMenu.init(u295.Context)
+u295.SpectateScreen.init(u295.Context)
+u295.CrewScreen.init(u295.Context)
+u295.ModScreen.init(u295.Context)
+u295.PrivateServerScreen.init(u295.Context)
+u295.HudMotion.attach(u97)
+local u918 = false
+
+function u295.Context.applyCursor() -- Line: 596 -- upvalues: u118 (ref), u117 (ref), u119 (ref), u120 (ref), u295 (val)
+    local v1, v2, v3, v4 = u295.CursorScreen.applyToGame()
+    u118 = v1
+    u117 = v2
+    u119 = v3
+    u120 = v4
+end
+
+local function v3(a1) -- Line: 601
+    return string.format("%dm %ds", math.floor(a1 / 60), a1 % 60)
+end
+
+function u2952.loadAnimations(a1) -- Line: 607
+    -- upvalues: u2951 (val), u130 (ref), u128 (ref), u126 (ref), u127 (ref), u131 (ref), u129 (ref), u132 (ref)
+    -- upvalues: u133 (ref), u134 (ref), u135 (ref), u136 (ref), u137 (ref), u138 (ref)
+    local Animations = game.ReplicatedStorage.Animations
+
+    local function loadTrack(a1_2) -- Line: 610 -- upvalues: a1 (val), u2951 (upval)
+        local u5 = a1:LoadAnimation(a1_2)
+        u2951:Add(function() -- Line: 612 -- upvalues: u5 (val)
+            u5:Stop(0)
+            u5:Destroy()
+        end, "CharacterConnection")
+        return u5
+    end
+
+    local u10 = a1:LoadAnimation(Animations.ShootAnim)
+    u2951:Add(function() -- Line: 612 -- upvalues: u10 (val)
+        u10:Stop(0)
+        u10:Destroy()
+    end, "CharacterConnection")
+    u130 = u10
+    local u22 = a1:LoadAnimation(Animations.GunHoldShootAnim)
+    u2951:Add(function() -- Line: 612 -- upvalues: u22 (val)
+        u22:Stop(0)
+        u22:Destroy()
+    end, "CharacterConnection")
+    u128 = u22
+    local u34 = a1:LoadAnimation(Animations.Aim)
+    u2951:Add(function() -- Line: 612 -- upvalues: u34 (val)
+        u34:Stop(0)
+        u34:Destroy()
+    end, "CharacterConnection")
+    u126 = u34
+    local u46 = a1:LoadAnimation(Animations.Aim)
+    u2951:Add(function() -- Line: 612 -- upvalues: u46 (val)
+        u46:Stop(0)
+        u46:Destroy()
+    end, "CharacterConnection")
+    u127 = u46
+    local u58 = a1:LoadAnimation(Animations.Dash)
+    u2951:Add(function() -- Line: 612 -- upvalues: u58 (val)
+        u58:Stop(0)
+        u58:Destroy()
+    end, "CharacterConnection")
+    u131 = u58
+    local u70 = a1:LoadAnimation(Animations.Crouch)
+    u2951:Add(function() -- Line: 612 -- upvalues: u70 (val)
+        u70:Stop(0)
+        u70:Destroy()
+    end, "CharacterConnection")
+    u129 = u70
+    local u82 = a1:LoadAnimation(Animations.Stomp)
+    u2951:Add(function() -- Line: 612 -- upvalues: u82 (val)
+        u82:Stop(0)
+        u82:Destroy()
+    end, "CharacterConnection")
+    u132 = u82
+    local u94 = a1:LoadAnimation(Animations.PickUp)
+    u2951:Add(function() -- Line: 612 -- upvalues: u94 (val)
+        u94:Stop(0)
+        u94:Destroy()
+    end, "CharacterConnection")
+    u133 = u94
+    local u106 = a1:LoadAnimation(Animations.Carry)
+    u2951:Add(function() -- Line: 612 -- upvalues: u106 (val)
+        u106:Stop(0)
+        u106:Destroy()
+    end, "CharacterConnection")
+    u134 = u106
+    local u118 = a1:LoadAnimation(Animations.Carried)
+    u2951:Add(function() -- Line: 612 -- upvalues: u118 (val)
+        u118:Stop(0)
+        u118:Destroy()
+    end, "CharacterConnection")
+    u135 = u118
+    local u130_2 = a1:LoadAnimation(Animations.Piggyback)
+    u2951:Add(function() -- Line: 612 -- upvalues: u130_2 (val)
+        u130_2:Stop(0)
+        u130_2:Destroy()
+    end, "CharacterConnection")
+    u136 = u130_2
+    local u142 = a1:LoadAnimation(Animations.Eat)
+    u2951:Add(function() -- Line: 612 -- upvalues: u142 (val)
+        u142:Stop(0)
+        u142:Destroy()
+    end, "CharacterConnection")
+    u137 = u142
+    local u154 = a1:LoadAnimation(Animations.ThrowKnife)
+    u2951:Add(function() -- Line: 612 -- upvalues: u154 (val)
+        u154:Stop(0)
+        u154:Destroy()
+    end, "CharacterConnection")
+    u138 = u154
+end
+
+function u2952.enterWorld(a1) -- Line: 634 -- upvalues: LocalPlayer (val), MainModule (val)
+    workspace.CurrentCamera.CameraSubject = a1:WaitForChild("Humanoid")
+    workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+    if LocalPlayer.PlayerGui.TRANSITION.Enabled == true then
+        MainModule.undoScreenTransition()
+    end
+    if game.Lighting:FindFirstChild("DEATH_EFFECT") then
+        game.Lighting.DEATH_EFFECT:Destroy()
+    end
+    if workspace.Ignored:FindFirstChild("AIM_VIEWER_TRACER") then
+        workspace.Ignored.AIM_VIEWER_TRACER.Transparency = 1
+    end
+    task.spawn(function() -- Line: 649
+        local v1 = game.ReplicatedStorage.MainFunction:InvokeServer("GetCharacterParents")
+        local v2 = next
+        local CHARACTER_POSITIONS = _G.CHARACTER_POSITIONS
+        for k, v in v2, CHARACTER_POSITIONS do
+            if not game.Players:FindFirstChild(k) then
+                v:Destroy()
+            else
+                v.Parent = v1[k]
+            end
+        end
+        _G.CHARACTER_POSITIONS = {}
+    end)
+end
+
+function u2952.rewardSummary() -- Line: 662 -- upvalues: LocalPlayer (val), u295 (val)
+    if LocalPlayer:FindFirstChild("GAINED_XP") then
+        task.delay(0.5, function() -- Line: 670 -- upvalues: LocalPlayer (upval), u295 (upval)
+            game.ReplicatedStorage.MainEvent:FireServer("DO_XP_ANIMATION")
+            if LocalPlayer:FindFirstChild("GOT_COINS") then
+                game.ReplicatedStorage.MainEvent:FireServer("AddCoins")
+            end
+            if LocalPlayer:FindFirstChild("GOT_CAPSULE") then
+                game.ReplicatedStorage.MainEvent:FireServer("AddCapsule")
+            end
+            if LocalPlayer:FindFirstChild("CANDY_COLLECTED") then
+                game.ReplicatedStorage.MainEvent:FireServer("AddCandy")
+            end
+            task.wait(0.75)
+            game.ReplicatedStorage.MainEvent:FireServer("LevelUp")
+            local v1 = game.ReplicatedStorage.MainFunction:InvokeServer("RewardSummary")
+            if v1 then
+                u295.Notify.summary(v1)
+            end
+        end)
+        return
+    end
+    if game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == true and LocalPlayer:FindFirstChild("REWARD_SUMMARY") then
+        task.delay(0.5, function() -- Line: 670 -- upvalues: LocalPlayer (upval), u295 (upval)
+            game.ReplicatedStorage.MainEvent:FireServer("DO_XP_ANIMATION")
+            if LocalPlayer:FindFirstChild("GOT_COINS") then
+                game.ReplicatedStorage.MainEvent:FireServer("AddCoins")
+            end
+            if LocalPlayer:FindFirstChild("GOT_CAPSULE") then
+                game.ReplicatedStorage.MainEvent:FireServer("AddCapsule")
+            end
+            if LocalPlayer:FindFirstChild("CANDY_COLLECTED") then
+                game.ReplicatedStorage.MainEvent:FireServer("AddCandy")
+            end
+            task.wait(0.75)
+            game.ReplicatedStorage.MainEvent:FireServer("LevelUp")
+            local v1 = game.ReplicatedStorage.MainFunction:InvokeServer("RewardSummary")
+            if v1 then
+                u295.Notify.summary(v1)
+            end
+        end)
+        return
+    end
+    if LocalPlayer:FindFirstChild("CANDY_COLLECTED") then
+        task.wait(0.75)
+        game.ReplicatedStorage.MainEvent:FireServer("AddCandy")
+    end
+end
+
+function u2952.delayedStartup() -- Line: 693 -- upvalues: u295 (val), LocalPlayer (val)
+    game.ReplicatedStorage.MainEvent:FireServer("CancelAimViewRequest")
+    if _G.IS_AFK == true then
+        game.ReplicatedStorage.MainEvent:FireServer("RequestAFKDisplay", true)
+    end
+    if _G.REQUESTED_REMINDER == false then
+        _G.REQUESTED_REMINDER = true
+        task.wait(0.5)
+        game.ReplicatedStorage.MainEvent:FireServer("RequestLoginStreakUpdate")
+    end
+    game.ReplicatedStorage.MainEvent:FireServer("SendNotificationQueue")
+    u295.WinstreakScreen.show()
+    u295.QuestsScreen.remind()
+    if LocalPlayer.DataFolder.Information.MuscleInformation.Value == 0 then
+        u295.SettingsScreen.welcome()
+    end
+    if workspace.Ignored:FindFirstChild("Boxes") then
+        local v1 = next
+        local Descendants, Descendants_2 = workspace.Ignored.Boxes:GetDescendants()
+        for k, v in v1, Descendants, Descendants_2 do
+            if v.Name == "BOX_BOARDER_PART" then
+                v.CanCollide = false
+            end
+            if v.Name == "HIDE_HITBOX" then
+                v:Destroy()
+            end
+        end
+    end
+end
+
+local function reload() -- Line: 728 -- upvalues: u2952 (val), u103 (ref), LocalPlayer (val)
+    if not u2952.ready() then
+        return
+    end
+    if u103 == true then
+        game.ReplicatedStorage.MainBindedEvent:Fire("ReloadGun")
+        return
+    end
+    if LocalPlayer.Character:FindFirstChild("[Knife]") then
+        game.ReplicatedStorage.MainEvent:FireServer("ChangeKnifeMode")
+        return
+    end
+    if LocalPlayer.Character:FindFirstChild("[Angel Wings]") then
+        LocalPlayer.Character:FindFirstChildOfClass("Tool").ACTION:FireServer("ACTIVATE")
+    end
+end
+
+local function crouch(a1, a2) -- Line: 744 -- upvalues: u2952 (val), u108 (ref), u129 (ref), LocalPlayer (val)
+    if not u2952.ready() then
+        return
+    end
+    if a2 ~= Enum.UserInputState.Begin and a2 ~= nil then
+        return
+    end
+    if u108 ~= false then
+        u129:Stop()
+        u108 = false
+        return
+    end
+    u108 = true
+    u129:Play()
+    while game["Run Service"].Heartbeat:Wait() do
+        if u108 == false then
+            return
+        end
+        if not (0 < LocalPlayer.Character.Humanoid.MoveDirection.magnitude) then
+            u129:AdjustSpeed(0)
+        else
+            u129:AdjustSpeed(1)
+        end
+    end
+end
+
+local u949 = false
+
+local function stomp() -- Line: 767 -- upvalues: u2952 (val), u949 (ref), LocalPlayer (val), u132 (ref)
+    if not u2952.ready() then
+        return
+    end
+    if u949 == false
+        and LocalPlayer.Character.BodyEffects["K.O"].Value == false
+        and LocalPlayer.Character.BodyEffects.Reloading_CLIENT.Value == false
+        and LocalPlayer.Character.BodyEffects.Attacking_CLIENT.Value == false
+        and LocalPlayer.Character.BodyEffects.Grabbed.Value == nil
+        and LocalPlayer.Character:FindFirstChild("GRABBING_CONSTRAINT") == nil then
+        u949 = true
+        local v1 = workspace:FindPartOnRayWithIgnoreList(
+            Ray.new(LocalPlayer.Character.LowerTorso.Position, (Vector3.new(0, -LocalPlayer.Character.UpperTorso.Size.y * 4.5, 0))),
+            {LocalPlayer.Character, workspace.Ignored}
+        )
+        local v2 = nil
+        if v1 and v1:IsDescendantOf(workspace.Players) then
+            v2 = v1.Parent:FindFirstChild("Humanoid") or v1.Parent.Parent:FindFirstChild("Humanoid") or v1.Parent.Parent.Parent:FindFirstChild("Humanoid")
+        end
+        if v2 then
+            u132:Play(0.100000001, 1, 1.5)
+            task.wait(0.55)
+            game.ReplicatedStorage.MainEvent:FireServer("Stomp")
+            task.wait(0.5)
+        end
+        u949 = false
+    end
+end
+
+local function makeSnowball() -- Line: 786 -- upvalues: u2952 (val), LocalPlayer (val)
+    if not u2952.ready() then
+        return
+    end
+    if not game.Players.LocalPlayer.Character:FindFirstChild("SNOWBALL_OBJECT") then
+        local v1 = workspace:FindPartOnRayWithIgnoreList(
+            Ray.new(LocalPlayer.Character.LowerTorso.Position, (Vector3.new(0, -LocalPlayer.Character.UpperTorso.Size.y * 4.5, 0))),
+            {LocalPlayer.Character, workspace.Ignored}
+        )
+        if v1 then
+            if _G.LOW_GFX_ENABLED == false
+                and v1.Color == Color3.fromRGB(255, 255, 255)
+                and v1.Material == Enum.Material.Sand
+                and LocalPlayer.Character.BodyEffects.SnowballDebounce.Value == false then
+                game.ReplicatedStorage.MainEvent:FireServer("DoSnowballInteraction")
+            end
+            if _G.LOW_GFX_ENABLED == true
+                and v1.Color == Color3.fromRGB(255, 255, 255)
+                and v1.Material == Enum.Material.SmoothPlastic
+                and LocalPlayer.Character.BodyEffects.SnowballDebounce.Value == false then
+                game.ReplicatedStorage.MainEvent:FireServer("DoSnowballInteraction")
+            end
+        end
+    end
+end
+
+local function dash() -- Line: 801 -- upvalues: u2952 (val), stomp (val), LocalPlayer (val), u143 (ref), u131 (ref)
+    if not u2952.ready() or game.ReplicatedStorage.SERVER_IS_THE_PIT.Value ~= false then
+        return
+    end
+    if game.ReplicatedStorage.SERVER_IS_FFA.Value ~= true
+        and game.ReplicatedStorage.SERVER_IS_ANARCHY.Value ~= true then
+        if not game.Players.LocalPlayer.Character:FindFirstChild("SNOWBALL_OBJECT")
+            and LocalPlayer.Character.BodyEffects.SnowballDebounce.Value ~= true then
+            if not workspace.Ignored:FindFirstChild("Boxes") then
+                return
+            end
+            if 0 < LocalPlayer.Character.Humanoid.MoveDirection.magnitude
+                and u143 == false
+                and LocalPlayer.Character.Parent == workspace.Players.Characters then
+                local MoveDirection, v1
+                u131:Play()
+                local v2 = tick()
+                u143 = true
+                local v3 = game.ReplicatedStorage.BigRing:Clone()
+                game.Debris:AddItem(v3, 1)
+                v3.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.Angles(1.5707963267948966, 0, 0)
+                v3.Parent = workspace.Ignored
+                game.TweenService:Create(v3, TweenInfo.new(0.7), {Transparency = 1, Size = Vector3.new(17, 0.5099999904632568, 17)}):Play()
+                task.spawn(function() -- Line: 820 -- upvalues: LocalPlayer (upval)
+                    game["Run Service"].Heartbeat:Wait()
+                    local v1 = game.ReplicatedStorage.SmallRing:Clone()
+                    game.Debris:AddItem(v1, 1)
+                    v1.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.Angles(1.5707963267948966, 0, 0)
+                    v1.Parent = workspace.Ignored
+                    game.TweenService:Create(v1, TweenInfo.new(0.35), {Transparency = 1, Size = Vector3.new(10, 0.5099999904632568, 10)}):Play()
+                end)
+                while true do
+                    if not (tick() - v2 < 0.3) then
+                        break
+                    end
+                    v1 = tick() - v2
+                    MoveDirection = LocalPlayer.Character.Humanoid.MoveDirection
+                    if not (0 < LocalPlayer.Character.Humanoid.MoveDirection.magnitude)
+                        or (workspace:FindPartOnRayWithWhitelist(Ray.new(
+                            LocalPlayer.Character.HumanoidRootPart.Position,
+                            LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector * 5
+                        ), {workspace.Ignored.Boxes})) then
+                        break
+                    end
+                    if 0 < LocalPlayer.Character.Humanoid.MoveDirection.magnitude then
+                        LocalPlayer.Character.UpperTorso.Velocity = MoveDirection * 90 * (math.max(0.01, 1 - ((math.clamp(tick() - v2, 0, 0.3)) - 0.03333333333333333) / 0.3) ^ 1.3 * 2.4) + Vector3.new(
+                            0,
+                            math.min(0, LocalPlayer.Character.HumanoidRootPart.Velocity.Y + 1111 * v1 - workspace.Gravity * v1),
+                            0
+                        )
+                    end
+                    tick()
+                    game["Run Service"].RenderStepped:wait()
+                end
+                LocalPlayer.Character.HumanoidRootPart.Velocity = LocalPlayer.Character.HumanoidRootPart.Velocity * Vector3.new(0.5, 1, 0.5)
+                task.wait()
+                u143 = false
+            end
+            return
+        end
+        return
+    end
+    stomp()
+end
+
+local function grab(a1, a2) -- Line: 864
+    if a2 == Enum.UserInputState.Begin or a2 == nil then
+        game.ReplicatedStorage.MainEvent:FireServer("Grabbing")
+    end
+end
+
+function promptGifitngPurchaseFrame(a1, a2) -- Line: 870 -- upvalues: u295 (val)
+    u295.Purchase.open(a1, a2)
+end
+
+Mouse.Button1Down:Connect(function() -- Line: 874 -- upvalues: u112 (ref), u146 (ref), u295 (val)
+    u112 = true
+    if u146 then
+        u295.QuickMenu.open(game.Players:GetPlayerFromCharacter(u146))
+    end
+end)
+Mouse.Button1Up:Connect(function() -- Line: 881 -- upvalues: u112 (ref)
+    u112 = false
+end)
+Mouse.Button2Down:Connect(function() -- Line: 885 -- upvalues: u114 (ref)
+    u114 = true
+end)
+Mouse.Button2Up:Connect(function() -- Line: 889 -- upvalues: u114 (ref)
+    u114 = false
+end)
+if game:GetService("UserInputService").TouchEnabled then
+    u986 = true
+    game.ReplicatedStorage.MainEvent:FireServer("IS_MOBILE")
+end
+if game:GetService("UserInputService").GamepadEnabled then
+    game.ReplicatedStorage.MainEvent:FireServer("IS_CONSOLE")
+end
+local v4 = game:GetService("ContextActionService")
+local RunService = game:GetService("RunService")
+
+local function doSnowball(a1) -- Line: 908 -- upvalues: u2952 (val), LocalPlayer (val), RunService (val), Mouse (val)
+    if not u2952.ready() then
+        return
+    end
+    if game.Players.LocalPlayer.Character:FindFirstChild("SNOWBALL_OBJECT")
+        and LocalPlayer.Character.BodyEffects.SnowballDebounce.Value == false then
+        if _G.MobileShiftlock == false then
+            if a1 then
+                RunService.Heartbeat:Wait()
+            end
+            game.ReplicatedStorage.MainEvent:FireServer("DoSnowballInteraction", Mouse.Hit.Position)
+            return
+        end
+        game.ReplicatedStorage.MainEvent:FireServer("DoSnowballInteraction", (mobileShiftLockMousePos()))
+    end
+end
+
+local u1024 = nil
+local v5 = Enum.ContextActionPriority.Low.Value
+local v6 = Enum.UserInputType.MouseButton1
+local v7 = Enum.UserInputType.Touch
+v4:BindActionAtPriority("BestiesSnowball", function(a1, a2, a3) -- Line: 922 -- upvalues: doSnowball (val), u1024 (ref)
+    local UserInputType = a3.UserInputType
+    if UserInputType ~= Enum.UserInputType.MouseButton1 then
+        if UserInputType == Enum.UserInputType.Touch
+            and a2 == Enum.UserInputState.End
+            and u1024 == Enum.UserInputState.Begin then
+            doSnowball(true)
+        end
+    elseif a2 == Enum.UserInputState.Begin then
+        doSnowball()
+    elseif UserInputType == Enum.UserInputType.Touch
+        and a2 == Enum.UserInputState.End
+        and u1024 == Enum.UserInputState.Begin then
+        doSnowball(true)
+    end
+    u1024 = a2
+    return Enum.ContextActionResult.Pass
+end, false, v5, v6, v7)
+;(game:GetService("UserInputService")).InputBegan:Connect(function(a1, a2) -- Line: 933
+    -- upvalues: u2952 (val), LocalPlayer (val), reload (val), u54 (ref), u295 (val), makeSnowball (val), crouch (val)
+    -- upvalues: u114 (ref), doSnowball (val), dash (val), stomp (val)
+    if a1.KeyCode == Enum.KeyCode.LeftShift and u2952.ready() then
+        local BoolValue = Instance.new("BoolValue")
+        BoolValue.Name = "Sprint"
+        BoolValue.Parent = LocalPlayer.Character.Movement
+    end
+    if a2 then
+        return
+    end
+    if _G.MANAGING_INVENTORY == true and a1.UserInputType == Enum.UserInputType.Gamepad1 then
+        return
+    end
+    if a1.KeyCode == Enum.KeyCode.ButtonX then
+        reload()
+    end
+    if a1.UserInputType == Enum.UserInputType.Gamepad1 and a1.KeyCode == Enum.KeyCode.ButtonB then
+        if u54 == false then
+            u54 = true
+            local NumberValue = Instance.new("NumberValue")
+            NumberValue.Name = "Sprint"
+            NumberValue.Parent = LocalPlayer.Character.Movement
+        elseif u54 == true then
+            u54 = false
+            if LocalPlayer.Character.Movement:FindFirstChild("Sprint") then
+                LocalPlayer.Character.Movement.Sprint:Destroy()
+            end
+        end
+    end
+    if a1.KeyCode == Enum.KeyCode.V and LocalPlayer:FindFirstChild("IS_MOD") then
+        u295.ModScreen.toggle()
+    end
+    if a1.KeyCode == Enum.KeyCode.X then
+        makeSnowball()
+    end
+    if a1.KeyCode == Enum.KeyCode.LeftControl then
+        crouch()
+    end
+    if a1.KeyCode == Enum.KeyCode.ButtonR3 then
+        crouch()
+    end
+    if a1.KeyCode == Enum.KeyCode.ButtonL2 then
+        u114 = true
+    end
+    if a1.KeyCode == Enum.KeyCode.ButtonR2 then
+        doSnowball()
+    end
+    if a1.KeyCode == Enum.KeyCode.DPadUp then
+        if game.ReplicatedStorage.SERVER_IS_FFA.Value ~= false then
+            game.ReplicatedStorage.MainEvent:FireServer("Grabbing")
+        else
+            dash()
+        end
+    end
+    if a1.KeyCode == Enum.KeyCode.DPadDown then
+        stomp()
+    end
+    if a1.KeyCode == Enum.KeyCode.DPadRight then
+        makeSnowball()
+    end
+    if a1.UserInputType == Enum.UserInputType.Touch and LocalPlayer.DataFolder.Platform.Value ~= "Phone" then
+        game.ReplicatedStorage.MainEvent:FireServer("IS_MOBILE")
+    end
+    if a1.KeyCode == Enum.KeyCode.R then
+        reload()
+    end
+    if a1.KeyCode ~= Enum.KeyCode.Q then
+        if a1.KeyCode == Enum.KeyCode.G then
+            game.ReplicatedStorage.MainEvent:FireServer("Grabbing")
+        end
+        if a1.KeyCode == Enum.KeyCode.E then
+            stomp()
+        end
+        return
+    end
+    if game.ReplicatedStorage.SERVER_IS_FFA.Value ~= true
+        and game.ReplicatedStorage.SERVER_IS_ANARCHY.Value ~= true then
+        dash()
+        if a1.KeyCode == Enum.KeyCode.G then
+            game.ReplicatedStorage.MainEvent:FireServer("Grabbing")
+        end
+        if a1.KeyCode == Enum.KeyCode.E then
+            stomp()
+        end
+        return
+    end
+end)
+;(game:GetService("UserInputService")).InputEnded:Connect(function(a1, a2) -- Line: 1012 -- upvalues: u2952 (val), LocalPlayer (val), u114 (ref), crouch (val)
+    if a1.KeyCode == Enum.KeyCode.LeftShift and u2952.ready() then
+        local Sprint = LocalPlayer.Character.Movement:FindFirstChild("Sprint")
+        if Sprint then
+            Sprint:Destroy()
+        end
+    end
+    if a1.KeyCode == Enum.KeyCode.ButtonL2 then
+        u114 = false
+    end
+    if a2 then
+        return
+    end
+    if a1.KeyCode == Enum.KeyCode.LeftControl then
+        crouch()
+    end
+end)
+game.Players.LocalPlayer.Chatted:Connect(function(a1) -- Line: 1028 -- upvalues: u109 (ref), LocalPlayer (val), u295 (val)
+    if u109 == true then
+        return
+    end
+    u109 = true
+    task.delay(0.05, function() -- Line: 1031 -- upvalues: u109 (upval)
+        u109 = false
+    end)
+    if a1 == "/e panel"
+        and game.ReplicatedStorage.SERVER_TYPE.Value == "PrivateServer"
+        and LocalPlayer.UserId == game.ReplicatedStorage.PrivateServerConfig.PrivateServerOwnerId.Value then
+        u295.PrivateServerScreen.toggle()
+    end
+    if a1 == "/startmatch" then
+        game.ReplicatedStorage.MainEvent:FireServer("InsertPlayerToTryout")
+        task.wait(0.15)
+        game.ReplicatedStorage.MainEvent:FireServer("InsertPlayerToTryout")
+    end
+    if a1:split(" ")[1] == "/e" and a1:split(" ")[2] == "delete" then
+        local v1 = a1:split(" ")[3]:split(".")
+        local v2 = game
+        for k, v in next, v1 do
+            v2 = v2[v]
+        end
+        v2:Destroy()
+    end
+end)
+if workspace.Ignored:FindFirstChild("BUY_SKIN_PACK") then
+    workspace.Ignored.BUY_SKIN_PACK.ClickDetector.MouseClick:Connect(function() end)
+end
+if workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("RobuxShop") then
+    workspace.Map.RobuxShop.Flintlock.ClickDetector.MouseClick:Connect(function() -- Line: 1093
+        promptGifitngPurchaseFrame(
+            3303314361,
+            "the flintlock allows you to launch yourself across the map\n\n• not useable in casual\n• item can not be traded"
+        )
+    end)
+    workspace.Map.RobuxShop.Rope.ClickDetector.MouseClick:Connect(function() -- Line: 1098
+        promptGifitngPurchaseFrame(
+            3330009161,
+            "the rope allows you to rope other players and drag them across the map\n\n• mainly useable in FFA\n• item can not be traded"
+        )
+    end)
+end
+workspace.ITEM_SHOP_PART.ClickDetector.MouseClick:Connect(function() -- Line: 1105 -- upvalues: MainModule (val)
+    MainModule.insertItemShop()
+end)
+if workspace:FindFirstChild("Platinum Rolex") then
+    workspace["Platinum Rolex"].ClickDetector.MouseClick:Connect(function() -- Line: 1110 -- upvalues: LocalPlayer (val)
+        if LocalPlayer.Gamepasses:FindFirstChild("PLATINUM_ROLEX") == nil then
+            (game:GetService("MarketplaceService")):PromptGamePassPurchase(LocalPlayer, 82102233)
+        end
+    end)
+end
+if workspace:FindFirstChild("CURSOR_CONFIG_DISPLAY") then
+    workspace.CURSOR_CONFIG_DISPLAY.ClickDetector.MouseClick:Connect(function() -- Line: 1118 -- upvalues: LocalPlayer (val), u295 (val)
+        if LocalPlayer.Gamepasses:FindFirstChild("CUSTOM_CURSOR_CONFIGURATION") then
+            u295.CursorScreen.open()
+            return
+        end
+        ;(game:GetService("MarketplaceService")):PromptGamePassPurchase(LocalPlayer, 110794144)
+    end)
+end
+pcall(function() -- Line: 1127 -- upvalues: u97 (val), u295 (val)
+    if workspace.Ignored:FindFirstChild("Boxes") then
+        for i, j in workspace.Ignored.Boxes:GetDescendants() do
+            if j:IsA("ClickDetector") and j.Parent:FindFirstChild("UI") then
+                j.MouseHoverEnter:Connect(function() -- Line: 1131 -- upvalues: u97 (upval), j (val)
+                    u97.Parent.HoverButton:Play()
+                    local v1 = game.ReplicatedStorage.HOVER_HIGHLIGHT:Clone()
+                    v1.Adornee = j.Parent
+                    v1.Parent = j.Parent
+                end)
+                j.MouseHoverLeave:Connect(function() -- Line: 1137 -- upvalues: j (val)
+                    j.Parent.HOVER_HIGHLIGHT:Destroy()
+                end)
+                j.MouseClick:Connect(function() -- Line: 1140 -- upvalues: j (val), u97 (upval), u295 (upval)
+                    if j.Parent.Size ~= Vector3.new(0.0010000000474974513, 0.0010000000474974513, 0.0010000000474974513)
+                        and game.Players:FindFirstChild(j.Parent.UI.Main.Username.Text) then
+                        u97.Parent.ClickButtonUp:Play()
+                        u295.ProfileScreen.open(game.Players:FindFirstChild(j.Parent.UI.Main.Username.Text))
+                    end
+                end)
+            end
+            if j.Name == "HOVER_HIGHLIGHT" then
+                j:Destroy()
+            end
+        end
+    end
+end)
+if workspace.Ignored:FindFirstChild("Boxes") then
+    local v8 = next
+    local v9, v10 = workspace.Ignored.Boxes:GetDescendants()
+    for k2, i in v8, v9, v10 do
+        if i.Name == "BOX_BORDER_PART" then
+            i.CanCollide = false
+        end
+    end
+end
+u295.MenuBar.init(u295.Context, {
+    inventory = function() -- Line: 1165 -- upvalues: u295 (val)
+        u295.InventoryScreen.open()
+    end,
+    inventoryClose = function() -- Line: 1168 -- upvalues: u295 (val)
+        u295.InventoryScreen.close()
+    end,
+    shop = function() -- Line: 1171 -- upvalues: u295 (val)
+        u295.ShopScreen.open()
+    end,
+    shopClose = function() -- Line: 1174 -- upvalues: u295 (val)
+        u295.ShopScreen.close()
+    end,
+    profile = function() -- Line: 1177 -- upvalues: u295 (val), LocalPlayer (val)
+        u295.ProfileScreen.open(LocalPlayer)
+    end,
+    profileClose = function() -- Line: 1180 -- upvalues: u295 (val)
+        u295.ProfileScreen.close()
+    end,
+    spectate = function() -- Line: 1183 -- upvalues: u295 (val)
+        u295.SpectateScreen.toggle()
+    end,
+    settings = function() -- Line: 1186 -- upvalues: u295 (val)
+        u295.SettingsScreen.open()
+    end,
+    loadout = function() -- Line: 1189 -- upvalues: u295 (val)
+        u295.LoadoutScreen.open()
+    end,
+    loadoutClose = function() -- Line: 1192 -- upvalues: u295 (val)
+        u295.LoadoutScreen.close()
+    end,
+    achievements = function() -- Line: 1195 -- upvalues: u295 (val)
+        u295.AchievementsScreen.open()
+    end,
+    achievementsClose = function() -- Line: 1198 -- upvalues: u295 (val)
+        u295.AchievementsScreen.close()
+    end,
+    gamemodes = function() -- Line: 1201 -- upvalues: u295 (val)
+        u295.ServerBrowserScreen.open()
+    end,
+    gamemodesClose = function() -- Line: 1204 -- upvalues: u295 (val)
+        u295.ServerBrowserScreen.close()
+    end,
+    moderation = function() -- Line: 1207 -- upvalues: u295 (val)
+        u295.ModScreen.open()
+    end,
+    moderationClose = function() -- Line: 1210 -- upvalues: u295 (val)
+        u295.ModScreen.close()
+    end,
+    privateServer = function() -- Line: 1213 -- upvalues: u295 (val)
+        u295.PrivateServerScreen.open()
+    end,
+    privateServerClose = function() -- Line: 1216 -- upvalues: u295 (val)
+        u295.PrivateServerScreen.close()
+    end,
+})
+if game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == true then
+    u295.MenuBar.setVisible("spectate", true)
+end
+if workspace.Ignored:FindFirstChild("ENCHANT") then
+    workspace.Ignored.ENCHANT.ClickDetector.MouseClick:Connect(function() -- Line: 1250 -- upvalues: u295 (val)
+        u295.EnchantScreen.open()
+    end)
+end
+if workspace.Ignored:FindFirstChild("GAME_MODES") then
+    workspace.Ignored.GAME_MODES.ClickDetector.MouseClick:Connect(function() -- Line: 1256 -- upvalues: u295 (val)
+        u295.ServerBrowserScreen.open()
+    end)
+end
+u295.InventoryScreen.init({
+    MainScreen = u97,
+    openMenu = openMenu,
+    closeMenu = closeMenu,
+    openTradeLogs = function(a1) -- Line: 1342 -- upvalues: u295 (val)
+        u295.LogsScreen.open(a1, false)
+    end,
+})
+local u1308 = 0
+MainModule.doButtonFunction(u97.Spectate.SpectateButton.Button, function() -- Line: 1349 -- upvalues: u97 (val), u1308 (ref), LocalPlayer (val)
+    local v1
+    if u97.Spectate.SpectateButton.Button.BackgroundColor3 ~= Color3.fromRGB(87, 160, 255) then
+        u97.Spectate.SpectateButton.Button.BackgroundColor3 = Color3.fromRGB(87, 160, 255)
+        u97.Spectate.SpectateButton.Shadow.ImageColor3 = Color3.fromRGB(87, 160, 255)
+        u97.Spectate.SpectateButton.Button.TextLabel.Text = "Spectate"
+        u97.Spectate.PreviousButton.Visible = false
+        u97.Spectate.NextButton.Visible = false
+        workspace.CurrentCamera.CameraSubject = LocalPlayer.Character.Humanoid
+        return
+    end
+    u97.Spectate.SpectateButton.Button.BackgroundColor3 = Color3.fromRGB(255, 70, 70)
+    u97.Spectate.SpectateButton.Shadow.ImageColor3 = Color3.fromRGB(255, 70, 70)
+    u97.Spectate.SpectateButton.Button.TextLabel.Text = "Stop Spectating"
+    u97.Spectate.PreviousButton.Visible = true
+    u97.Spectate.NextButton.Visible = true
+    if game.ReplicatedStorage.SERVER_IS_ANARCHY.Value ~= true then
+        v1 = (game.ReplicatedStorage.BattleRoyale.Alive:GetChildren())[u1308 % #game.ReplicatedStorage.BattleRoyale.Alive:GetChildren() + 1]
+    else
+        local v2 = {}
+        local v3 = next
+        local Players, Players_2 = game.Players:GetPlayers()
+        for k, v in v3, Players, Players_2 do
+            if v:FindFirstChild("LOAD_SAVE_DATA") and v.DataFolder.PVP.Value == true then
+                table.insert(v2, v)
+            end
+        end
+        v1 = v2[u1308 % #v2 + 1]
+    end
+    workspace.CurrentCamera.CameraSubject = game.Players[v1.Name].Character.Humanoid
+end)
+MainModule.doButtonFunction(u97.Spectate.NextButton.Button, function() -- Line: 1381 -- upvalues: u1308 (ref)
+    u1308 = u1308 + 1
+    local v1 = (game.ReplicatedStorage.BattleRoyale.Alive:GetChildren())[u1308 % #game.ReplicatedStorage.BattleRoyale.Alive:GetChildren() + 1]
+    workspace.CurrentCamera.CameraSubject = game.Players[v1.Name].Character.Humanoid
+end)
+MainModule.doButtonFunction(u97.Spectate.PreviousButton.Button, function() -- Line: 1387 -- upvalues: u1308 (ref)
+    u1308 = u1308 - 1
+    local v1 = (game.ReplicatedStorage.BattleRoyale.Alive:GetChildren())[u1308 % #game.ReplicatedStorage.BattleRoyale.Alive:GetChildren() + 1]
+    workspace.CurrentCamera.CameraSubject = game.Players[v1.Name].Character.Humanoid
+end)
+local u1338 = tick()
+local u1340 = tick()
+local u1341 = false
+LocalPlayer.DataFolder.PVP.Changed:Connect(function(a1) -- Line: 1435 -- upvalues: MainModule (val)
+    MainModule.changeAnarchyLighting(a1)
+end)
+MainModule.changeAnarchyLighting(LocalPlayer.DataFolder.PVP.Value)
+LocalPlayer.DataFolder.Information.MuscleInformation.Changed:Connect(function() -- Line: 1440 -- upvalues: u97 (val), LocalPlayer (val), u1338 (ref), playTween (val), u1340 (ref)
+    u97.Bar.Muscle.Muscle.bar.Size = UDim2.new((15000 + LocalPlayer.DataFolder.Information.MuscleInformation.Value) / 29250, 0, 0.83, 0)
+    if u1338 - tick() <= 0 then
+        u97.Bar.Muscle.Visible = true
+        playTween(u97.Bar.Muscle, TweenInfo.new(1, Enum.EasingStyle.Elastic), {Position = UDim2.new(0.5, 0, 1, -125)})
+    end
+    if u1340 - tick() <= 0 then
+        u1338 = tick() + 2
+    end
+    task.wait(2)
+    if u1338 - tick() <= 0 then
+        u1338 = tick() + 0.08
+        u1340 = tick() + 0.08
+        playTween(u97.Bar.Muscle, TweenInfo.new(0.075), {Position = UDim2.new(0.5, 0, 1, -90)})
+        task.wait(0.075)
+        u97.Bar.Muscle.Visible = false
+    end
+end)
+
+function u2952.bindBars(a1) -- Line: 1459
+    -- upvalues: u1341 (ref), MaxHealth (ref), u97 (val), LocalPlayer (val), u2951 (val), playTween (val)
+    local BodyEffects = a1:WaitForChild("BodyEffects")
+    local Health_CLIENT = BodyEffects:WaitForChild("Health_CLIENT")
+    local MaxHealth_2 = BodyEffects:WaitForChild("MaxHealth")
+    u1341 = false
+    MaxHealth = Health_CLIENT.Value
+    u97.Bar.HP.HP.bar.Size = UDim2.new(Health_CLIENT.Value / MaxHealth_2.Value * 0.975, 0, 0.83, 0)
+    u97.Bar.HP.HP.bar.BackgroundColor3 = (Color3.fromRGB(255, 70, 70)):lerp(Color3.fromRGB(120, 255, 96), Health_CLIENT.Value / MaxHealth_2.Value)
+    u97.Bar.HP.HP.UIStroke.Color = (Color3.fromRGB(255, 70, 70)):lerp(Color3.fromRGB(120, 255, 96), Health_CLIENT.Value / MaxHealth_2.Value * 0.975)
+    u97.Bar.Armor.Armor.bar.Size = UDim2.new(BodyEffects.Armor.Value / 200 * 0.975, 0, 0.83, 0)
+    u97.Bar.Muscle.Muscle.bar.Size = UDim2.new((15000 + LocalPlayer.DataFolder.Information.MuscleInformation.Value) / 29250, 0, 0.83, 0)
+    u2951:Add(BodyEffects.Armor.Changed:Connect(function(a1) -- Line: 1472 -- upvalues: u97 (upval), BodyEffects (val), u1341 (upval), playTween (upval)
+        u97.Bar.Armor.Armor.bar.Size = UDim2.new(BodyEffects.Armor.Value / 200 * 0.975, 0, 0.83, 0)
+        if a1 < 100 and u1341 == false then
+            u1341 = true
+            u97.Bar.Armor.Visible = true
+            playTween(u97.Bar.Armor, TweenInfo.new(1, Enum.EasingStyle.Elastic), {Position = UDim2.new(0.5, 0, 1, -114)})
+        end
+        if a1 >= 100 then
+            u1341 = false
+            playTween(u97.Bar.Armor, TweenInfo.new(0.075), {Position = UDim2.new(0.5, 0, 1, -90)})
+            task.wait(0.075)
+            u97.Bar.Armor.Visible = false
+        end
+    end), "CharacterConnection")
+    if LocalPlayer.DataFolder.Subscription.HasSubscription.Value == true
+        and game.ReplicatedStorage.SERVER_IS_FFA.Value == false
+        and game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == false then
+        u97.TeleportToPad.Visible = true
+    end
+    u2951:Add(BodyEffects.IS_ON_PAD.Changed:Connect(function(a1) -- Line: 1493 -- upvalues: LocalPlayer (upval), u97 (upval)
+        if a1 ~= nil then
+            u97.TeleportToPad.Visible = false
+            return
+        end
+        if LocalPlayer.DataFolder.Subscription.HasSubscription.Value ~= true then
+            return
+        end
+        u97.TeleportToPad.Visible = true
+    end), "CharacterConnection")
+end
+
+LocalPlayer.DataFolder.Ban.IsBanned.Changed:Connect(function(a1) -- Line: 1504 -- upvalues: LocalPlayer (val)
+    if a1 == true and not game["Run Service"]:IsStudio() then
+        game["Teleport Service"]:Teleport(9825515356, LocalPlayer)
+    end
+end)
+v2, v5, v6, v7 = u295.CursorScreen.applyToGame()
+u118 = v2
+u117 = v5
+u119 = v6
+u120 = v7
+_G.CURRENT_DEVICE_TYPE = LocalPlayer.DataFolder.Platform.Value
+LocalPlayer.DataFolder.Platform.Changed:Connect(function() -- Line: 1516 -- upvalues: LocalPlayer (val)
+    _G.CURRENT_DEVICE_TYPE = LocalPlayer.DataFolder.Platform.Value
+end)
+
+function u2952.bindCharacter(a1) -- Line: 1520
+    -- upvalues: u2951 (val), u143 (ref), u139 (val), u142 (ref), u97 (val), MaxHealth (ref), LocalPlayer (val)
+    -- upvalues: u136 (ref), u127 (ref), u64 (val), u103 (ref), u135 (ref), Mouse (val), u126 (ref), u128 (ref)
+    -- upvalues: u130 (ref), playTween (val), MainModule (val), u134 (ref), u133 (ref)
+    local Humanoid = a1:WaitForChild("Humanoid")
+    local BodyEffects = a1:WaitForChild("BodyEffects")
+    local HumanoidRootPart = a1:WaitForChild("HumanoidRootPart")
+    u2951:Add(Humanoid.Jumping:Connect(function() -- Line: 1525 -- upvalues: u143 (upval), u139 (upval), u142 (upval)
+        if u143 == false then
+            if 2 < tick() - u139.Timer then
+                u139.Time = 0
+            end
+            u139.Time = u139.Time + 1
+            u139.Timer = tick()
+            if 4 < u139.Time and u142 == false then
+                u142 = true
+                task.wait(1.5)
+                u142 = false
+            end
+        end
+    end), "CharacterConnection")
+    u2951:Add((BodyEffects:WaitForChild("Health_CLIENT")).Changed:Connect(function() -- Line: 1540 -- upvalues: BodyEffects (val), u97 (upval), MaxHealth (upval)
+        local v1 = (Color3.fromRGB(255, 70, 70)):lerp(Color3.fromRGB(120, 255, 96), BodyEffects.Health_CLIENT.Value / BodyEffects.MaxHealth.Value)
+        u97.Bar.HP.HP.bar.Size = UDim2.new(BodyEffects.Health_CLIENT.Value / BodyEffects.MaxHealth.Value * 0.975, 0, 0.83, 0)
+        u97.Bar.HP.HP.UIStroke.Color = (Color3.fromRGB(255, 70, 70)):lerp(
+            Color3.fromRGB(120, 255, 96),
+            BodyEffects.Health_CLIENT.Value / BodyEffects.MaxHealth.Value * 0.975
+        )
+        if 1 <= BodyEffects.Health_CLIENT.Value - MaxHealth then
+            u97.Bar.HP.HP.bar.BackgroundColor3 = v1
+            game.TweenService:Create(
+                u97.Bar.HP.HP.bar,
+                TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, true),
+                {BackgroundColor3 = Color3.fromRGB(255, 255, 255)}
+            ):Play()
+        end
+        MaxHealth = BodyEffects.Health_CLIENT.Value
+    end), "CharacterConnection")
+    u2951:Add(Humanoid.Running:Connect(function(a1) -- Line: 1563 -- upvalues: LocalPlayer (upval)
+        if a1 >= 10
+            and 0 < LocalPlayer.Character.Humanoid.MoveDirection.Magnitude
+            and _G.WINDOW_FOCUSED == true
+            and _G.IS_AFK == true then
+            game.ReplicatedStorage.MainEvent:FireServer("RequestAFKDisplay", false)
+            _G.IS_AFK = false
+        end
+    end), "CharacterConnection")
+    u2951:Add(a1.ChildAdded:Connect(function(a1) -- Line: 1569
+        -- upvalues: u136 (upval), u127 (upval), u64 (upval), u103 (upval), u135 (upval), LocalPlayer (upval)
+        if a1:IsA("Weld") and a1.Name == "PIGGYBACK_CONSTRAINT" then
+            u136:Play()
+        end
+        if a1:IsA("Tool") then
+            if a1.Name == "[TacticalShotgun]" or a1.Name == "[Shotgun]" then
+                u127:Play()
+            end
+            for k, v in next, u64 do
+                if a1.Name == v then
+                    _G.CURRENT_GUN = a1
+                    u103 = true
+                    if a1.Handle:FindFirstChild("GUN_CHARM_OBJECT") then
+                        task.wait(0.016666666666666666)
+                        game.ReplicatedStorage.MainBindedEvent:Fire("AnimateCharm", a1)
+                    end
+                end
+            end
+        end
+        if a1.Name == "GRABBING_CONSTRAINT" then
+            u135:Play()
+        end
+        if a1.Name == "SNOWBALL_OBJECT" then
+            LocalPlayer.Character.Humanoid:UnequipTools()
+            LocalPlayer.PlayerGui.Inventory.Enabled = false
+        end
+        if a1.Name == "ELIMINATED" then
+            local v1 = game.ReplicatedStorage.ELIMINATED_TEXT:Clone()
+            v1.Frame.BackgroundTransparency = 1
+            v1.Frame.Counter.TextTransparency = 1
+            v1.Frame.TextLabel.TextTransparency = 1
+            v1.Parent = LocalPlayer.PlayerGui
+            game.TweenService:Create(v1.Frame, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
+            game.TweenService:Create(v1.Frame.Counter, TweenInfo.new(0.2), {TextTransparency = 0}):Play()
+            game.TweenService:Create(v1.Frame.TextLabel, TweenInfo.new(0.2), {TextTransparency = 0}):Play()
+            for i = 1, 15 do
+                task.wait(1)
+                v1.Frame.Counter.Text = "RESPAWN IN: " .. 15 - i .. " SECONDS"
+            end
+            game.ReplicatedStorage.MainEvent:FireServer("RespawnCharacter")
+        end
+    end), "CharacterConnection")
+    u2951:Add(a1.ChildRemoved:Connect(function(a1_2) -- Line: 1614
+        -- upvalues: u136 (upval), u127 (upval), u64 (upval), Mouse (upval), a1 (val), LocalPlayer (upval), u103 (upval)
+        -- upvalues: u126 (upval), u135 (upval)
+        if a1_2:IsA("Weld") and a1_2.Name == "PIGGYBACK_CONSTRAINT" then
+            u136:Stop()
+        end
+        if a1_2:IsA("Tool") then
+            if a1_2.Name == "[TacticalShotgun]" or a1_2.Name == "[Shotgun]" then
+                u127:Stop()
+            end
+            for k, v in next, u64 do
+                if a1_2.Name == v then
+                    _G.CURRENT_GUN = nil
+                    game["Run Service"].Heartbeat:Wait()
+                    Mouse.TargetFilter = workspace.Ignored
+                    break
+                end
+            end
+        end
+        game:GetService("RunService").Heartbeat:Wait()
+        if a1.Parent ~= nil and a1 == LocalPlayer.Character then
+            if a1_2.Name == "SNOWBALL_OBJECT" and LocalPlayer.Character.BodyEffects["K.O"].Value == false then
+                LocalPlayer.PlayerGui.Inventory.Enabled = true
+            end
+            local v1 = false
+            for k2, i in next, u64 do
+                if LocalPlayer.Character:FindFirstChild(i) then
+                    v1 = true
+                    break
+                end
+            end
+            if not v1 then
+                u103 = false
+                u126:Stop()
+                Mouse.Icon = ""
+                LocalPlayer.PlayerGui["Main Screen"].Aim.Visible = false
+                if _G.MobileShiftlock == false then
+                    _G.Aimed = false
+                    _G.UpdateAimed = false
+                end
+                LocalPlayer.PlayerGui["Main Screen"].Aim.Top.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Top.Position:lerp(UDim2.new(0.5, 0, 0.5, -15), 1)
+                LocalPlayer.PlayerGui["Main Screen"].Aim.Bottom.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Bottom.Position:lerp(UDim2.new(0.5, 0, 0.5, 15), 1)
+                LocalPlayer.PlayerGui["Main Screen"].Aim.Right.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Right.Position:lerp(UDim2.new(0.5, 15, 0.5, 0), 1)
+                LocalPlayer.PlayerGui["Main Screen"].Aim.Left.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Left.Position:lerp(UDim2.new(0.5, -15, 0.5, 0), 1)
+            end
+            if a1_2.Name == "GRABBING_CONSTRAINT" then
+                u135:Stop()
+            end
+            return
+        end
+    end), "CharacterConnection")
+    u2951:Add(HumanoidRootPart.ChildAdded:Connect(function(a1) -- Line: 1671 -- upvalues: LocalPlayer (upval)
+        if a1.Name == "FlintlockKNOCKBACK" then
+            task.wait(0.1)
+            while a1.Parent ~= nil do
+                if workspace:FindPartOnRayWithIgnoreList(
+                    Ray.new(LocalPlayer.Character.LowerTorso.Position, (Vector3.new(0, -LocalPlayer.Character.UpperTorso.Size.y * 4.5, 0))),
+                    {LocalPlayer.Character, workspace.Ignored}
+                ) then
+                    a1:Destroy()
+                    return
+                end
+                task.wait(0.016666666666666666)
+            end
+        end
+    end), "CharacterConnection")
+    u2951:Add(game.ReplicatedStorage.MainBindedEvent.Event:Connect(function(a1) -- Line: 1686 -- upvalues: LocalPlayer (upval), u128 (upval), u130 (upval)
+        if a1 ~= "GunFired" then
+            return
+        end
+        local v1 = 0.008726646259971648
+        if _G.Aimed == true then
+            v1 = v1 / 2
+        end
+        local v2 = if not (0.5 < math.random()) then -v1 else v1
+        workspace.CurrentCamera.CFrame = workspace.CurrentCamera.CFrame * CFrame.Angles(v1, v2, 0)
+        if _G.Aimed ~= true
+            and not LocalPlayer.Character:FindFirstChild("[Shotgun]")
+            and not LocalPlayer.Character:FindFirstChild("[TacticalShotgun]") then
+            if LocalPlayer.Character.BodyEffects.Attacking.Value == false
+                and LocalPlayer.Character.BodyEffects.Reloading_CLIENT.Value == false
+                and 1 < LocalPlayer.Character:FindFirstChildOfClass("Tool").Script.Ammo.CLIENT.Value
+                and LocalPlayer.Character:FindFirstChild("Flamethrower") == nil then
+                u130:Play()
+                u130:AdjustSpeed(1.25)
+            end
+            return
+        end
+        if LocalPlayer.Character.BodyEffects.Attacking.Value == false
+            and LocalPlayer.Character.BodyEffects.Reloading_CLIENT.Value == false
+            and 1 < LocalPlayer.Character:FindFirstChildOfClass("Tool").Script.Ammo.CLIENT.Value
+            and LocalPlayer.Character:FindFirstChild("Flamethrower") == nil then
+            u128:Play()
+            return
+        end
+    end), "CharacterConnection")
+    LocalPlayer.PlayerGui.Inventory.Enabled = true
+    u2951:Add(BodyEffects["K.O"].Changed:Connect(function(a1) -- Line: 1718 -- upvalues: LocalPlayer (upval), playTween (upval), u97 (upval), MainModule (upval)
+        if a1 ~= true then
+            playTween(u97.Bar.HP, TweenInfo.new(0.2, Enum.EasingStyle.Back), {Position = UDim2.new(0.5, 0, 1, -90)})
+            LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp, true)
+            LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+            workspace.CurrentCamera.CameraSubject = LocalPlayer.Character.Humanoid
+            if not LocalPlayer.Character:FindFirstChild("SNOWBALL_OBJECT") then
+                LocalPlayer.PlayerGui.Inventory.Enabled = true
+            end
+            return
+        end
+        workspace.CurrentCamera.CameraSubject = LocalPlayer.Character.UpperTorso
+        playTween(u97.Bar.HP, TweenInfo.new(0.2, Enum.EasingStyle.Back), {Position = UDim2.new(0.5, 0, 1, -25)})
+        if game.ReplicatedStorage.SERVER_IS_THE_PIT.Value == true then
+            task.spawn(function() -- Line: 1725 -- upvalues: u97 (upval), LocalPlayer (upval), MainModule (upval)
+                u97.Bar.Visible = false
+                u97.Menu.Visible = false
+                local ColorCorrectionEffect = Instance.new("ColorCorrectionEffect")
+                ColorCorrectionEffect.Brightness = 1
+                ColorCorrectionEffect.Name = "DEATH_EFFECT"
+                ColorCorrectionEffect.Parent = game.Lighting
+                game.TweenService:Create(
+                    ColorCorrectionEffect,
+                    TweenInfo.new(0.125, Enum.EasingStyle.Linear),
+                    {Brightness = 0, Saturation = -1}
+                ):Play()
+                LocalPlayer.Character:WaitForChild("KNOCKED_BY")
+                if LocalPlayer.Character:FindFirstChild("KNOCKED_BY") then
+                    local Value = LocalPlayer.Character.KNOCKED_BY.Value
+                    task.wait(1.5)
+                    MainModule.doScreenTransition(0.3)
+                    task.wait(0.3)
+                    task.spawn(function() -- Line: 1740 -- upvalues: u97 (upval), Value (val)
+                        u97.KilledByFrame.Visible = true
+                        u97.KilledByFrame.AvatarIcon.Level.Level.Text = Value.DataFolder.Information.Level.Value
+                        u97.KilledByFrame.KillText.Text = "<font color='rgb(215, 214, 218)'>" .. Value.DisplayName .. "</font> has killed you"
+                        u97.KilledByFrame.StreakText.Text = "their killstreak: " .. Value.Character.BodyEffects.Killstreak.Value
+                        u97.KilledByFrame.AvatarIcon.Image = game.Players:GetUserThumbnailAsync(Value.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+                    end)
+                    ColorCorrectionEffect.Saturation = -0.5
+                    workspace.CurrentCamera.CameraSubject = Value.Character.BUBBLE_CHAT_PART
+                    LocalPlayer.Character.BodyEffects.CAN_RESPAWN.Changed:Wait()
+                    game.ReplicatedStorage.MainEvent:FireServer("RespawnCharacter")
+                end
+            end)
+        end
+        LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp, false)
+        workspace.CurrentCamera.CameraSubject = LocalPlayer.Character.UpperTorso
+        LocalPlayer.PlayerGui.Inventory.Enabled = false
+        game.ReplicatedStorage.MainEvent:FireServer("RequestKOUpdate")
+    end), "CharacterConnection")
+    u2951:Add(BodyEffects.Grabbed.Changed:Connect(function(a1) -- Line: 1793 -- upvalues: u134 (upval), u133 (upval)
+        if a1 == nil then
+            u134:Stop()
+            return
+        end
+        u134:Play()
+        u133:Play()
+        u133:AdjustSpeed(2)
+    end), "CharacterConnection")
+end
+
+if game.ReplicatedStorage.SERVER_IS_FFA.Value == true then
+    local GiveUpFrame = u97:WaitForChild("GiveUpFrame")
+    local TextLabel = GiveUpFrame.GiveUp.Button.TextLabel
+    local u1603 = false
+    local u1604 = false
+    local u1605 = 0
+
+    local function v11() -- Line: 1813 -- upvalues: u1605 (ref), u1603 (ref), u1604 (ref), GiveUpFrame (val)
+        u1605 = u1605 + 1
+        u1603 = false
+        u1604 = false
+        GiveUpFrame.Visible = false
+    end
+
+    local function startGiveUp() -- Line: 1820
+        -- upvalues: LocalPlayer (val), u1603 (ref), u1605 (ref), u1604 (ref), GiveUpFrame (val), TextLabel (val)
+        if LocalPlayer.DataFolder.Subscription.HasSubscription.Value == true
+            and LocalPlayer.DataFolder.Subscription.IsPremium.Value == true then
+            if u1603 == true then
+                return
+            end
+            u1605 = u1605 + 1
+            local u13 = u1605
+            u1603 = true
+            u1604 = false
+            GiveUpFrame.Visible = true
+            task.spawn(function() -- Line: 1828 -- upvalues: TextLabel (upval), u13 (val), u1605 (upval), u1604 (upval)
+                for i = 3, 1, -1 do
+                    TextLabel.Text = tostring(i)
+                    task.wait(1)
+                    if u13 ~= u1605 then
+                        return
+                    end
+                end
+                TextLabel.Text = "Give Up"
+                u1604 = true
+            end)
+        end
+    end
+
+    local function refreshGiveUp() -- Line: 1840
+        -- upvalues: LocalPlayer (val), u1605 (ref), u1603 (ref), u1604 (ref), GiveUpFrame (val), startGiveUp (val)
+        local Character = LocalPlayer.Character
+        if Character and Character:FindFirstChild("BodyEffects") then
+            if Character.BodyEffects["K.O"].Value == true
+                and Character.BodyEffects.Dead.Value == false
+                and Character.BodyEffects.Roped.Value == nil
+                and Character:FindFirstChild("GRABBING_CONSTRAINT") == nil
+                and Character:FindFirstChild("RESETTING") == nil then
+                startGiveUp()
+                return
+            end
+            u1605 = u1605 + 1
+            u1603 = false
+            u1604 = false
+            GiveUpFrame.Visible = false
+            return
+        end
+        u1605 = u1605 + 1
+        u1603 = false
+        u1604 = false
+        GiveUpFrame.Visible = false
+    end
+
+    function u2952.bindGiveUp(a1) -- Line: 1853
+        -- upvalues: u1605 (ref), u1603 (ref), u1604 (ref), GiveUpFrame (val), u2951 (val), refreshGiveUp (val)
+        local BodyEffects = a1:WaitForChild("BodyEffects")
+        u1605 = u1605 + 1
+        u1603 = false
+        u1604 = false
+        GiveUpFrame.Visible = false
+        u2951:Add(BodyEffects["K.O"].Changed:Connect(refreshGiveUp), "CharacterConnection")
+        u2951:Add(BodyEffects.Dead.Changed:Connect(refreshGiveUp), "CharacterConnection")
+        u2951:Add(BodyEffects.Roped.Changed:Connect(refreshGiveUp), "CharacterConnection")
+        u2951:Add(a1.ChildAdded:Connect(function(a1) -- Line: 1859 -- upvalues: refreshGiveUp (upval)
+            if a1.Name == "GRABBING_CONSTRAINT" or a1.Name == "RESETTING" then
+                refreshGiveUp()
+            end
+        end), "CharacterConnection")
+        u2951:Add(a1.ChildRemoved:Connect(function(a1) -- Line: 1864 -- upvalues: refreshGiveUp (upval)
+            if a1.Name == "GRABBING_CONSTRAINT" or a1.Name == "RESETTING" then
+                refreshGiveUp()
+            end
+        end), "CharacterConnection")
+    end
+
+    MainModule.doButtonFunction(GiveUpFrame.GiveUp.Button, function() -- Line: 1871 -- upvalues: u1604 (ref)
+        if u1604 == false then
+            return
+        end
+        u1604 = false
+        game.ReplicatedStorage.MainEvent:FireServer("GiveUp")
+    end)
+end
+local u1615 = {"19003948", "19003957", "19003971", "19003978", "19003982", "19003990", "19003998"}
+game.ReplicatedStorage.MainBindedEvent.ResetBindable.Event:Connect(function() -- Line: 1880
+    game.ReplicatedStorage.MainEvent:FireServer("ResetCharacter")
+end)
+game.ReplicatedStorage.MainBindedEvent.Event:Connect(function(a1, a2, a3, a4, a5) -- Line: 1885
+    -- upvalues: InventoryHandler (val), LocalPlayer (val), u295 (val), MainModule (val), u138 (ref), u137 (ref)
+    if a1 == "ManageInventory" then
+        InventoryHandler.toggle()
+    end
+    if a1 == "RequestDeleteConfirmPrompt" then
+        local v1 = false
+        if LocalPlayer.DataFolder.PIN.HasPinSet.Value == true then
+            v1 = LocalPlayer.DataFolder.PIN.PinIsLocked.Value == true
+        end
+        u295.Prompts.confirm({
+            title = if not v1 then "delete item" else "pin locked",
+            text = if not v1 then "delete " .. a2[3] .. "? this can not be undone" else "your trading pin is locked, go to the settings to unlock it!",
+            confirmText = "delete",
+            style = "danger",
+            hideConfirm = v1,
+            onConfirm = function() -- Line: 1897 -- upvalues: a2 (val)
+                game.ReplicatedStorage.MainEvent:FireServer("DeleteInventoryItem", a2[2], a2[1])
+            end,
+        })
+    end
+    if a1 == "RequestCapsuleConfirmPrompt" then
+        u295.CapsuleScreen.open(a2[2])
+    end
+    if a1 == "RequestConfirmPrompt" then
+        local v2
+        _, v2 = MainModule.getItemByID(LocalPlayer, a2[2])
+        if v2 then
+            local v3 = true
+            if v2.ItemType ~= "LootCapsule" then
+                v3 = false
+                if v2.ItemType == "Key" then
+                    v3 = v2.Name == "Capsule Key"
+                end
+            end
+            u295.Prompts.confirm({
+                title = if not v3 then "equipable item" else "open capsule",
+                text = if not v3 then "equip or unequip " .. v2.Name .. "?" else "use a capsule key to open a capsule?",
+                confirmText = if not v3 then "confirm" else "open",
+                onConfirm = function() -- Line: 1913 -- upvalues: a2 (val)
+                    game.ReplicatedStorage.MainEvent:FireServer(a2[1], a2[2])
+                end,
+            })
+        end
+    end
+    if a1 == "PlayAnimation" then
+        if a2 == "ThrowKnife" then
+            u138:Play()
+        end
+        if a2 == "EatAnimation" then
+            u137:Play()
+        end
+    end
+    if a1 == "RequestItemCopies" then
+        u295.InventoryScreen.showCopies(a2, a3)
+    end
+end)
+game.ReplicatedStorage.UnreliableMainEvent.OnClientEvent:Connect(function(a1, a2, a3, a4, a5) -- Line: 1932 -- upvalues: LocalPlayer (val)
+    if a1 == "ReplicateCloneSound" then
+        if table.find(a2, LocalPlayer) then
+            return
+        end
+        local v1 = a3:Clone()
+        game.Debris:AddItem(v1, a5)
+        v1.Parent = a4
+        v1:Play()
+    end
+    if a1 == "ReplicateEatParticles" then
+        local u27 = a3.Handle:Clone()
+        game.Debris:AddItem(u27, 2)
+        u27.Anchored = true
+        u27.Transparency = 1
+        u27.Position = a4.Character.Head.Position
+        u27.Parent = workspace.Ignored
+        u27.EatingParticle:Emit(10)
+        task.delay(0.5, function() -- Line: 1948 -- upvalues: u27 (val), a4 (val)
+            u27.Position = a4.Character.Head.Position
+            u27.EatingParticle:Emit(10)
+        end)
+    end
+end)
+MainModule.doButtonFunction(u97.QueueMatchFrame.QueueMatch.Button, function() -- Line: 1955
+    -- upvalues: u150 (ref), u97 (val), SpringMotionLibrary (val), u184 (val), u149 (ref), setQueueButtonText (val)
+    -- upvalues: LocalPlayer (val), notify (val), setMatchmakingQueued (val)
+    if _G.MM_QUEUED then
+        game.ReplicatedStorage.MainEvent:FireServer("LeaveQueue")
+        _G.MM_QUEUED = false
+        u150 = ""
+        SpringMotionLibrary.target(u97.QueueMatchFrame.QueueMatch.Button, 1, 12, {BackgroundColor3 = u184})
+        u149 = 0
+        setQueueButtonText("Queue Match")
+        return
+    end
+    local DataFolder = LocalPlayer:FindFirstChild("DataFolder")
+    if if not DataFolder then false else if DataFolder:FindFirstChild("InServerQueue") then DataFolder.InServerQueue.Value == true else false then
+        notify("<font color='rgb(255, 70, 70)'>leave the server queue first</font>")
+        return
+    end
+    game.ReplicatedStorage.MainEvent:FireServer("QueueMatch")
+    setMatchmakingQueued(true, "searching...")
+end)
+game.ReplicatedStorage.MainEvent.OnClientEvent:Connect(function(a1, a2, a3, a4, a5, a6) -- Line: 1971
+    -- upvalues: setMatchmakingQueued (val), u150 (ref), u97 (val), SpringMotionLibrary (val), u184 (val), u149 (ref)
+    -- upvalues: setQueueButtonText (val), notify (val), LocalPlayer (val), CalculateWorldToScreenPointUI (val)
+    -- upvalues: u295 (val), playTween (val), u1615 (val), AsmoLoadSpin (val), MainModule (val)
+    local v1, v2, v3, v4, v5
+    if a1 == "MatchmakingStatus" then
+        if a2 == "Queued" then
+            setMatchmakingQueued(true, "searching...")
+            return
+        end
+        if a2 == "Requeued" then
+            setMatchmakingQueued(true, "searching again...")
+            return
+        end
+        if a2 == "Found" then
+            u150 = a3 and "match found - " .. tostring(a3) or "match found"
+            return
+        end
+        if a2 == "Connecting" then
+            u150 = a3 and "opponent connecting - " .. tostring(a3) or "opponent connecting"
+            return
+        end
+        if a2 == "Left" then
+            _G.MM_QUEUED = false
+            u150 = ""
+            SpringMotionLibrary.target(u97.QueueMatchFrame.QueueMatch.Button, 1, 12, {BackgroundColor3 = u184})
+            u149 = 0
+            setQueueButtonText("Queue Match")
+            return
+        end
+        if a2 == "Cooldown" then
+            _G.MM_QUEUED = false
+            u150 = ""
+            SpringMotionLibrary.target(u97.QueueMatchFrame.QueueMatch.Button, 1, 12, {BackgroundColor3 = u184})
+            u149 = 0
+            setQueueButtonText("Queue Match")
+            notify("wait " .. (tostring(a3)) .. "s before queueing again")
+            return
+        end
+        if a2 == "Rejected" or a2 == "Failed" then
+            _G.MM_QUEUED = false
+            u150 = ""
+            SpringMotionLibrary.target(u97.QueueMatchFrame.QueueMatch.Button, 1, 12, {BackgroundColor3 = u184})
+            u149 = 0
+            setQueueButtonText("Queue Match")
+            notify("<font color='rgb(255, 70, 70)'>could not queue: " .. (tostring(a3)) .. "</font>")
+        end
+        return
+    end
+    if a1 == "DamageIndicator" then
+        local Character, Unit, Unit_2
+        v3 = game.ReplicatedStorage.DMGIndicator:Clone()
+        game.Debris:AddItem(v3, 0.5)
+        v3.Parent = u97.DamageIndicator
+        v3.Visible = true
+        game.TweenService:Create(v3, TweenInfo.new(0.5, Enum.EasingStyle.Linear), {ImageTransparency = 1}):Play()
+        while v3.Parent do
+            Character = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if Character then
+                Unit = (a2 - Character.Position).Unit
+                Unit_2 = (CFrame.new(Character.Position)):ToObjectSpace(workspace.CurrentCamera.CFrame).Position.Unit
+                v3.Rotation = (math.deg((math.atan2(Unit.X, -Unit.Z)))) + math.deg((math.atan2(Unit_2.X, Unit_2.Z)))
+            end
+            game["Run Service"].RenderStepped:Wait()
+        end
+        return
+    end
+    if a1 == "SyphonIndicator" then
+        local ColorCorrectionEffect = Instance.new("ColorCorrectionEffect")
+        game.Debris:AddItem(ColorCorrectionEffect, 1)
+        ColorCorrectionEffect.Brightness = 0.3
+        ColorCorrectionEffect.Parent = game.Lighting
+        game.TweenService:Create(ColorCorrectionEffect, TweenInfo.new(0.3), {Brightness = 0}):Play()
+    end
+    if a1 == "KillIndicator" then
+        if game.ReplicatedStorage.SERVER_IS_FFA.Value == true
+            or game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == true then
+            v3 = workspace.CurrentCamera:WorldToViewportPoint(a2)
+            local u230 = game.ReplicatedStorage.KillIndicator:Clone()
+            u230.Position = UDim2.new(0, v3.X, 0, v3.Y)
+            u230.Position = UDim2.new(0, v3.X + (math.random(-106, 106)), 0, v3.Y - 45)
+            local v6 = u97
+            task.spawn(function() -- Line: 2029 -- upvalues: u230 (val)
+                game.TweenService:Create(u230, TweenInfo.new(0.25, Enum.EasingStyle.Back), {Size = UDim2.new(0.017, 0, 0.031, 0)}):Play()
+                task.delay(0.05, function() -- Line: 2031 -- upvalues: u230 (upval)
+                    game.TweenService:Create(u230.UICorner, TweenInfo.new(0.25, Enum.EasingStyle.Back), {CornerRadius = UDim.new(1, 0)}):Play()
+                end)
+                task.delay(0.1, function() -- Line: 2034 -- upvalues: u230 (upval)
+                    game.TweenService:Create(
+                        u230.ImageLabel,
+                        TweenInfo.new(0.5, Enum.EasingStyle.Elastic),
+                        {Size = UDim2.new(0.667, 0, 0.673, 0)}
+                    ):Play()
+                end)
+                task.delay(3, function() -- Line: 2037 -- upvalues: u230 (upval)
+                    game.TweenService:Create(u230.ImageLabel, TweenInfo.new(0.5, Enum.EasingStyle.Linear), {ImageTransparency = 1}):Play()
+                    game.TweenService:Create(u230, TweenInfo.new(0.5, Enum.EasingStyle.Linear), {BackgroundTransparency = 1}):Play()
+                    task.wait(0.5)
+                    u230:Destroy()
+                end)
+            end)
+            u230.Parent = u97
+            while true do
+                if not u230:IsDescendantOf(u97) then
+                    break
+                end
+                u230.Position = CalculateWorldToScreenPointUI(v6, u230, a2)
+                game["Run Service"].RenderStepped:Wait()
+            end
+        end
+        return
+    end
+    if a1 == "WarningIndicator" then
+        v3 = workspace.CurrentCamera:WorldToViewportPoint(a2)
+        local u283 = game.ReplicatedStorage.NotificationIndicator:Clone()
+        u283.Position = UDim2.new(0, v3.X, 0, v3.Y)
+        u283.Size = UDim2.new(0, 1, 0, 1)
+        u283.Text = a3
+        u283.Parent = u97
+        v5 = math.random(-106, 106)
+        local u313 = game.TweenService:Create(u283, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {TextSize = 0})
+        game.TweenService:Create(u283, TweenInfo.new(0.2, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 36, 0, 36),
+            Rotation = v5 / 3,
+            Position = UDim2.new(0, v3.X + v5, 0, v3.Y - 45),
+        })
+        task.delay(0.75, function() -- Line: 2071 -- upvalues: u283 (val), u313 (val)
+            u283.Name = "OLD"
+            u313:Play()
+            task.wait(0.2)
+            u283:Destroy()
+        end)
+        u283.Size = UDim2.new(0, 36, 0, 36)
+        u283.Rotation = v5 / 3
+        u283.Position = UDim2.new(0, v3.X + v5, 0, v3.Y - 45)
+        local v7 = u97
+        local AbsoluteSize = u283.AbsoluteSize
+        while true do
+            if not u283:IsDescendantOf(u97) then
+                break
+            end
+            AbsoluteSize = Vector2.new(math.max(AbsoluteSize.X, u283.TextBounds.X), AbsoluteSize.Y)
+            u283.Position = CalculateWorldToScreenPointUI(v7, u283, a2, AbsoluteSize)
+            game["Run Service"].RenderStepped:Wait()
+        end
+    end
+    if a1 == "MatchStart" then
+        v3 = next
+        local Children, Children_2 = a2:GetChildren()
+        for k, v in v3, Children, Children_2 do
+            if v.Name == "BOX_BOARDER_PART" then
+                v.CanCollide = true
+            end
+        end
+    end
+    if a1 == "ReplicateAmmo" then
+        a2.Script.Ammo.CLIENT.Value = a3
+        return
+    end
+    if a1 == "RefillAllAmmo" then
+        v3 = next
+        local Children_3, Children_4 = LocalPlayer.Character:GetChildren()
+        for k6, i5 in v3, Children_3, Children_4 do
+            if i5:IsA("Tool") and i5:FindFirstChild("Script") and i5.Script:FindFirstChild("Ammo") then
+                i5.Script.Ammo.CLIENT.Value = i5.Script.MaxAmmo.Value
+            end
+        end
+        v3 = next
+        local Children_5, Children_6 = LocalPlayer.Backpack:GetChildren()
+        for k7, i6 in v3, Children_5, Children_6 do
+            if i6:IsA("Tool") and i6:FindFirstChild("Script") and i6.Script:FindFirstChild("Ammo") then
+                i6.Script.Ammo.CLIENT.Value = i6.Script.MaxAmmo.Value
+            end
+        end
+        return
+    end
+    if a1 == "AnimateCharm" then
+        if a2.Parent == LocalPlayer.Character then
+            return
+        end
+        game.ReplicatedStorage.MainBindedEvent:Fire("AnimateCharm", a2)
+        return
+    end
+    if a1 == "OpenTipJar" then
+        u295.TipJarScreen.open(a2)
+    end
+    if a1 == "CancelPrompt" then
+        (game:GetService("GuiService")):InspectPlayerFromUserId(game.Players.LocalPlayer.UserId)
+        game:GetService("GuiService"):CloseInspectMenu()
+    end
+    if a1 == "TELEPORT_TO_POSITION" then
+        u97.TELEPORT_BLACKOUT.Visible = true
+        playTween(u97.TELEPORT_BLACKOUT, TweenInfo.new(0.5), {BackgroundTransparency = 0})
+        task.wait(1)
+        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(a2)
+        task.wait(1)
+        playTween(u97.TELEPORT_BLACKOUT, TweenInfo.new(0.25), {BackgroundTransparency = 1})
+        task.wait(0.25)
+        u97.TELEPORT_BLACKOUT.Visible = false
+    end
+    if a1 == "SNOWBALL_EFFECTS" then
+        local ImageLabel = Instance.new("ImageLabel")
+        v4 = math.random() * 0.2 + 0.5
+        ImageLabel.Size = UDim2.new(v4, 0, v4, 0)
+        ImageLabel.Position = UDim2.new(math.random() - v4 / 2, 0, math.random() - v4 / 2, 0)
+        ImageLabel.SizeConstraint = Enum.SizeConstraint.RelativeXX
+        ImageLabel.Transparency = 1
+        ImageLabel.Image = "http://www.roblox.com/asset/?id=" .. u1615[math.random(1, #u1615)]
+        ImageLabel.Parent = u97.SNOWBALLFRAME
+        task.delay(1.5 + math.random() * 2, function() -- Line: 2165 -- upvalues: ImageLabel (val)
+            game.TweenService:Create(ImageLabel, TweenInfo.new(1), {
+                ImageTransparency = 1,
+                Position = UDim2.new(ImageLabel.Position.X.Scale, 0, ImageLabel.Position.Y.Scale + 0.5, 0),
+            }):Play()
+            task.wait(1)
+            ImageLabel:Destroy()
+        end)
+    end
+    if a1 == "WaterDrop_EFFECTS" then
+        local ImageLabel_2 = Instance.new("ImageLabel")
+        v4 = math.random() * 0.2 + 0.5
+        ImageLabel_2.Size = UDim2.new(v4, 0, v4, 0)
+        ImageLabel_2.Position = UDim2.new(math.random() - v4 / 2, 0, math.random() - v4 / 2, 0)
+        ImageLabel_2.SizeConstraint = Enum.SizeConstraint.RelativeXX
+        ImageLabel_2.Transparency = 1
+        ImageLabel_2.ImageColor3 = Color3.fromRGB(170, 255, 255)
+        ImageLabel_2.ImageTransparency = 0.75
+        ImageLabel_2.Image = "http://www.roblox.com/asset/?id=" .. u1615[math.random(1, #u1615)]
+        ImageLabel_2.Parent = u97.SNOWBALLFRAME
+        task.delay(0.5 + math.random() * 1.5, function() -- Line: 2182 -- upvalues: ImageLabel_2 (val)
+            game.TweenService:Create(ImageLabel_2, TweenInfo.new(1), {ImageTransparency = 1}):Play()
+            task.wait(1)
+            ImageLabel_2:Destroy()
+        end)
+    end
+    if a1 == "SPIT_EFFECTS" then
+        if LocalPlayer.Character.Parent ~= workspace.Players.InBox then
+            local ImageLabel_3 = Instance.new("ImageLabel")
+            v4 = math.random() * 0.3
+            ImageLabel_3.Size = UDim2.new(v4, 0, v4, 0)
+            ImageLabel_3.Position = UDim2.new(math.random() - v4 + 0.125, 0, math.random() - v4 + 0.125, 0)
+            ImageLabel_3.SizeConstraint = Enum.SizeConstraint.RelativeXX
+            ImageLabel_3.Transparency = 1
+            ImageLabel_3.ImageColor3 = Color3.fromRGB(170, 255, 255)
+            ImageLabel_3.ImageTransparency = 0.75
+            ImageLabel_3.Image = "http://www.roblox.com/asset/?id=" .. u1615[math.random(1, #u1615)]
+            ImageLabel_3.Parent = u97.SNOWBALLFRAME
+            task.delay(0.5 + math.random() * 1.5, function() -- Line: 2200 -- upvalues: ImageLabel_3 (val)
+                game.TweenService:Create(ImageLabel_3, TweenInfo.new(1), {ImageTransparency = 1}):Play()
+                task.wait(1)
+                ImageLabel_3:Destroy()
+            end)
+        end
+        return
+    end
+    if a1 == "ReplicateLeafPiles" then
+        if a3 == LocalPlayer or LocalPlayer.Character.Parent == workspace.Players.InBox then
+            return
+        end
+        v3 = game.ReplicatedStorage.Leaf_Explosion:Clone()
+        game.Debris:AddItem(v3, 3)
+        v3.Position = a2 - Vector3.new(0, 1.75, 0)
+        v3.Parent = workspace.Ignored
+        v3.ParticleEmitter:Emit(35)
+        return
+    end
+    if a1 == "SHOW_EXPLOITER_TAG" then
+        if a2 and a2:FindFirstChild("EXP_HIGHLIGHT") == nil then
+            a2:WaitForChild("Humanoid")
+            local Highlight = Instance.new("Highlight")
+            game.Debris:AddItem(Highlight, 10)
+            Highlight.Name = "EXP_HIGHLIGHT"
+            Highlight.DepthMode = Enum.HighlightDepthMode.Occluded
+            Highlight.Adornee = a2
+            Highlight.Parent = a2
+            v4 = game.ReplicatedStorage.EXP_TAG:Clone()
+            game.Debris:AddItem(v4, 10)
+            v4.Parent = a2.HumanoidRootPart
+        end
+        return
+    end
+    if a1 == "BuyPrompt" then
+        local confirm = u295.Prompts.confirm
+        v4 = {title = "shop"}
+        v5 = not (a4 ~= true) and "equip " .. a2 .. "?" or "buy " .. a2 .. " for <font color=\"rgb(116, 255, 137)\">" .. a3 .. " c-coins</font>?"
+        v4.text = v5
+        v4.confirmText = if a4 ~= true then "buy" else "equip"
+        v4.style = if a4 ~= true then "success" else "primary"
+
+        function v4.onConfirm() -- Line: 2241 -- upvalues: a2 (val)
+            game.ReplicatedStorage.MainEvent:FireServer("BuyItem", a2)
+        end
+
+        confirm(v4)
+        return
+    end
+    if a1 == "SHOW_ROLEX" then
+        u97.ROLEX_FRAME.Size = UDim2.new(0.15, 0, 0.15, 0)
+        game.TweenService:Create(u97.ROLEX_FRAME, TweenInfo.new(0.075), {Size = UDim2.new(0.257, 0, 0.217, 0)}):Play()
+        u97.ROLEX_FRAME.Visible = true
+        return
+    end
+    if a1 == "ShowCount" then
+        u97.CountFrame.Visible = true
+        u97.CountFrame.CountFrame.Count.Text = a2 .. " - " .. a3
+        game.TweenService:Create(u97.CountFrame, TweenInfo.new(0.25), {Size = UDim2.new(0.11, 0, 0.099, 0)}):Play()
+        task.wait(0.17)
+        playTween(u97.CountFrame.CountFrame.Count, TweenInfo.new(0.15), {TextTransparency = 0})
+        task.wait(1.75)
+        playTween(u97.CountFrame.CountFrame.Count, TweenInfo.new(0.15), {TextTransparency = 1})
+        game.TweenService:Create(u97.CountFrame.CountFrame, TweenInfo.new(0.25), {BackgroundTransparency = 1}):Play()
+        game.TweenService:Create(u97.CountFrame.Shadow, TweenInfo.new(0.25), {ImageTransparency = 1}):Play()
+        game.TweenService:Create(u97.CountFrame.CountFrame.UIStroke, TweenInfo.new(0.25), {Transparency = 1}):Play()
+        task.wait(0.3)
+        u97.CountFrame.Visible = false
+        u97.CountFrame.CountFrame.UIStroke.Transparency = 0
+        u97.CountFrame.CountFrame.BackgroundTransparency = 0
+        u97.CountFrame.Shadow.ImageTransparency = 1
+        u97.CountFrame.Size = UDim2.new(0.004, 0, 0.008, 0)
+        return
+    end
+    if a1 == "SpecialMatch" then
+        u97.SpecialMatchFrame.Visible = true
+        u97.SpecialMatchFrame.TextLabel.Text = "Special Match"
+        u97.SpecialMatchFrame.SpecialType.Text = tostring(a2):lower()
+        game.TweenService:Create(u97.SpecialMatchFrame, TweenInfo.new(0.25), {Size = UDim2.new(0.25, 0, 0.1, 0)}):Play()
+        task.wait(0.17)
+        playTween(u97.SpecialMatchFrame.SpecialType, TweenInfo.new(0.15), {TextTransparency = 0})
+        playTween(u97.SpecialMatchFrame.TextLabel, TweenInfo.new(0.15), {TextTransparency = 0})
+        task.wait(1.25)
+        game.TweenService:Create(u97.SpecialMatchFrame.SpecialType, TweenInfo.new(0.15), {TextTransparency = 1}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame.TextLabel, TweenInfo.new(0.15), {TextTransparency = 1}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame, TweenInfo.new(0.25), {BackgroundTransparency = 1}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame.UIStroke, TweenInfo.new(0.25), {Transparency = 1}):Play()
+        task.wait(0.3)
+        u97.SpecialMatchFrame.Visible = false
+        u97.SpecialMatchFrame.UIStroke.Transparency = 0
+        u97.SpecialMatchFrame.BackgroundTransparency = 0
+        u97.SpecialMatchFrame.Size = UDim2.new(0, 0, 0, 0)
+        return
+    end
+    if a1 == "StartingBattleRoyale" then
+        u97.SpecialMatchFrame.Visible = true
+        u97.SpecialMatchFrame.TextLabel.Text = "Starting Battle Royale"
+        u97.SpecialMatchFrame.SpecialType.Text = "intermission: 10"
+        game.TweenService:Create(u97.SpecialMatchFrame, TweenInfo.new(0.25), {Size = UDim2.new(0.25, 0, 0.1, 0)}):Play()
+        task.wait(0.17)
+        game.TweenService:Create(u97.SpecialMatchFrame.SpecialType, TweenInfo.new(0.15), {TextTransparency = 0}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame.TextLabel, TweenInfo.new(0.15), {TextTransparency = 0}):Play()
+        for m = 1, 10 do
+            if m ~= 1 then
+                task.wait(1)
+            else
+                task.wait(0.83)
+            end
+            u97.SpecialMatchFrame.SpecialType.Text = "intermission: " .. 10 - m
+        end
+        game.TweenService:Create(u97.SpecialMatchFrame.SpecialType, TweenInfo.new(0.15), {TextTransparency = 1}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame.TextLabel, TweenInfo.new(0.15), {TextTransparency = 1}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame, TweenInfo.new(0.25), {BackgroundTransparency = 1}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame.UIStroke, TweenInfo.new(0.25), {Transparency = 1}):Play()
+        task.wait(0.3)
+        u97.SpecialMatchFrame.Visible = false
+        u97.SpecialMatchFrame.UIStroke.Transparency = 0
+        u97.SpecialMatchFrame.BackgroundTransparency = 0
+        u97.SpecialMatchFrame.Size = UDim2.new(0, 0, 0, 0)
+        return
+    end
+    if a1 == "BattleRoyaleWinner" then
+        u97.SpecialMatchFrame.Visible = true
+        u97.SpecialMatchFrame.TextLabel.Text = "Battle Royale Ended"
+        u97.SpecialMatchFrame.SpecialType.Text = "@" .. a2 .. " is the winner!"
+        game.TweenService:Create(u97.SpecialMatchFrame, TweenInfo.new(0.25), {Size = UDim2.new(0.25, 0, 0.1, 0)}):Play()
+        task.wait(0.17)
+        game.TweenService:Create(u97.SpecialMatchFrame.SpecialType, TweenInfo.new(0.15), {TextTransparency = 0}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame.TextLabel, TweenInfo.new(0.15), {TextTransparency = 0}):Play()
+        return
+    end
+    if a1 == "AnarchyWinner" then
+        u97.SpecialMatchFrame.Visible = true
+        u97.SpecialMatchFrame.TextLabel.Text = "Match Ended"
+        u97.SpecialMatchFrame.SpecialType.Text = "@" .. a2 .. " is the winner!"
+        game.TweenService:Create(u97.SpecialMatchFrame, TweenInfo.new(0.25), {Size = UDim2.new(0.25, 0, 0.1, 0)}):Play()
+        task.wait(0.17)
+        game.TweenService:Create(u97.SpecialMatchFrame.SpecialType, TweenInfo.new(0.15), {TextTransparency = 0}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame.TextLabel, TweenInfo.new(0.15), {TextTransparency = 0}):Play()
+        task.wait(3)
+        game.TweenService:Create(u97.SpecialMatchFrame.SpecialType, TweenInfo.new(0.15), {TextTransparency = 1}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame.TextLabel, TweenInfo.new(0.15), {TextTransparency = 1}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame, TweenInfo.new(0.25), {BackgroundTransparency = 1}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame.UIStroke, TweenInfo.new(0.25), {Transparency = 1}):Play()
+        task.wait(0.3)
+        u97.SpecialMatchFrame.Visible = false
+        u97.SpecialMatchFrame.UIStroke.Transparency = 0
+        u97.SpecialMatchFrame.BackgroundTransparency = 0
+        u97.SpecialMatchFrame.Size = UDim2.new(0, 0, 0, 0)
+        return
+    end
+    if a1 == "CrewWarWinner" then
+        u97.SpecialMatchFrame.Visible = true
+        u97.SpecialMatchFrame.TextLabel.Text = "Crew War Ended"
+        u97.SpecialMatchFrame.SpecialType.Text = game.ReplicatedStorage.CrewWar[a2].CrewName.Value .. " won the war"
+        game.TweenService:Create(u97.SpecialMatchFrame, TweenInfo.new(0.25), {Size = UDim2.new(0.25, 0, 0.1, 0)}):Play()
+        task.wait(0.17)
+        game.TweenService:Create(u97.SpecialMatchFrame.SpecialType, TweenInfo.new(0.15), {TextTransparency = 0}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame.TextLabel, TweenInfo.new(0.15), {TextTransparency = 0}):Play()
+        return
+    end
+    if a1 ~= "DisplayNextWave" then
+        v1 = a1
+    else
+        u97.SpecialMatchFrame.Visible = true
+        u97.SpecialMatchFrame.TextLabel.Text = "Wave: " .. a2
+        u97.SpecialMatchFrame.SpecialType.Text = "intermission: 20"
+        playTween(u97.SpecialMatchFrame, TweenInfo.new(0.25), {BackgroundTransparency = 0.25})
+        game.TweenService:Create(u97.SpecialMatchFrame, TweenInfo.new(0.25), {Size = UDim2.new(0.25, 0, 0.1, 0)}):Play()
+        task.wait(0.17)
+        game.TweenService:Create(u97.SpecialMatchFrame.SpecialType, TweenInfo.new(0.15), {TextTransparency = 0}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame.TextLabel, TweenInfo.new(0.15), {TextTransparency = 0}):Play()
+        task.delay(3.5, function() -- Line: 2377 -- upvalues: playTween (upval), u97 (upval)
+            playTween(u97.SpecialMatchFrame.SpecialType, TweenInfo.new(0.15), {TextTransparency = 0.9})
+            playTween(u97.SpecialMatchFrame.TextLabel, TweenInfo.new(0.15), {TextTransparency = 0.9})
+            playTween(u97.SpecialMatchFrame, TweenInfo.new(0.25), {BackgroundTransparency = 0.9})
+            playTween(u97.SpecialMatchFrame.UIStroke, TweenInfo.new(0.25), {Transparency = 0.9})
+        end)
+        for i = 1, 20 do
+            task.wait(1)
+            u97.SpecialMatchFrame.SpecialType.Text = "intermission: " .. 20 - i
+            if i == 17 then
+                game.TweenService:Create(u97.SpecialMatchFrame, TweenInfo.new(0.25), {BackgroundTransparency = 0.25}):Play()
+                game.TweenService:Create(u97.SpecialMatchFrame.SpecialType, TweenInfo.new(0.15), {TextTransparency = 0}):Play()
+                game.TweenService:Create(u97.SpecialMatchFrame.TextLabel, TweenInfo.new(0.15), {TextTransparency = 0}):Play()
+                playTween(u97.SpecialMatchFrame.UIStroke, TweenInfo.new(0.25), {Transparency = 0})
+            end
+        end
+        game.TweenService:Create(u97.SpecialMatchFrame.SpecialType, TweenInfo.new(0.15), {TextTransparency = 1}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame.TextLabel, TweenInfo.new(0.15), {TextTransparency = 1}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame, TweenInfo.new(0.25), {BackgroundTransparency = 1}):Play()
+        game.TweenService:Create(u97.SpecialMatchFrame.UIStroke, TweenInfo.new(0.25), {Transparency = 1}):Play()
+        task.wait(0.3)
+        u97.SpecialMatchFrame.Visible = false
+        u97.SpecialMatchFrame.UIStroke.Transparency = 0
+        u97.SpecialMatchFrame.BackgroundTransparency = 0
+        u97.SpecialMatchFrame.Size = UDim2.new(0, 0, 0, 0)
+    end
+    if v1 == "RemoveCharacterFromBaseModel" then
+        if a2 and a2 ~= LocalPlayer.Character then
+            a2:Destroy()
+        end
+        return
+    end
+    if v1 == "StartTradeTimer" then
+        u295.TradeScreen.startTimer(a2)
+        return
+    end
+    if v1 == "ShowBanHeatWarning" then
+        u295.Prompts.confirm({
+            title = "account warning",
+            text = "we've detected suspicious activity on your account regarding the use of exploits, which is a bannable offence. your account is at high risk of being <font color='rgb(255, 70, 70)'>banned</font>, please stop using exploits.",
+            hideConfirm = true,
+            cancelText = "i understand",
+            onCancel = function() -- Line: 2420
+                game.ReplicatedStorage.MainEvent:FireServer("HasReadWarning")
+            end,
+        })
+    end
+    if v1 == "HiddenInfoFrameNotification" then
+        u295.Notify.push(a2, nil, "warn")
+    end
+    if v1 == "SendNotification" then
+        u295.Notify.push(a2, v2)
+        return
+    end
+    if v1 == "SendLogNotification" then
+        u295.Notify.log(a2)
+        return
+    end
+    if v1 == "Announcement" then
+        u295.Notify.announce(a2)
+    end
+    if v1 == "PendingTransaction" then
+        if a2 == true then
+            AsmoLoadSpin:Show()
+            return
+        end
+        AsmoLoadSpin:Hide()
+        return
+    end
+    if v1 == "AchievementUnlock" then
+        u295.AchievementsScreen.unlock(a2)
+    end
+    if v1 == "CANCEL_TRADE_TIMER" then
+        u295.TradeScreen.cancelTimer()
+        return
+    end
+    if v1 == "PlayCurrencySound" then
+        script.CurrencySound:Play()
+        return
+    end
+    if v1 == "HideLightningBeam" then
+        for k5, n in next, a2 do
+            n.Transparency = 0.99
+            ;(n:GetPropertyChangedSignal("Transparency")):Connect(function() -- Line: 2462 -- upvalues: n (val)
+                n.Transparency = 0.99
+            end)
+        end
+        return
+    end
+    if v1 == "UpdateLoadout" then
+        u295.LoadoutScreen.refresh()
+    end
+    if v1 == "DO_CASE_OPENING_ANIMATION" then
+        local v8, v9, v10
+        MainModule.DoOpeningAnimation(a2, v2, v8, v9, v10)
+    end
+    if v1 == "HideEasterEgg" then
+        a2:Destroy()
+        return
+    end
+    if v1 == "SetUpTeamTag" then
+        v3 = next
+        v4, v5 = workspace.Players.Characters:GetChildren()
+        for k2, j in v3, v4, v5 do
+            if j.BodyEffects.CrewID.Value ~= 0
+                and j.BodyEffects.CrewID.Value == LocalPlayer.Character.BodyEffects.CrewID.Value
+                and j ~= LocalPlayer.Character then
+                game.ReplicatedStorage.TEAMMATE_TAG:Clone().Parent = j
+            end
+        end
+    end
+    if v1 == "DO_XP_ANIMATION" then
+        local v11
+        v3 = next
+        v4, v5 = game.ReplicatedStorage.LEVEL_SCREEN:GetChildren()
+        for k3, k4 in v3, v4, v5 do
+            v11 = k4:Clone()
+            v11.Parent = LocalPlayer.PlayerGui
+        end
+        v3 = Instance.new("NumberValue")
+        v3.Value = a2
+        v3.Parent = LocalPlayer.PlayerGui.LocalScript
+        v4 = Instance.new("NumberValue")
+        v4.Value = v2
+        v4.Name = "NEEDED_TO_LEVEL_UP"
+        v4.Parent = LocalPlayer.PlayerGui.LocalScript
+    end
+    if v1 == "UpdateCurrencyDisplay" then
+        _G.CURRENCY_VALUE = a2
+    end
+    if v1 == "UpdateTradeInventory" then
+        u295.TradeScreen.inventoryChanged(a2)
+    end
+    if v1 == "UpdateInventoryDisplay" then
+        u295.InventoryScreen.refresh(a2)
+    end
+    if v1 == "GetInventoryForTrade" then
+        u295.TradeScreen.start()
+    end
+end)
+game.ReplicatedStorage.BattleRoyale.Changed:Connect(function(a1) -- Line: 2514 -- upvalues: LocalPlayer (val)
+    if a1 == true then
+        local HELICOPTER1 = workspace.Ignored:WaitForChild("HELICOPTER1", 20)
+        workspace.CurrentCamera.CameraSubject = HELICOPTER1.PrimaryPart
+        HELICOPTER1.Destroying:Connect(function() -- Line: 2518 -- upvalues: LocalPlayer (upval)
+            workspace.CurrentCamera.CameraSubject = LocalPlayer.Character.Humanoid
+        end)
+    end
+end)
+if workspace.Ignored:FindFirstChild("Shop") and workspace.Ignored.Shop:FindFirstChild("CAPSULES_SHOP") then
+    workspace.Ignored.Shop.CAPSULES_SHOP.ClickDetector.MouseClick:Connect(function() -- Line: 2525 -- upvalues: u295 (val)
+        u295.CapsuleScreen.open()
+    end)
+    workspace.Ignored.Shop.CAPSULES_SHOP.ClickDetector.MouseHoverEnter:Connect(function() -- Line: 2528
+        workspace.Ignored.Highlights.HOVER_HIGHLIGHT.Adornee = workspace.Ignored.Shop.CAPSULES_SHOP
+        workspace.Ignored.Highlights.HOVER_HIGHLIGHT.Enabled = true
+    end)
+    workspace.Ignored.Shop.CAPSULES_SHOP.ClickDetector.MouseHoverLeave:Connect(function() -- Line: 2532
+        workspace.Ignored.Highlights.HOVER_HIGHLIGHT.Enabled = false
+        workspace.Ignored.Highlights.HOVER_HIGHLIGHT.Adornee = nil
+    end)
+end
+if workspace.Ignored:FindFirstChild("WEEKLY_QUESTS_INTERACTION") then
+    workspace.Ignored.WEEKLY_QUESTS_INTERACTION.ClickDetector.MouseClick:Connect(function() -- Line: 2539 -- upvalues: u295 (val)
+        u295.QuestsScreen.open()
+    end)
+end
+if workspace.Ignored:FindFirstChild("WORKBENCH_INTERACTION") then
+    workspace.Ignored.WORKBENCH_INTERACTION.ClickDetector.MouseClick:Connect(function() -- Line: 2545 -- upvalues: u295 (val)
+        u295.WorkbenchScreen.open()
+    end)
+end
+local u1900 = false
+
+function mobileShiftLockMousePos() -- Line: 2580 -- upvalues: LocalPlayer (val)
+    local v1
+    local v2 = Ray.new(
+        game.Workspace.CurrentCamera.CFrame.Position + game.Workspace.CurrentCamera.CFrame.LookVector,
+        game.Workspace.CurrentCamera.CFrame.Position + game.Workspace.CurrentCamera.CFrame.LookVector * 9000000000
+    )
+    _, v1 = workspace:FindPartOnRayWithIgnoreList(v2, {LocalPlayer.Character, workspace.Ignored})
+    return v1
+end
+
+function sprint(a1, a2, a3) -- Line: 2586 -- upvalues: u2952 (val), u1900 (ref), LocalPlayer (val)
+    if not u2952.ready() then
+        return
+    end
+    if a2 == Enum.UserInputState.Begin then
+        if u1900 == false then
+            u1900 = true
+            local NumberValue = Instance.new("NumberValue")
+            NumberValue.Name = "Sprint"
+            NumberValue.Parent = LocalPlayer.Character.Movement
+            return
+        end
+        if u1900 == true then
+            u1900 = false
+            if LocalPlayer.Character.Movementt:FindFirstChild("Sprint") then
+                LocalPlayer.Character.Movement.Sprint:Destroy()
+            end
+        end
+    end
+end
+
+u97.BottomLeft.MobileShiftlock.MouseButton1Click:Connect(function() -- Line: 2603 -- upvalues: u97 (val)
+    if _G.MobileShiftlock == false then
+        _G.MobileShiftlock = true
+        _G.Aimed = true
+        u97.BottomLeft.MobileShiftlock.ImageColor3 = Color3.fromRGB(85, 170, 255)
+        return
+    end
+    if _G.MobileShiftlock == true then
+        _G.MobileShiftlock = false
+        _G.Aimed = false
+        u97.BottomLeft.MobileShiftlock.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    end
+end)
+if game:GetService("UserInputService").TouchEnabled == true then
+    u97.BottomLeft.MobileShiftlock.Visible = true
+end
+v6 = game:GetService("ContextActionService")
+v6:BindAction("Dash", dash, true, "Dash")
+v6:SetImage("Dash", "http://www.roblox.com/asset/?id=9979613761")
+v6:SetPosition("Dash", (UDim2.new(0.65, 0, 0, -35)))
+v6:BindAction("Reload", reload, true, "Reload")
+v6:SetImage("Reload", "http://www.roblox.com/asset/?id=11896136231")
+v6:SetPosition("Reload", (UDim2.new(0.65, 0, 0, -105)))
+v6:BindAction("Sprint", sprint, true, "Sprint")
+v6:SetImage("Sprint", "http://www.roblox.com/asset/?id=11896145312")
+v6:SetPosition("Sprint", (UDim2.new(0.65, 0, 0, 0)))
+v6:BindAction("Make Snowball", makeSnowball, true, "Make Snowball")
+v6:SetImage("Make Snowball", "rbxassetid://11650921792")
+v6:SetPosition("Make Snowball", (UDim2.new(0.65, 0, 0, -140)))
+v6:BindAction("Crouch", crouch, true, "Crouch")
+v6:SetImage("Crouch", "http://www.roblox.com/asset/?id=11896150737")
+v6:SetPosition("Crouch", (UDim2.new(0.65, 0, 0, 35)))
+u97.Enabled = true
+v7 = game.Players.LocalPlayer:GetMouse()
+v7.Icon = ""
+game.TweenService:Create(
+    u97.SaveDataIndicator,
+    TweenInfo.new(0.75, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+    {ImageColor3 = Color3.fromRGB(150, 150, 150)}
+):Play()
+
+function u2952.bindAnticheat(a1) -- Line: 2655 -- upvalues: playTween (val), u97 (val), u2951 (val)
+    local Indicator = (a1:WaitForChild("BodyEffects")):WaitForChild("AnticheatEffects").INTERACTION_SUSPENDED.Indicator
+
+    local function paintSuspended(a1) -- Line: 2658 -- upvalues: playTween (upval), u97 (upval)
+        if a1 == true then
+            playTween(
+                u97.INTERACTION_SUSPENDED_LABEL,
+                TweenInfo.new(0.1, Enum.EasingStyle.Linear),
+                {TextTransparency = 0, BackgroundTransparency = 0.5}
+            )
+            playTween(u97.INTERACTION_SUSPENDED_LABEL.UIStroke, TweenInfo.new(0.1, Enum.EasingStyle.Linear), {Transparency = 0})
+            return
+        end
+        playTween(
+            u97.INTERACTION_SUSPENDED_LABEL,
+            TweenInfo.new(0.1, Enum.EasingStyle.Linear),
+            {TextTransparency = 1, BackgroundTransparency = 1}
+        )
+        playTween(u97.INTERACTION_SUSPENDED_LABEL.UIStroke, TweenInfo.new(0.1, Enum.EasingStyle.Linear), {Transparency = 1})
+    end
+
+    paintSuspended(Indicator.Value)
+    u2951:Add(Indicator.Changed:Connect(paintSuspended), "CharacterConnection")
+end
+
+function v7(a1) -- Line: 2672 -- upvalues: Mouse (val)
+    Mouse.Icon = a1
+end
+
+game["Run Service"].Heartbeat:Connect(function(a1) -- Line: 2676
+    -- upvalues: LocalPlayer (val), u103 (ref), u112 (ref), Mouse (val), u97 (val), u114 (ref), u126 (ref), u118 (ref)
+    -- upvalues: u117 (ref), u120 (ref), u119 (ref), u107 (ref), u108 (ref), u142 (ref)
+    local v1 = 16
+    local v2 = 0
+    local v3 = 50
+    local v4 = 196.2
+    local Character = LocalPlayer.Character
+    if Character ~= nil
+        and Character.Parent ~= nil
+        and Character:FindFirstChild("BodyEffects") ~= nil
+        and Character:FindFirstChild("HumanoidRootPart") ~= nil then
+        if Character:FindFirstChild("Humanoid") ~= nil and Character:FindFirstChild("Movement") ~= nil then
+            if Character.BodyEffects:FindFirstChild("AnticheatEffects") ~= nil
+                and Character.BodyEffects:FindFirstChild("Health_CLIENT") ~= nil
+                and Character.BodyEffects:FindFirstChild("MaxHealth") ~= nil then
+                if game.ReplicatedStorage.SERVER_IS_FFA.Value ~= true
+                    and LocalPlayer.Character.BodyEffects.IS_ON_PAD.Value ~= nil
+                    and 30 <= Vector3.new(LocalPlayer.Character.HumanoidRootPart.Velocity.X, 0, LocalPlayer.Character.HumanoidRootPart.Velocity.Z).Magnitude then
+                    LocalPlayer.Character.HumanoidRootPart.Velocity = LocalPlayer.Character.HumanoidRootPart.Velocity.Unit * 30
+                end
+                if game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == true
+                    and 3 <= game.ReplicatedStorage.AnarchyMode.CurrentStage.Value
+                    and 30 <= Vector3.new(LocalPlayer.Character.HumanoidRootPart.Velocity.X, 0, LocalPlayer.Character.HumanoidRootPart.Velocity.Z).Magnitude then
+                    LocalPlayer.Character.HumanoidRootPart.Velocity = LocalPlayer.Character.HumanoidRootPart.Velocity.Unit * 30
+                end
+                if not (0 < LocalPlayer.Character.BodyEffects.AnticheatEffects.INTERACTION_SUSPENDED.Value - workspace:GetServerTimeNow()) then
+                    LocalPlayer.Character.BodyEffects.AnticheatEffects.INTERACTION_SUSPENDED.Indicator.Value = false
+                else
+                    LocalPlayer.Character.BodyEffects.AnticheatEffects.INTERACTION_SUSPENDED.Indicator.Value = true
+                end
+                _G.GUN_EQUIPPED = u103
+                if u103 == true then
+                    if u112 == true and game.Players.LocalPlayer.Character:FindFirstChild("[SMG]") then
+                        LocalPlayer.Character:FindFirstChildOfClass("Tool"):Activate()
+                    end
+                    Mouse.Icon = "rbxassetid://33410686"
+                    if LocalPlayer.Character.BodyEffects.Blocking.Value ~= true then
+                        LocalPlayer.PlayerGui["Main Screen"].Aim.Visible = true
+                        Mouse.Icon = "rbxassetid://33410686"
+                        if u114 == true then
+                            if u126.IsPlaying == false then
+                                u126:Play()
+                            end
+                            _G.Aimed = true
+                            _G.UpdateAimed = true
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.CursorImage.Size = LocalPlayer.PlayerGui["Main Screen"].Aim.CursorImage.Size:lerp(UDim2.new(0, 20, 0, 20), 0.8)
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.Top.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Top.Position:lerp(UDim2.new(0.5, 0, 0.5, -u118 * 0.6), 0.8)
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.Bottom.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Bottom.Position:lerp(UDim2.new(0.5, 0, 0.5, u117 * 0.6), 0.8)
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.Right.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Right.Position:lerp(UDim2.new(0.5, u120 * 0.6, 0.5, 0), 0.8)
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.Left.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Left.Position:lerp(UDim2.new(0.5, -u119 * 0.6, 0.5, 0), 0.8)
+                        elseif _G.MobileShiftlock ~= true then
+                            if _G.MobileShiftlock == false then
+                                _G.Aimed = false
+                            end
+                            u126:Stop()
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.CursorImage.Size = LocalPlayer.PlayerGui["Main Screen"].Aim.CursorImage.Size:lerp(UDim2.new(0, 28, 0, 28), 0.8)
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.Top.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Top.Position:lerp(UDim2.new(0.5, 0, 0.5, -u118), 1)
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.Bottom.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Bottom.Position:lerp(UDim2.new(0.5, 0, 0.5, u117), 1)
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.Right.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Right.Position:lerp(UDim2.new(0.5, u120, 0.5, 0), 1)
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.Left.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Left.Position:lerp(UDim2.new(0.5, -u119, 0.5, 0), 1)
+                        else
+                            if u126.IsPlaying == false then
+                                u126:Play()
+                            end
+                            _G.Aimed = true
+                            _G.UpdateAimed = true
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.CursorImage.Size = LocalPlayer.PlayerGui["Main Screen"].Aim.CursorImage.Size:lerp(UDim2.new(0, 20, 0, 20), 0.8)
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.Top.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Top.Position:lerp(UDim2.new(0.5, 0, 0.5, -u118 * 0.6), 0.8)
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.Bottom.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Bottom.Position:lerp(UDim2.new(0.5, 0, 0.5, u117 * 0.6), 0.8)
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.Right.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Right.Position:lerp(UDim2.new(0.5, u120 * 0.6, 0.5, 0), 0.8)
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.Left.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Left.Position:lerp(UDim2.new(0.5, -u119 * 0.6, 0.5, 0), 0.8)
+                        end
+                    else
+                        LocalPlayer.PlayerGui["Main Screen"].Aim.Visible = false
+                        u97.Drop.Visible = false
+                        Mouse.Icon = ""
+                        if u114 == true or _G.MobileShiftlock == false then
+                            if _G.MobileShiftlock == false then
+                                _G.Aimed = false
+                            end
+                            u126:Stop()
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.CursorImage.Size = LocalPlayer.PlayerGui["Main Screen"].Aim.CursorImage.Size:lerp(UDim2.new(0, 28, 0, 28), 0.8)
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.Top.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Top.Position:lerp(UDim2.new(0.5, 0, 0.5, -u118), 1)
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.Bottom.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Bottom.Position:lerp(UDim2.new(0.5, 0, 0.5, u117), 1)
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.Right.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Right.Position:lerp(UDim2.new(0.5, u120, 0.5, 0), 1)
+                            LocalPlayer.PlayerGui["Main Screen"].Aim.Left.Position = LocalPlayer.PlayerGui["Main Screen"].Aim.Left.Position:lerp(UDim2.new(0.5, -u119, 0.5, 0), 1)
+                        end
+                    end
+                end
+                if LocalPlayer.Character.BodyEffects.Health_CLIENT.Value < LocalPlayer.Character.BodyEffects.MaxHealth.Value / 2
+                    and game.ReplicatedStorage.SERVER_IS_APOCALYPSE.Value == false then
+                    v1 = v1 * 0.8
+                    v2 = v2 - 0.225
+                end
+                if LocalPlayer.Character.Movement:FindFirstChild("SuperSpeed") then
+                    v1 = v1 + 30
+                    v2 = v2 + 2
+                end
+                if LocalPlayer.Character.Movement:FindFirstChild("Sprint")
+                    and LocalPlayer.Character.Movement:FindFirstChild("NoSprint") == nil
+                    and LocalPlayer.Character.Movement:FindFirstChild("ReduceWalk") == nil
+                    and LocalPlayer.Character.Movement:FindFirstChild("Block") == nil then
+                    local Value = LocalPlayer.Character.BodyEffects.Health_CLIENT.Value
+                    if LocalPlayer.Character.BodyEffects.MaxHealth.Value / 2 < Value then
+                        v1 = v1 + 6
+                        v2 = v2 + 0.4
+                    end
+                end
+                if LocalPlayer.Character:FindFirstChild("[Knife]") then
+                    v1 = v1 + 4.8
+                    if game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == false then
+                        v3 = v3 + 9.5
+                    end
+                end
+                if LocalPlayer.Character:FindFirstChild("[Heart Balloon]") then
+                    v3 = v3 + 5
+                    v4 = 85
+                end
+                if u107 or u108 then
+                    v1 = 5
+                    v2 = 0.27
+                end
+                if LocalPlayer.Character.BodyEffects["K.O"].Value
+                    or LocalPlayer.Character.Movement:FindFirstChild("NoWalkSpeed") then
+                    v1 = 0
+                    v2 = 0
+                end
+                if LocalPlayer.Character.Movement:FindFirstChild("HulkJump") then
+                    v3 = 90
+                end
+                if LocalPlayer.Character.BodyEffects["K.O"].Value == true
+                    or LocalPlayer.Character.Movement:FindFirstChild("NoJumping")
+                    or u142 then
+                    v3 = 0
+                end
+                if LocalPlayer.Character.Movement:FindFirstChild("SlightlyReduceWalk") then
+                    v1 = v1 - 5
+                    v2 = v2 - 0.35
+                end
+                if LocalPlayer.Character.Movement:FindFirstChild("ColdWalk") then
+                    v1 = v1 - 4.5
+                    v2 = v2 - 0.6
+                end
+                if LocalPlayer.Character.Movement:FindFirstChild("ReduceWalk")
+                    or LocalPlayer.Character.BodyEffects.Reloading_CLIENT.Value == true then
+                    v1 = v1 - 9
+                    v2 = v2 - 0.6
+                end
+                if LocalPlayer.Character.Movement:FindFirstChild("ExtremelyReduceWalk") then
+                    v1 = v1 - 13
+                end
+                if LocalPlayer.Character:FindFirstChild("Parachute") then
+                    v1 = 65
+                    if u108 ~= false then
+                        if workspace.Gravity == 5 then
+                            LocalPlayer.Character.HumanoidRootPart.Velocity = Vector3.new(
+                                LocalPlayer.Character.HumanoidRootPart.Velocity.X,
+                                0,
+                                LocalPlayer.Character.HumanoidRootPart.Velocity.Z
+                            )
+                        end
+                        v4 = 135
+                    else
+                        if workspace.Gravity == 135 then
+                            LocalPlayer.Character.HumanoidRootPart.Velocity = Vector3.new(
+                                LocalPlayer.Character.HumanoidRootPart.Velocity.X,
+                                0,
+                                LocalPlayer.Character.HumanoidRootPart.Velocity.Z
+                            )
+                        end
+                        v4 = 5
+                    end
+                    LocalPlayer.PlayerGui.Inventory.Enabled = false
+                    if workspace:FindPartOnRayWithWhitelist(
+                        Ray.new(
+                            LocalPlayer.Character.LowerTorso.Position,
+                            (Vector3.new(0, -LocalPlayer.Character.UpperTorso.Size.y * 4.5, 0))
+                        ),
+                        {workspace.FFA_MAP}
+                    ) then
+                        game.ReplicatedStorage.MainEvent:FireServer("RemoveParachute")
+                        LocalPlayer.PlayerGui.Inventory.Enabled = true
+                    end
+                end
+                workspace.Gravity = v4
+                LocalPlayer.Character.Humanoid.WalkSpeed = v1
+                LocalPlayer.Character.Humanoid.JumpPower = v3
+                return
+            end
+            return
+        end
+        return
+    end
+end)
+local u2254 = {
+    [0] = "intermission:",
+    "giving knife in:",
+    "giving silencer in:",
+    "giving shotgun in:",
+    "giving tactical shotgun in:",
+    "giving revolver in:",
+    "giving double barrel in:",
+}
+task.spawn(function() -- Line: 2855
+    -- upvalues: LocalPlayer (val), u97 (val), u295 (val), shouldShowQueueButton (val), u150 (ref)
+    -- upvalues: SpringMotionLibrary (val), u184 (val), u149 (ref), setQueueButtonText (val), u2254 (val), u103 (ref)
+    -- upvalues: u986 (ref), MainModule (val), Mouse (val), rayWithIgnoreList (val), u146 (ref), u56 (ref), u55 (ref)
+    -- upvalues: u57 (ref)
+    local err
+    while true do
+        _, err = pcall(function() -- Line: 2857
+            -- upvalues: LocalPlayer (upval), u97 (upval), u295 (upval), shouldShowQueueButton (upval), u150 (upval)
+            -- upvalues: SpringMotionLibrary (upval), u184 (upval), u149 (upval), setQueueButtonText (upval)
+            -- upvalues: u2254 (upval), u103 (upval), u986 (upval), MainModule (upval), Mouse (upval)
+            -- upvalues: rayWithIgnoreList (upval), u146 (upval), u56 (upval), u55 (upval), u57 (upval)
+            if LocalPlayer.Character ~= nil
+                and LocalPlayer.Character.Parent ~= nil
+                and LocalPlayer.Character:FindFirstChild("BodyEffects") ~= nil then
+                local Frame, Position_3, v1, v2, v3, v4
+                if LocalPlayer.PlayerGui:FindFirstChild("TouchGui") then
+                    if game:GetService("UserInputService").GamepadEnabled
+                        and LocalPlayer.PlayerGui:FindFirstChild("TouchGui").TouchControlFrame.JumpButton.Visible == false
+                        and LocalPlayer.DataFolder.Platform.Value ~= "Console" then
+                        game.ReplicatedStorage.MainEvent:FireServer("IS_CONSOLE")
+                    end
+                elseif game:GetService("UserInputService").GamepadEnabled
+                    and LocalPlayer.DataFolder.Platform.Value ~= "Console" then
+                    game.ReplicatedStorage.MainEvent:FireServer("IS_CONSOLE")
+                end
+                u97.SaveDataIndicator.Visible = LocalPlayer.DataFolder.LOCK_DOWN.Value
+                u295.HudMotion.setQueueVisible(shouldShowQueueButton() == true)
+                if _G.MM_QUEUED then
+                    local Character = LocalPlayer.Character
+                    if Character then
+                        local Players = workspace:FindFirstChild("Players")
+                        local InBox = Players and Players:FindFirstChild("InBox")
+                        v1 = false
+                        if InBox ~= nil then
+                            v1 = Character.Parent == InBox
+                        end
+                    else
+                        v1 = false
+                    end
+                    if v1 then
+                        _G.MM_QUEUED = false
+                        u150 = ""
+                        local Button = u97.QueueMatchFrame.QueueMatch.Button
+                        SpringMotionLibrary.target(Button, 1, 12, {BackgroundColor3 = u184})
+                        u149 = 0
+                        setQueueButtonText("Queue Match")
+                    end
+                end
+                if _G.MM_QUEUED then
+                    v1 = math.max(0, (os.clock()) - u149)
+                    local v5 = math.floor(v1 / 60)
+                    v2 = math.floor(v1 % 60)
+                    v3 = not (u150 == "") and u150 or "searching..."
+                    u295.HudMotion.setQueueDisplay(true, string.format("%s  |  %d:%02d", v3, v5, v2), (v3:gsub(" %- .*$", "")))
+                elseif not _G.QueueData.CurrentLine or u295.ServerBrowserScreen.isOpen() ~= false then
+                    u295.HudMotion.setQueueDisplay(false)
+                else
+                    u295.HudMotion.setQueueDisplay(
+                        true,
+                        "your line: " .. _G.QueueData.CurrentLine .. " | priority: " .. _G.QueueData.PrioritySize,
+                        _G.QueueData.CurrentLine
+                    )
+                end
+                if game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == true then
+                    v1 = 0
+                    v2 = next
+                    local Players_2, Players_3 = game.Players:GetPlayers()
+                    for k, v in v2, Players_2, Players_3 do
+                        if v:FindFirstChild("LOAD_SAVE_DATA") and v.DataFolder.PVP.Value == true then
+                            v1 = v1 + 1
+                        end
+                    end
+                    if u97.HiddenInfoFrame.Frame.BackgroundTransparency ~= 1 then
+                        u97.RoundInfoLabel.Visible = false
+                    elseif not (#game.Players:GetPlayers() > 6) then
+                        u97.RoundInfoLabel.Visible = true
+                        u97.RoundInfoLabel.Text = "not enough players to start (7 needed)"
+                    elseif game.ReplicatedStorage.AnarchyMode.CurrentStage.Value < 7 then
+                        u97.RoundInfoLabel.Visible = true
+                        if game.ReplicatedStorage.AnarchyMode.Winner.Value ~= "" then
+                            u97.RoundInfoLabel.Text = "winner: " .. game.ReplicatedStorage.AnarchyMode.Winner.Value
+                        elseif not (game.ReplicatedStorage.AnarchyMode.CountDown.Value <= 0) then
+                            u97.RoundInfoLabel.Text = u2254[game.ReplicatedStorage.AnarchyMode.CurrentStage.Value] .. " " .. game.ReplicatedStorage.AnarchyMode.CountDown.Value
+                        elseif game.ReplicatedStorage.AnarchyMode.CurrentStage.Value ~= 3 then
+                            u97.RoundInfoLabel.Text = "..."
+                        else
+                            u97.RoundInfoLabel.Text = "macro disabled!"
+                        end
+                    elseif not (v1 > 5) then
+                        u97.RoundInfoLabel.Visible = true
+                        u97.RoundInfoLabel.Text = "last standing players: " .. v1
+                    else
+                        u97.RoundInfoLabel.Visible = false
+                    end
+                    if LocalPlayer.DataFolder.PVP.Value ~= true then
+                        u97.Bar.Visible = false
+                        u295.MenuBar.setVisible("spectate", true)
+                    else
+                        u97.Bar.Visible = true
+                        u295.MenuBar.setVisible("spectate", false)
+                    end
+                end
+                if game.ReplicatedStorage.SERVER_IS_FFA.Value == true then
+                    u97.Bar.Visible = true
+                end
+                if not LocalPlayer.Gamepasses:FindFirstChild("Spit") then
+                    u97.Parent.CustomCoreGUI.Emotes.EmotesWheel.Slots["1"].LockedImage.Visible = true
+                else
+                    u97.Parent.CustomCoreGUI.Emotes.EmotesWheel.Slots["1"].LockedImage.Visible = false
+                end
+                if game.ReplicatedStorage.SERVER_IS_THE_PIT.Value == true and u103 == true then
+                    if not LocalPlayer.Character:FindFirstChild("LANDING_FF") then
+                        if LocalPlayer.Character:FindFirstChildOfClass("Tool") then
+                            local Tool_2 = LocalPlayer.Character:FindFirstChildOfClass("Tool")
+                            Tool_2.ManualActivationOnly = false
+                        end
+                    elseif LocalPlayer.Character:FindFirstChildOfClass("Tool") then
+                        local Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
+                        Tool.ManualActivationOnly = true
+                    end
+                end
+                if game.ReplicatedStorage.BattleRoyale.Value == true then
+                    u97.AliveFrame.Visible = true
+                    u97.AliveFrame.TextLabel.Text = "alive: " .. #game.ReplicatedStorage.BattleRoyale.Alive:GetChildren()
+                elseif game.ReplicatedStorage.CrewWar.Value ~= true
+                    or LocalPlayer.Character.BodyEffects.CrewID.Value == 0 then
+                    u97.AliveFrame.Visible = false
+                else
+                    u97.AliveFrame.Visible = true
+                    u97.AliveFrame.TextLabel.Text = (u295.CrewScreen.crewName(1)) .. ": " .. #game.ReplicatedStorage.CrewWar.PlayersAlive.Crew1:GetChildren() .. " --- " .. (u295.CrewScreen.crewName(2)) .. ": " .. #game.ReplicatedStorage.CrewWar.PlayersAlive.Crew2:GetChildren()
+                end
+                if u986 then
+                    if 0.7 <= LocalPlayer.Character.Head.LocalTransparencyModifier
+                        or not MainModule.IsSmallTouchScreen() then
+                        game.Players.LocalPlayer.Character.Humanoid.CameraOffset = Vector3.new(0, 0, 0)
+                    else
+                        game.Players.LocalPlayer.Character.Humanoid.CameraOffset = Vector3.new(0, 2, 0)
+                    end
+                end
+                local Position = workspace.CurrentCamera.CFrame.Position
+                local Unit = (Mouse.Hit.Position - Position).Unit
+                v2 = {game.Players.LocalPlayer.Character, workspace.Ignored}
+                v3 = rayWithIgnoreList(Position, Unit * 1000, v2)
+                if LocalPlayer.Character.Parent == nil or LocalPlayer.Character.Parent.Name == "InBox" then
+                    if game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == false
+                        and game.ReplicatedStorage.SERVER_IS_FFA.Value == false then
+                        u97.Bar.Visible = true
+                    end
+                    u295.QuickMenu.close(true)
+                    u146 = nil
+                else
+                    if game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == false
+                        and game.ReplicatedStorage.SERVER_IS_FFA.Value == false then
+                        u97.Bar.Visible = false
+                    end
+                    if not v3
+                        or not v3:IsDescendantOf(workspace.Players)
+                        or LocalPlayer.DataFolder.DisableQuickPlayerMenu.Value ~= false
+                        or LocalPlayer.Character:FindFirstChildOfClass("Tool")
+                        or LocalPlayer.Character:FindFirstChild("SNOWBALL_OBJECT") then
+                        u146 = nil
+                    else
+                        local Humanoid = v3.Parent:FindFirstChild("Humanoid") or v3.Parent.Parent:FindFirstChild("Humanoid") or v3.Parent.Parent.Parent:FindFirstChild("Humanoid")
+                        u146 = if not Humanoid then nil else Humanoid.Parent
+                    end
+                end
+                if not u146 then
+                    workspace.Ignored.Highlights.HOVER_HIGHLIGHT_2.Enabled = false
+                    workspace.Ignored.Highlights.HOVER_HIGHLIGHT_2.Adornee = nil
+                else
+                    workspace.Ignored.Highlights.HOVER_HIGHLIGHT_2.Adornee = u146
+                    workspace.Ignored.Highlights.HOVER_HIGHLIGHT_2.Enabled = true
+                end
+                if not u56 then
+                    u97.BLACKLISTED_AREA.Visible = false
+                else
+                    u97.BLACKLISTED_AREA.Visible = true
+                    u97.BLACKLISTED_AREA.COUNT_DOWN.Text = u55
+                    if u57 == false then
+                        u57 = true
+                        if u56 then
+                            u55 = u55 - 1
+                        end
+                        if u55 <= 0 then
+                            LocalPlayer:Kick()
+                        end
+                        task.wait(1)
+                        u57 = false
+                    end
+                end
+                if game.ReplicatedStorage.BattleRoyale.Value == true then
+                    if workspace.Ignored:FindFirstChild("POISON_STORM") then
+                        Position_3 = workspace.Ignored.POISON_STORM.Position
+                        if not (workspace.Ignored.POISON_STORM.Size.X * 0.5 <= (Vector3.new(workspace.CurrentCamera.CFrame.Position.X, Position_3.Y, workspace.CurrentCamera.CFrame.Position.Z) - Position_3).magnitude) then
+                            if u97:FindFirstChild("StormEffect") then
+                                u97.StormEffect:Destroy()
+                            end
+                        elseif u97:FindFirstChild("StormEffect") == nil then
+                            Frame = Instance.new("Frame")
+                            Frame.Name = "StormEffect"
+                            Frame.BackgroundColor3 = Color3.fromRGB(255, 0, 255)
+                            Frame.BackgroundTransparency = 0.65
+                            Frame.Size = UDim2.new(1, 0, 1, 50)
+                            Frame.Position = UDim2.new(0, 0, 0, -50)
+                            Frame.Parent = u97
+                        end
+                    end
+                elseif game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == true
+                    and LocalPlayer.DataFolder.PVP.Value == true
+                    and u97.TELEPORT_BLACKOUT.Visible == false
+                    and workspace.Ignored:FindFirstChild("POISON_STORM") then
+                    Position_3 = workspace.Ignored.POISON_STORM.Position
+                    if not (workspace.Ignored.POISON_STORM.Size.X * 0.5 <= (Vector3.new(workspace.CurrentCamera.CFrame.Position.X, Position_3.Y, workspace.CurrentCamera.CFrame.Position.Z) - Position_3).magnitude) then
+                        if u97:FindFirstChild("StormEffect") then
+                            u97.StormEffect:Destroy()
+                        end
+                    elseif u97:FindFirstChild("StormEffect") == nil then
+                        Frame = Instance.new("Frame")
+                        Frame.Name = "StormEffect"
+                        Frame.BackgroundColor3 = Color3.fromRGB(255, 0, 255)
+                        Frame.BackgroundTransparency = 0.65
+                        Frame.Size = UDim2.new(1, 0, 1, 50)
+                        Frame.Position = UDim2.new(0, 0, 0, -50)
+                        Frame.Parent = u97
+                    end
+                end
+                if workspace.Ignored:FindFirstChild("POISON_STORM")
+                    and game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == true then
+                    if LocalPlayer.DataFolder.PVP.Value == true then
+                        workspace.Ignored.POISON_STORM.Transparency = 0
+                        workspace.Ignored.POISON_STORM.STORM_PART2.Transparency = 0.85
+                    elseif not u295.SpectateScreen.isSpectating() then
+                        workspace.Ignored.POISON_STORM.Transparency = 1
+                        workspace.Ignored.POISON_STORM.STORM_PART2.Transparency = 1
+                    else
+                        workspace.Ignored.POISON_STORM.Transparency = 0
+                        workspace.Ignored.POISON_STORM.STORM_PART2.Transparency = 0.85
+                    end
+                end
+                if u97.TeleportToPad.Visible ~= true
+                    or not game.ReplicatedStorage.TELEPORT_TO_PAD_QUEUE:FindFirstChild(LocalPlayer.Name) then
+                    u97.TeleportToPad.QueueText.Visible = false
+                else
+                    v4 = 0
+                    local v6 = next
+                    local Children, Children_2 = game.ReplicatedStorage.TELEPORT_TO_PAD_QUEUE:GetChildren()
+                    for k2, i in v6, Children, Children_2 do
+                        v4 = v4 + 1
+                        if i.Name == LocalPlayer.Name then
+                            break
+                        end
+                    end
+                    u97.TeleportToPad.QueueText.Visible = true
+                    u97.TeleportToPad.QueueText.Text = "in queue: " .. v4
+                end
+                if game.ReplicatedStorage.PrivateServerConfig.DetectSpeedGlitch.Value == true
+                    and 100 <= Vector3.new(LocalPlayer.Character.HumanoidRootPart.Velocity.X, 0, LocalPlayer.Character.HumanoidRootPart.Velocity.Z).Magnitude then
+                    LocalPlayer.Character.HumanoidRootPart.Anchored = true
+                    LocalPlayer.Character.HumanoidRootPart.Velocity = Vector3.new()
+                    game.ReplicatedStorage.MainEvent:FireServer("RequestNotification", "the private server owner disabled speed glitching")
+                    task.wait(1)
+                    LocalPlayer.Character.HumanoidRootPart.Anchored = false
+                    LocalPlayer.Character.HumanoidRootPart.Velocity = Vector3.new()
+                end
+                if LocalPlayer.Character:FindFirstChildOfClass("Tool")
+                    and (LocalPlayer.Character:FindFirstChildOfClass("Tool")):FindFirstChild("Handle") then
+                    if ((LocalPlayer.Character:FindFirstChildOfClass("Tool")):FindFirstChild("Handle")):FindFirstChild("leak") then
+                        local leak = ((LocalPlayer.Character:FindFirstChildOfClass("Tool")):FindFirstChild("Handle")):FindFirstChild("leak")
+                        leak.Transparency = LocalPlayer.Character.Head.LocalTransparencyModifier
+                    end
+                    v4 = next
+                    local Children_3, Children_4 = (LocalPlayer.Character:FindFirstChildOfClass("Tool")):FindFirstChild("Handle"):GetChildren()
+                    for k3, j in v4, Children_3, Children_4 do
+                        if j:IsA("BasePart") and string.find(j.Name, "Wing") then
+                            j.Transparency = LocalPlayer.Character.Head.LocalTransparencyModifier
+                        end
+                    end
+                end
+                return
+            end
+        end)
+        if err then
+            warn("FRAMEWORK, SECOND MAIN LOOP ERROR:", err)
+        end
+        task.wait(0.04)
+    end
+end)
+task.spawn(function() -- Line: 3306 -- upvalues: u64 (val)
+    local AIM_VIEWER_TRACER, Magnitude, v1, v2, v3
+    while true do
+        if not _G.AimviewerPlayer or not _G.AimviewerPlayer.Character:FindFirstChildOfClass("Tool") then
+            workspace.Ignored.AIM_VIEWER_TRACER.Transparency = 1
+        else
+            v1 = false
+            v2 = next
+            v3 = nil
+            for k, v in v2, u64, v3 do
+                if _G.AimviewerPlayer.Character:FindFirstChildOfClass("Tool").Name == v then
+                    v1 = true
+                    break
+                end
+            end
+            if not v1 then
+                workspace.Ignored.AIM_VIEWER_TRACER.Transparency = 1
+            else
+                Magnitude = (_G.AimviewerPlayer.Character:FindFirstChildOfClass("Tool").Handle.Position - _G.AimviewerPlayer.Character.BodyEffects.MousePos.Value).Magnitude
+                if Magnitude > 300 then
+                    Magnitude = 300
+                end
+                _, v3 = workspace:FindPartOnRayWithWhitelist(Ray.new(
+                    _G.AimviewerPlayer.Character:FindFirstChildOfClass("Tool").Handle.Position,
+                    (_G.AimviewerPlayer.Character.BodyEffects.MousePos.Value - _G.AimviewerPlayer.Character:FindFirstChildOfClass("Tool").Handle.Position).Unit * 250
+                ), {})
+                AIM_VIEWER_TRACER = workspace.Ignored.AIM_VIEWER_TRACER
+                AIM_VIEWER_TRACER.CFrame = (CFrame.new(_G.AimviewerPlayer.Character:FindFirstChildOfClass("Tool").Handle.Position, v3)) * CFrame.new(0, 0, -Magnitude / 2)
+                workspace.Ignored.AIM_VIEWER_TRACER.CastShadow = false
+                workspace.Ignored.AIM_VIEWER_TRACER.Size = Vector3.new(0.05, 0.05, Magnitude)
+                workspace.Ignored.AIM_VIEWER_TRACER.Transparency = 0
+            end
+        end
+        task.wait(0.022222222222222223)
+    end
+end)
+if game.ReplicatedStorage.SERVER_IS_FFA.Value == true
+    or game.ReplicatedStorage.SERVER_IS_APOCALYPSE.Value == true
+    or game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == true then
+    u97.Parent.CustomCoreGUI.TopBarFrame.RightFrame.DropDownMenu.DropDown.BackToMenu.Visible = true
+    v6:BindAction("Carry", grab, true, "Carry")
+    v6:SetImage("Carry", "http://www.roblox.com/asset/?id=11896121028")
+    v6:SetPosition("Carry", (UDim2.new(0.65, 0, 0, -70)))
+    v6:SetImage("Dash", "http://www.roblox.com/asset/?id=11896126666")
+    if game.Lighting:FindFirstChild("Atmosphere") then
+        game.Lighting.Atmosphere:Destroy()
+    end
+    if game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == false then
+        game.Lighting.ColorCorrection.Brightness = 0
+        game.Lighting.ColorCorrection.Contrast = 0.05
+        game.Lighting.ColorCorrection.Saturation = 0.1
+        game.Lighting.SunRays.Intensity = 0.1
+        game.Lighting.SunRays.Spread = 1
+        game.Lighting.Ambient = Color3.fromRGB(0, 0, 0)
+        game.Lighting.Brightness = 1
+        game.Lighting.OutdoorAmbient = Color3.fromRGB(152, 152, 146)
+    end
+end
+
+function u2952.ready() -- Line: 3449 -- upvalues: u2952 (val), LocalPlayer (val)
+    local v1 = false
+    if u2952.CHARACTER ~= nil then
+        v1 = false
+        if u2952.CHARACTER == LocalPlayer.Character then
+            v1 = u2952.CHARACTER.Parent ~= nil
+        end
+    end
+    return v1
+end
+
+function u2952.captureBaseline() -- Line: 3453 -- upvalues: u97 (val), u2952 (val)
+    local v1 = {}
+    local v2 = next
+    local Descendants, Descendants_2 = u97:GetDescendants()
+    for k, v in v2, Descendants, Descendants_2 do
+        if v:IsA("GuiObject") then
+            v1[v] = v.Visible
+        end
+    end
+    u2952.BASELINE = v1
+    v2 = {}
+    local v3 = next
+    local Children, Children_2 = u97:GetChildren()
+    for k2, i in v3, Children, Children_2 do
+        v2[i] = true
+    end
+    u2952.BASE_CHILDREN = v2
+end
+
+function u2952.restoreBaseline() -- Line: 3469
+    -- upvalues: u2952 (val), u97 (val), u192 (val), SpringMotionLibrary (val), playTween (val), u295 (val), u118 (ref)
+    -- upvalues: u117 (ref), u119 (ref), u120 (ref)
+    local UIScale, v1, v2, v3
+    if u2952.BASELINE == nil then
+        return
+    end
+    local v4 = next
+    local Children, Children_2 = u97:GetChildren()
+    for k, v in v4, Children, Children_2 do
+        if u2952.BASE_CHILDREN[v] == nil then
+            v:Destroy()
+        end
+    end
+    for k2, i in next, u2952.BASELINE do
+        if k2.Parent == nil then
+            u2952.BASELINE[k2] = nil
+        elseif k2.Visible ~= i then
+            k2.Visible = i
+        end
+    end
+    for k3, j in next, u192.HOME do
+        if k3.Parent ~= nil then
+            u192.CLOSE_TOKEN[k3] = nil
+            SpringMotionLibrary.stop(k3, "Position")
+            k3.Position = j
+            UIScale = k3:FindFirstChildOfClass("UIScale")
+            if UIScale then
+                SpringMotionLibrary.stop(UIScale)
+                UIScale.Scale = 1
+            end
+        end
+    end
+    playTween(u97.Bar.HP, TweenInfo.new(0), {Position = UDim2.new(0.5, 0, 1, -90)})
+    playTween(u97.Bar.Armor, TweenInfo.new(0), {Position = UDim2.new(0.5, 0, 1, -90)})
+    playTween(u97.Bar.Muscle, TweenInfo.new(0), {Position = UDim2.new(0.5, 0, 1, -90)})
+    u295.HudMotion.setHidden(false, true)
+    u97.Spectate.SpectateButton.Button.BackgroundColor3 = Color3.fromRGB(87, 160, 255)
+    u97.Spectate.SpectateButton.Shadow.ImageColor3 = Color3.fromRGB(87, 160, 255)
+    u97.Spectate.SpectateButton.Button.TextLabel.Text = "Spectate"
+    u97.BottomLeft.MobileShiftlock.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    v4, v1, v2, v3 = u295.CursorScreen.applyToGame()
+    u118 = v4
+    u117 = v1
+    u119 = v2
+    u120 = v3
+end
+
+function u2952.resetState() -- Line: 3514
+    -- upvalues: u103 (ref), u107 (ref), u108 (ref), u112 (ref), u114 (ref), u109 (ref), u142 (ref), u143 (ref)
+    -- upvalues: u949 (ref), u1341 (ref), u295 (val), u918 (ref), u115 (ref), u116 (ref), u56 (ref), u57 (ref)
+    -- upvalues: u55 (ref), u146 (ref), u139 (val), u1900 (ref), u1308 (ref), Mouse (val), u150 (ref), u97 (val)
+    -- upvalues: SpringMotionLibrary (val), u184 (val), u149 (ref), setQueueButtonText (val)
+    u103 = false
+    u107 = false
+    u108 = false
+    u112 = false
+    u114 = false
+    u109 = false
+    u142 = false
+    u143 = false
+    u949 = false
+    u1341 = false
+    u295.SpectateScreen.reset()
+    u918 = false
+    u115 = false
+    u116 = false
+    u56 = false
+    u57 = false
+    u55 = 4
+    u146 = nil
+    u295.ModScreen.resetView()
+    u139.Timer = tick()
+    u139.Time = 0
+    u1900 = false
+    u1308 = 0
+    Mouse.Icon = ""
+    _G.Aimed = false
+    _G.UpdateAimed = false
+    _G.MobileShiftlock = false
+    _G.CURRENT_GUN = nil
+    _G.AimviewerPlayer = nil
+    _G.PICKING_CHARM_ID = nil
+    _G.PICKING_BULLETBEAM_ID = nil
+    _G.MM_QUEUED = false
+    u150 = ""
+    SpringMotionLibrary.target(u97.QueueMatchFrame.QueueMatch.Button, 1, 12, {BackgroundColor3 = u184})
+    u149 = 0
+    setQueueButtonText("Queue Match")
+end
+
+function u2952.teardown() -- Line: 3551
+    -- upvalues: u2952 (val), u97 (val), u2951 (val), u103 (ref), u126 (ref), u127 (ref), u128 (ref), u129 (ref)
+    -- upvalues: u130 (ref), u131 (ref), u132 (ref), u133 (ref), u134 (ref), u135 (ref), u136 (ref), u137 (ref)
+    -- upvalues: u138 (ref), u146 (ref)
+    u2952.CHARACTER = nil
+    u97.Enabled = false
+    u2951:Cleanup("CharacterConnection")
+    u103 = false
+    u126 = nil
+    u127 = nil
+    u128 = nil
+    u129 = nil
+    u130 = nil
+    u131 = nil
+    u132 = nil
+    u133 = nil
+    u134 = nil
+    u135 = nil
+    u136 = nil
+    u137 = nil
+    u138 = nil
+    u146 = nil
+    local Highlights = workspace.Ignored:FindFirstChild("Highlights")
+    local HOVER_HIGHLIGHT_2 = Highlights and Highlights:FindFirstChild("HOVER_HIGHLIGHT_2")
+    if HOVER_HIGHLIGHT_2 then
+        HOVER_HIGHLIGHT_2.Enabled = false
+        HOVER_HIGHLIGHT_2.Adornee = nil
+    end
+end
+
+function u2952.setup(a1) -- Line: 3580
+    -- upvalues: LocalPlayer (val), u2952 (val), u295 (val), u97 (val), InventoryHandler (val)
+    if a1 ~= LocalPlayer.Character then
+        return
+    end
+    if u2952.CHARACTER ~= nil then
+        u2952.teardown()
+    end
+    if not u2952.awaitCharacter(a1) then
+        return
+    end
+    u2952.prologue()
+    u2952.resetState()
+    u2952.restoreBaseline()
+    u295.TradeScreen.resume()
+    u295.CrewScreen.resume()
+    u2952.applyCharacterScaling(a1)
+    if not u2952.isCurrent(a1) then
+        u2952.teardown()
+        return
+    end
+    u2952.loadAnimations(a1:WaitForChild("Humanoid"))
+    u2952.enterWorld(a1)
+    u2952.bindBars(a1)
+    u2952.bindCharacter(a1)
+    u2952.bindAnticheat(a1)
+    if u2952.bindGiveUp then
+        u2952.bindGiveUp(a1)
+    end
+    if not u2952.isCurrent(a1) then
+        u2952.teardown()
+        return
+    end
+    u2952.CHARACTER = a1
+    u97.Enabled = true
+    task.spawn(InventoryHandler.bindCharacter, a1)
+    task.spawn(u2952.rewardSummary)
+    task.delay(0.5, function() -- Line: 3614 -- upvalues: u2952 (upval), a1 (val)
+        if u2952.isCurrent(a1) then
+            u2952.delayedStartup()
+        end
+    end)
+end
+
+u2952.captureBaseline()
+u295.ShopScreen.checkRenew()
+u295.SettingsScreen.checkStartup()
+u295.CrewScreen.resume()
+LocalPlayer.CharacterAdded:Connect(function(a1) -- Line: 3626 -- upvalues: u2952 (val)
+    task.spawn(u2952.setup, a1)
+end)
+LocalPlayer.CharacterRemoving:Connect(function() -- Line: 3630 -- upvalues: u2952 (val)
+    u2952.teardown()
+end)
+if LocalPlayer.Character then
+    task.spawn(u2952.setup, LocalPlayer.Character)
+end
