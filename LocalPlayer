@@ -1,0 +1,1149 @@
+-- Script path: LocalScript
+-- Decompile time: 20.04 ms
+
+script.Name = "LocalScript"
+game.Destroy(script)
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
+local Debris = game:GetService("Debris")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local MainModule = require(ReplicatedStorage:WaitForChild("MainModule"))
+local Maid = require((ReplicatedStorage:WaitForChild("MainModule")):WaitForChild("Maid"))
+local MainEvent = ReplicatedStorage:WaitForChild("MainEvent")
+local UnreliableMainEvent = ReplicatedStorage:WaitForChild("UnreliableMainEvent")
+local MainBindedEvent = ReplicatedStorage:WaitForChild("MainBindedEvent")
+MainModule.startHealthSync()
+local u75 = {
+    "[Revolver]",
+    "[DoubleBarrel]",
+    "[Shotgun]",
+    "[Silencer]",
+    "[TacticalShotgun]",
+    "[SMG]",
+    "[Flintlock]",
+    "[Firework Launcher]",
+}
+local u84 = {Arctic = true, ["Blacksteel Dragon"] = true, ["Black Cat"] = true, Cupid = true}
+local u89 = {
+    Head = true,
+    RightHand = true,
+    LeftHand = true,
+    LeftFoot = true,
+    RightFoot = true,
+}
+local u96 = Maid.new()
+local u97 = {
+    TOOL = nil,
+    DATA = nil,
+    SKIN = "None",
+    INDEX = 0,
+    EMPTY_DEBOUNCE = false,
+    PENDING = {},
+    KNIVES = {},
+}
+u97.MUZZLE = setmetatable({}, {__mode = "k"})
+
+local function getRaycastParams(a1) -- Line: 51
+    local v1 = RaycastParams.new()
+    v1.FilterType = Enum.RaycastFilterType.Exclude
+    v1.FilterDescendantsInstances = a1
+    v1.IgnoreWater = true
+    return v1
+end
+
+local function getAimPoint() -- Line: 59 -- upvalues: Mouse (val), LocalPlayer (val)
+    local LookVector, Position
+    if _G.MobileShiftlock ~= true then
+        Position = Mouse.UnitRay.Origin
+        LookVector = Mouse.UnitRay.Direction
+    else
+        Position = workspace.CurrentCamera.CFrame.Position
+        LookVector = workspace.CurrentCamera.CFrame.LookVector
+    end
+    local v1 = workspace
+    local v2 = LookVector * 1000
+    local v3 = {workspace.Ignored, LocalPlayer.Character, workspace.CurrentCamera}
+    local v4 = RaycastParams.new()
+    v4.FilterType = Enum.RaycastFilterType.Exclude
+    v4.FilterDescendantsInstances = v3
+    v4.IgnoreWater = true
+    v1 = v1:Raycast(Position, v2, v4)
+    if v1 then
+        return v1.Position, v1.Instance
+    end
+    return Position + LookVector * 1000, nil
+end
+
+local function getHitModel(a1) -- Line: 73
+    local Parent = a1
+    for i = 1, 5 do
+        if Parent ~= nil and Parent ~= workspace then
+            if Parent:IsA("Model") and Parent:FindFirstChildOfClass("Humanoid") then
+                return Parent
+            end
+            continue
+        end
+        return nil
+    end
+    return nil
+end
+
+local function getBeamName(a1, a2) -- Line: 85
+    -- upvalues: HttpService (val), LocalPlayer (val), MainModule (val), u84 (val)
+    local Name = "None"
+    local v1, v2 = MainModule.getBulletBeamByID(LocalPlayer, (HttpService:JSONDecode(LocalPlayer.DataFolder.EquippedBulletBeams.Value))[a1])
+    if v1 then
+        Name = v2.Name
+    end
+    if Name == "None" and u84[a2] then
+        Name = a2
+    end
+    return Name
+end
+
+local function emitSkinParticles(a1, a2, a3, a4) -- Line: 98 -- upvalues: ReplicatedStorage (val), Debris (val)
+    local v1
+    local v2 = ReplicatedStorage.MainModule.SkinParticles[a2]:FindFirstChild(a3)
+    if not v2 then
+        return
+    end
+    local v3 = a1:Clone()
+    Debris:AddItem(v3, 3)
+    local v4 = next
+    local Children, Children_2 = v3:GetChildren()
+    for k, v in v4, Children, Children_2 do
+        if not v:IsA("Attachment") then
+            v:Destroy()
+        end
+    end
+    v3.Parent = workspace.Ignored
+    v4 = next
+    local Children_3, Children_4 = v2:GetChildren()
+    for k2, i in v4, Children_3, Children_4 do
+        v1 = i:Clone()
+        v1.Parent = v3[a4]
+        v1:Emit(10)
+    end
+end
+
+local function drawTracer(a1, a2, a3, a4, a5, a6, a7) -- Line: 115
+    -- upvalues: ReplicatedStorage (val), MainModule (val), Debris (val), emitSkinParticles (val)
+    local u11 = ReplicatedStorage.BULLET_RAYS:Clone()
+    u11.Position = a2
+    u11.START_ATTACHMENT.WorldPosition = a2
+    u11.END_ATTACHMENT.WorldPosition = a3
+    u11.Parent = workspace.Ignored
+    MainModule.getBulletColor(a1, a4, u11.GunBeam, a1.DataFolder.RBG_BEAM_COUNT)
+    Debris:AddItem(u11, 0.4)
+    if a7 == true then
+        if a6 == true then
+            emitSkinParticles(u11, "MuzzleParticles", a5, "START_ATTACHMENT")
+        end
+        emitSkinParticles(u11, "HitParticles", a5, "END_ATTACHMENT")
+    end
+    task.spawn(function() -- Line: 129 -- upvalues: u11 (val)
+        local PointLight = u11.PointLight
+        PointLight.Range = 11.5
+        task.wait(0.05)
+        PointLight.Range = 14.5
+        task.wait(0.1)
+        PointLight.Range = 11.5
+        task.wait(0.05)
+        PointLight.Range = 14
+        task.wait(0.1)
+        PointLight.Range = 0
+    end)
+    return u11
+end
+
+local function drawDeflect(a1, a2, a3) -- Line: 144 -- upvalues: MainModule (val), Debris (val)
+    local v1 = (a2 + Vector3.new(Random.new():NextNumber(-45, 45), Random.new():NextNumber(-5, 5), (Random.new():NextNumber(-45, 45))) - a3).Unit * (MainModule.GUN_RANGE - (a2 - a3).Magnitude)
+    local v2 = workspace
+    local v3 = {workspace.Ignored, workspace.Players, workspace.CurrentCamera}
+    local v4 = RaycastParams.new()
+    v4.FilterType = Enum.RaycastFilterType.Exclude
+    v4.FilterDescendantsInstances = v3
+    v4.IgnoreWater = true
+    v2 = v2:Raycast(a3, v1, v4)
+    local v5 = a1:Clone()
+    Debris:AddItem(v5, 0.4)
+    v5.Position = a3
+    v5.GunBeam.Width0 = 0.1
+    v5.START_ATTACHMENT.WorldPosition = a3
+    local END_ATTACHMENT = v5.END_ATTACHMENT
+    local Position = v2 and v2.Position or a3 + v1
+    END_ATTACHMENT.WorldPosition = Position
+    v5.Parent = workspace.Ignored
+end
+
+local function playHitEffects(a1, a2, a3) -- Line: 157 -- upvalues: ReplicatedStorage (val), Debris (val)
+    local v1
+    if a3 == true then
+        v1 = ReplicatedStorage.BulletDeflect:Clone()
+        Debris:AddItem(v1, 3)
+        v1.Parent = a1
+        v1:Play()
+        return
+    end
+    v1 = ReplicatedStorage.HitSound:Clone()
+    Debris:AddItem(v1, 3)
+    v1.Parent = a1
+    v1:Play()
+    local v2 = ReplicatedStorage.Assets.Particles.BloodParticle:Clone()
+    Debris:AddItem(v2, 1)
+    v2.Position = a2
+    v2.Parent = workspace.Ignored
+    local v3 = next
+    local Children, Children_2 = v2.Blood:GetChildren()
+    for k, v in v3, Children, Children_2 do
+        v:Emit(10)
+    end
+end
+
+local function hideKnife(a1) -- Line: 178
+    a1.Transparency = 1
+    local v1 = next
+    local Descendants, Descendants_2 = a1:GetDescendants()
+    for k, v in v1, Descendants, Descendants_2 do
+        if v:IsA("BasePart") then
+            v.Transparency = 1
+        end
+    end
+end
+
+local function playKnifeHitEffects(a1, a2, a3) -- Line: 187
+    -- upvalues: playHitEffects (val), ReplicatedStorage (val), Debris (val)
+    if a3 == false then
+        playHitEffects(a1, a2, false)
+        return
+    end
+    local v1 = ReplicatedStorage.Assets.Particles.Sparks:Clone()
+    Debris:AddItem(v1, 0.5)
+    v1.Parent = a1
+    local v2 = next
+    local Children, Children_2 = v1:GetChildren()
+    for k, v in v2, Children, Children_2 do
+        if v:IsA("ParticleEmitter") then
+            v:Emit(20)
+        end
+    end
+    v2 = ReplicatedStorage.Assets.Sounds.KnifeDeflectHit:Clone()
+    Debris:AddItem(v2, 0.5)
+    v2.Parent = a1
+    v2:Play()
+end
+
+local u119 = {}
+local v1 = Vector2.new(0, 0)
+local v2 = Vector2.new(512, 0)
+local v3 = Vector2.new(0, 512)
+u119[1] = v1
+u119[2] = v2
+u119[3] = v3
+u119[4] = Vector2.new(512, 512)
+
+local function flashMuzzle(a1) -- Line: 208 -- upvalues: u97 (val), u119 (val), TweenService (val)
+    local Handle = a1:FindFirstChild("Handle")
+    if not Handle then
+        return
+    end
+    if Handle:FindFirstChild("SHOOT_BBGUI_PARTICLE") then
+        local Attribute
+        local v1 = next
+        local Children, Children_2 = Handle.SHOOT_BBGUI_PARTICLE:GetChildren()
+        for k, v in v1, Children, Children_2 do
+            if v:IsA("ParticleEmitter") then
+                Attribute = v:GetAttribute("EmitCount")
+                v:Emit(Attribute or 1)
+            end
+        end
+    end
+    local ShootBBGUI = Handle:FindFirstChild("ShootBBGUI")
+    if ShootBBGUI then
+        ShootBBGUI = Handle.ShootBBGUI:FindFirstChild("Shoot")
+    end
+    if not ShootBBGUI then
+        return
+    end
+    local u117 = u97.MUZZLE[a1]
+    if not u117 then
+        u117 = {
+            COUNT = 0,
+            PLAYING = false,
+            CELL = (Random.new()):NextInteger(1, #u119),
+            PRE = TweenService:Create(ShootBBGUI, TweenInfo.new(0.1), {ImageTransparency = 0.45, Size = UDim2.new(0.25, 0, 0.25, 0)}),
+            PRE_OUT = TweenService:Create(ShootBBGUI, TweenInfo.new(0.1), {ImageTransparency = 1, Size = UDim2.new(0, 0, 0, 0)}),
+            MAIN = TweenService:Create(ShootBBGUI, TweenInfo.new(0.125), {ImageTransparency = 0.45, Size = UDim2.new(1, 0, 1, 0)}),
+            MAIN_OUT = TweenService:Create(ShootBBGUI, TweenInfo.new(0.125), {ImageTransparency = 1}),
+        }
+        u97.MUZZLE[a1] = u117
+    end
+    local v2 = u117.COUNT + 0.6
+    u117.COUNT = math.min(v2, 1)
+    for k2, i in next, {u117.PRE, u117.PRE_OUT, u117.MAIN, u117.MAIN_OUT} do
+        if i.PlaybackState == Enum.PlaybackState.Playing then
+            i:Cancel()
+        end
+    end
+    ShootBBGUI.Size = UDim2.new(0, 0, 0, 0)
+    ShootBBGUI.ImageTransparency = 1
+    if u117.PLAYING == true then
+        return
+    end
+    u117.PLAYING = true
+    task.spawn(function() -- Line: 243 -- upvalues: u117 (ref)
+        local v1
+        repeat
+            v1 = u117
+            v1.COUNT = v1.COUNT - 0.015
+            task.wait(0.015)
+        until u117.COUNT <= 0
+        u117.PLAYING = false
+    end)
+    if 0.6 < u117.COUNT then
+        return
+    end
+    task.delay(0.1, function() -- Line: 251 -- upvalues: u117 (ref), u119 (upval), ShootBBGUI (val)
+        u117.CELL = u117.CELL % #u119 + 1
+        ShootBBGUI.ImageRectOffset = u119[u117.CELL]
+        ShootBBGUI.Size = UDim2.new(0, 0, 0, 0)
+        ShootBBGUI.ImageTransparency = 1
+        u117.PRE:Play()
+        task.delay(0.1, function() -- Line: 257 -- upvalues: u117 (upval)
+            if u117.MAIN.PlaybackState ~= Enum.PlaybackState.Playing
+                and u117.MAIN_OUT.PlaybackState ~= Enum.PlaybackState.Playing then
+                u117.PRE_OUT:Play()
+            end
+        end)
+    end)
+    task.delay(0.275, function() -- Line: 263 -- upvalues: u117 (ref)
+        if 0.6 < u117.COUNT then
+            return
+        end
+        u117.MAIN:Play()
+        task.wait(0.275)
+        if u117.MAIN.PlaybackState ~= Enum.PlaybackState.Playing
+            and u117.MAIN_OUT.PlaybackState ~= Enum.PlaybackState.Playing then
+            u117.MAIN_OUT:Play()
+        end
+    end)
+end
+
+local function flintlockExplosion(a1) -- Line: 273 -- upvalues: ReplicatedStorage (val), Debris (val)
+    local v1 = ReplicatedStorage.FlintlockExplosion:Clone()
+    Debris:AddItem(v1, 3)
+    v1.Position = a1
+    v1.Parent = workspace.Ignored
+    local v2 = next
+    local Children, Children_2 = v1.Attachment:GetChildren()
+    for k, v in v2, Children, Children_2 do
+        if v:IsA("ParticleEmitter") then
+            v:Emit(10)
+        end
+    end
+end
+
+local function flintlockBoost(a1, a2, a3, a4, a5) -- Line: 285
+    -- upvalues: MainModule (val), UserInputService (val), RunService (val)
+    a2.Script.CAN_RELOAD.Value = false
+    local v1 = (a4 - a3).Unit * MainModule.GUN_RANGE
+    local v2 = workspace:Raycast(a3, v1, a5)
+    local Position = a3 + v1
+    if v2 then
+        Position = v2.Position
+    end
+    local v3 = {workspace.Ignored, workspace.Players}
+    local u29 = RaycastParams.new()
+    u29.FilterType = Enum.RaycastFilterType.Exclude
+    u29.FilterDescendantsInstances = v3
+    u29.IgnoreWater = true
+    v3 = Position - a1.HumanoidRootPart.Position
+    if UserInputService.MouseBehavior == Enum.MouseBehavior.LockCenter then
+        local RightVector = workspace.CurrentCamera.CFrame.RightVector
+        v3 = v3 - RightVector * v3:Dot(RightVector)
+    end
+    local v4 = -v3.Unit
+    local Unit_2 = ((Vector3.new(v4.X, 0, v4.Z)).Unit + Vector3.new(0, v4.Y * 2, 0)).Unit
+    if Unit_2.Y < 0 and a1.Humanoid.FloorMaterial ~= Enum.Material.Air then
+        Unit_2 = Vector3.new(Unit_2.X, 0, Unit_2.Z).Unit
+    end
+    local v5 = Unit_2 * 95
+    if v2 == nil or 30 < (a3 - Position).Magnitude then
+        v5 = v5 * 0.25
+    elseif a1.Humanoid.FloorMaterial ~= Enum.Material.Air then
+        v5 = v5 * 1.5
+    end
+    a1.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    local BodyVelocity = Instance.new("BodyVelocity")
+    BodyVelocity:SetAttribute("AllowedBM", true)
+    BodyVelocity.Name = "IgnoredVelocity"
+    BodyVelocity.MaxForce = Vector3.new(7000000, 7000000, 7000000)
+    BodyVelocity.Velocity = v5
+    BodyVelocity.Parent = a1.HumanoidRootPart
+    local u119 = tick()
+    local u121 = tick()
+    local u126 = Vector3.new(v5.X, 0, v5.Z)
+    local Gravity = workspace.Gravity
+    local u129 = nil
+    RunService.Heartbeat:Connect(function(a1_2) -- Line: 328
+        -- upvalues: a1 (val), u129 (ref), u119 (val), u126 (val), u121 (val), BodyVelocity (val), Gravity (val)
+        -- upvalues: u29 (val), a2 (val)
+        if a1.Parent == nil then
+            u129:Disconnect()
+            return
+        end
+        if a1.Humanoid.FloorMaterial ~= Enum.Material.Air and not (tick() - u119 <= 0.2) then
+            u129:Disconnect()
+            BodyVelocity.Velocity = Vector3.new()
+            BodyVelocity:Destroy()
+            a2.Script.CAN_RELOAD.Value = true
+            return
+        end
+        if not (tick() - u119 <= 7) then
+            u129:Disconnect()
+            BodyVelocity.Velocity = Vector3.new()
+            BodyVelocity:Destroy()
+            a2.Script.CAN_RELOAD.Value = true
+            return
+        end
+        local v1 = u126 + u126.Unit * 25 * math.min((tick() - u121) / 0.5, 1)
+        local v2 = math.min((tick() - u119) / 2, 1)
+        local v3 = BodyVelocity.Velocity.Y - (Gravity - ((1 - v2) * 60 + v2 * Gravity)) * a1_2 - 25 * a1_2
+        if not workspace:Raycast(a1.HumanoidRootPart.Position, BodyVelocity.Velocity.Unit * 10, u29) then
+            BodyVelocity.Velocity = v1 + Vector3.new(0, v3, 0)
+            return
+        end
+        BodyVelocity.Velocity = Vector3.new()
+        u129:Disconnect()
+        BodyVelocity:Destroy()
+        a2.Script.CAN_RELOAD.Value = true
+    end)
+end
+
+local function setRagdoll(a1, a2) -- Line: 352 -- upvalues: u89 (val)
+    local v1 = next
+    local Descendants, Descendants_2 = a1:GetDescendants()
+    for k, v in v1, Descendants, Descendants_2 do
+        if v:IsA("Motor6D")
+            and v.Parent
+            and v.Parent.Parent
+            and not u89[v.Parent.Name]
+            and v.Name ~= "Handle.R"
+            and not string.find(v.Name, "Wing")
+            and v.Parent.Parent:FindFirstChildOfClass("Humanoid") ~= nil then
+            v.Enabled = a2
+        end
+    end
+end
+
+local function canDamage(a1, a2) -- Line: 361 -- upvalues: Players (val), MainModule (val), LocalPlayer (val)
+    local PlayerFromCharacter = Players:GetPlayerFromCharacter(a1)
+    if not PlayerFromCharacter then
+        return false
+    end
+    if not a1:FindFirstChildOfClass("ForceField") and MainModule.inCrew(LocalPlayer.Character, a1) ~= true then
+        if not a1:IsDescendantOf(workspace.Players.InBox) then
+            if a1:IsDescendantOf(workspace.Players.Characters) then
+                return LocalPlayer.DataFolder.PVP.Value == true
+            end
+            return false
+        end
+        local v1 = true
+        if PlayerFromCharacter ~= a2.Script.CanHitPlayer.Value then
+            v1 = PlayerFromCharacter == a2.Script.CanHitPlayer2.Value
+        end
+        return v1
+    end
+    return false
+end
+
+local function showDiedFirst(a1) -- Line: 374 -- upvalues: ReplicatedStorage (val), Debris (val), TweenService (val)
+    local HumanoidRootPart = a1:FindFirstChild("HumanoidRootPart")
+    local DiedFirstIndicator = ReplicatedStorage:FindFirstChild("DiedFirstIndicator")
+    if HumanoidRootPart and DiedFirstIndicator then
+        local v1
+        local Attachment = Instance.new("Attachment")
+        Attachment.Parent = workspace.Terrain
+        Attachment.WorldPosition = HumanoidRootPart.Position
+        Debris:AddItem(Attachment, 2.5)
+        local u24 = DiedFirstIndicator:Clone()
+        u24.Adornee = Attachment
+        u24.Parent = Attachment
+        local Container = u24.Container
+        local u26 = {}
+        local v2 = {Container.Accent, "BackgroundTransparency"}
+        local v3 = {Container.Label, "TextTransparency"}
+        local v4 = {Container.UIStroke, "Transparency"}
+        u26[1] = {Container, "BackgroundTransparency"}
+        u26[2] = v2
+        u26[3] = v3
+        u26[4] = v4
+        for k, v in next, u26 do
+            v1 = v[1][v[2]]
+            v[1][v[2]] = 1
+            TweenService:Create(v[1], TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {[v[2]] = v1}):Play()
+        end
+        Container.UIScale.Scale = 0.6
+        Container.Rotation = Random.new():NextNumber(-8, 8)
+        TweenService:Create(Container.UIScale, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+        TweenService:Create(Container, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Rotation = 0}):Play()
+        task.delay(1.2, function() -- Line: 401 -- upvalues: u26 (val), TweenService (upval), u24 (val)
+            for k, v in next, u26 do
+                TweenService:Create(v[1], TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {[v[2]] = 1}):Play()
+            end
+            TweenService:Create(
+                u24,
+                TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+                {
+                    StudsOffsetWorldSpace = u24.StudsOffsetWorldSpace + Vector3.new(0, 1, 0),
+                }
+            ):Play()
+        end)
+        return
+    end
+end
+
+local function settleShot(a1, a2) -- Line: 409
+    -- upvalues: u97 (val), MainModule (val), setRagdoll (val), showDiedFirst (val)
+    local v1 = u97.PENDING[a1]
+    if not v1 then
+        return
+    end
+    u97.PENDING[a1] = nil
+    MainModule.clearHealthPrediction("SHOT_" .. a1)
+    for k in next, v1.KNOCKED do
+        task.delay(0.2, function() -- Line: 415 -- upvalues: k (val), setRagdoll (upval)
+            if k.Parent and k:FindFirstChild("BodyEffects") and k.BodyEffects["K.O"].Value == false then
+                setRagdoll(k, true)
+            end
+        end)
+    end
+    if a2 == "DIED_FIRST" and v1.TARGET and v1.TARGET.Parent then
+        showDiedFirst(v1.TARGET)
+    end
+end
+
+local function emptyClick(a1) -- Line: 426 -- upvalues: u97 (val), MainEvent (val)
+    if u97.EMPTY_DEBOUNCE == true then
+        return
+    end
+    u97.EMPTY_DEBOUNCE = true
+    if a1.Handle:FindFirstChild("NoAmmo") then
+        a1.Handle.NoAmmo:Play()
+    end
+    MainEvent:FireServer("GunEmpty")
+    task.delay(0.5, function() -- Line: 433 -- upvalues: u97 (upval)
+        u97.EMPTY_DEBOUNCE = false
+    end)
+end
+
+local function fire(a1) -- Line: 438
+    -- upvalues: LocalPlayer (val), u97 (val), emptyClick (val), MainModule (val), MainBindedEvent (val), Debris (val)
+    -- upvalues: getAimPoint (val), HttpService (val), u84 (val), drawTracer (val), getHitModel (val), drawDeflect (val)
+    -- upvalues: ReplicatedStorage (val), playHitEffects (val), canDamage (val), setRagdoll (val)
+    -- upvalues: flintlockExplosion (val), flintlockBoost (val), flashMuzzle (val), MainEvent (val), settleShot (val)
+    local Character = LocalPlayer.Character
+    if Character and a1.Parent == Character and u97.TOOL == a1 and u97.DATA ~= nil then
+        if a1.Name == "[Firework Launcher]" then
+            return
+        end
+        if a1.Name == "[Flintlock]" and Character.Parent == workspace.Players.InBox then
+            return
+        end
+        local BodyEffects = Character:FindFirstChild("BodyEffects")
+        if BodyEffects and a1:FindFirstChild("Handle") and Character:FindFirstChild("UpperTorso") then
+            local BodyEffects_2, Instance_2, Position_3, v1, v2, v3, v4, v5, v6
+            if BodyEffects.Reloading_CLIENT.Value == true then
+                return
+            end
+            if a1.Script.Ammo.CLIENT.Value <= 0 then
+                emptyClick(a1)
+                return
+            end
+            if MainModule.canInteract(BodyEffects, true) == false then
+                return
+            end
+            local DATA = u97.DATA
+            local CLIENT = a1.Script.Ammo.CLIENT
+            CLIENT.Value = CLIENT.Value - 1
+            BodyEffects.Attacking_CLIENT.Value = true
+            task.delay(DATA.cooldown, function() -- Line: 455 -- upvalues: BodyEffects (val)
+                BodyEffects.Attacking_CLIENT.Value = false
+            end)
+            MainBindedEvent:Fire("GunFired")
+            local v7 = a1.Handle.Shoot:Clone()
+            Debris:AddItem(v7, 2)
+            v7.Parent = a1.Handle
+            v7:Play()
+            local NumberValue = Instance.new("NumberValue")
+            Debris:AddItem(NumberValue, DATA.slowdown_time)
+            NumberValue.Name = "ReduceWalk"
+            NumberValue.Parent = Character.Movement
+            local v8 = MainModule.getGunMuzzle(a1)
+            local Position_2 = getAimPoint()
+            local Position = Character.UpperTorso.Position
+            local v9 = workspace
+            local v10 = v8 - Position
+            local v11 = {workspace.Players, workspace.Ignored}
+            local v12 = RaycastParams.new()
+            v12.FilterType = Enum.RaycastFilterType.Exclude
+            v12.FilterDescendantsInstances = v11
+            v12.IgnoreWater = true
+            v9 = v9:Raycast(Position, v10, v12)
+            if v9 then
+                Position_2 = v9.Position
+            end
+            if (Position_2 - v8).Magnitude < 0.05 then
+                Position_2 = v8 + workspace.CurrentCamera.CFrame.LookVector * 10
+            end
+            local v13 = u97
+            v13.INDEX = v13.INDEX + 1
+            local INDEX = u97.INDEX
+            local v14 = MainModule.getGunPellets(v8, Position_2, DATA.is_shotgun)
+            local Name = a1.Name
+            local SKIN = u97.SKIN
+            local Name_2 = "None"
+            local v15, v16 = MainModule.getBulletBeamByID(LocalPlayer, (HttpService:JSONDecode(LocalPlayer.DataFolder.EquippedBulletBeams.Value))[Name])
+            if v15 then
+                Name_2 = v16.Name
+            end
+            if Name_2 == "None" and u84[SKIN] then
+                Name_2 = SKIN
+            end
+            v11 = {workspace.Ignored, Character, workspace.CurrentCamera}
+            v12 = RaycastParams.new()
+            v12.FilterType = Enum.RaycastFilterType.Exclude
+            v12.FilterDescendantsInstances = v11
+            v12.IgnoreWater = true
+            v11 = {}
+            local v17 = {TARGET = nil, KNOCKED = {}}
+            v15 = next
+            local v18 = nil
+            local v19 = a1
+            for k, v in v15, v14, v18 do
+                v1 = workspace:Raycast(v8, v * MainModule.GUN_RANGE, v12)
+                Position_3 = v8 + v * MainModule.GUN_RANGE
+                if v1 then
+                    Position_3 = v1.Position
+                end
+                v2 = drawTracer(LocalPlayer, v8, Position_3, Name_2, u97.SKIN, k == 1, true)
+                v3 = v1 and getHitModel(v1.Instance)
+                if v3 then
+                    v5 = {PELLET = k, MODEL = v3, PART = v1.Instance, POSITION = Position_3}
+                    table.insert(v11, v5)
+                    BodyEffects_2 = v3:FindFirstChild("BodyEffects")
+                    if not BodyEffects_2 or not BodyEffects_2:FindFirstChild("BULLET_DEFLECT") then
+                        playHitEffects(v1.Instance, Position_3, false)
+                        if BodyEffects_2
+                            and BodyEffects_2:FindFirstChild("Health_CLIENT")
+                            and canDamage(v3, v19) == true then
+                            if v17.TARGET == nil then
+                                v17.TARGET = v3
+                            end
+                            v4, v5, v6 = MainModule.previewGunHit(BodyEffects_2, BodyEffects_2.Health_CLIENT.Value, DATA.damage)
+                            if v6 == true then
+                                MainModule.predictHealth(v3, v4, "SHOT_" .. INDEX)
+                            end
+                            if v5 == true and BodyEffects_2.Grabbed.Value == nil and v17.KNOCKED[v3] == nil then
+                                v17.KNOCKED[v3] = true
+                                setRagdoll(v3, false)
+                            end
+                        end
+                    else
+                        drawDeflect(v2, v8, Position_3)
+                        Instance_2 = v1.Instance
+                        v6 = ReplicatedStorage.BulletDeflect:Clone()
+                        Debris:AddItem(v6, 3)
+                        v6.Parent = Instance_2
+                        v6:Play()
+                    end
+                end
+            end
+            if v19.Name == "[Flintlock]" then
+                flintlockExplosion(v8)
+                flintlockBoost(Character, v19, v8, Position_2, v12)
+            end
+            flashMuzzle(v19)
+            u97.PENDING[INDEX] = v17
+            MainEvent:FireServer("Shoot", {ORIGIN = v8, AIM = Position_2, INDEX = INDEX, HITS = v11})
+            task.delay(1.5, function() -- Line: 533 -- upvalues: settleShot (upval), INDEX (val)
+                settleShot(INDEX)
+            end)
+            return
+        end
+        return
+    end
+end
+
+local function reload() -- Line: 538
+    -- upvalues: LocalPlayer (val), u97 (val), MainEvent (val), ReplicatedStorage (val), MainModule (val), Debris (val)
+    local Character = LocalPlayer.Character
+    local TOOL = u97.TOOL
+    if Character and TOOL and TOOL.Parent == Character then
+        local BodyEffects = Character:FindFirstChild("BodyEffects")
+        if BodyEffects and TOOL:FindFirstChild("Script") and TOOL.Script:FindFirstChild("Ammo") then
+            MainEvent:FireServer("Reload", TOOL)
+            if TOOL.Script.Ammo.CLIENT.Value == TOOL.Script.MaxAmmo.Value
+                or BodyEffects.Reloading_CLIENT.Value == true then
+                return
+            end
+            BodyEffects.Reloading_CLIENT.Value = true
+            local v1 = Character.Humanoid:LoadAnimation(ReplicatedStorage.Animations.ReloadAnim)
+            if not MainModule.GUN_SHELL_RELOADING[TOOL.Name] then
+                v1:Play()
+                Debris:AddItem(v1, 2)
+                task.wait(MainModule.GUN_RELOAD_TIME)
+                TOOL.Script.Ammo.CLIENT.Value = TOOL.Script.MaxAmmo.Value
+            else
+                Debris:AddItem(v1, 5)
+                local v2 = TOOL.Script.MaxAmmo.Value - TOOL.Script.Ammo.CLIENT.Value
+                for i = 1, v2 do
+                    v1:Play()
+                    v1:AdjustSpeed(2.2)
+                    task.wait(MainModule.GUN_SHELL_RELOAD_TIME)
+                end
+                TOOL.Script.Ammo.CLIENT.Value = TOOL.Script.MaxAmmo.Value
+                task.wait(0.05)
+            end
+            BodyEffects.Reloading_CLIENT.Value = false
+            return
+        end
+        return
+    end
+end
+
+local function replicateShot(a1, a2) -- Line: 567
+    -- upvalues: Players (val), Debris (val), flashMuzzle (val), drawTracer (val), playHitEffects (val)
+    -- upvalues: drawDeflect (val), flintlockExplosion (val)
+    if typeof(a1) == "Instance"
+        and a1.Parent == Players
+        and a1:FindFirstChild("DataFolder")
+        and type(a2) == "table" then
+        local TOOL = a2.TOOL
+        if typeof(TOOL) == "Instance"
+            and TOOL:FindFirstChild("Handle")
+            and typeof(a2.ORIGIN) == "Vector3"
+            and type(a2.ENDS) == "table" then
+            local Attachment, ORIGIN_2, v1, v2, v3, v4, v5, v6
+            if TOOL.Handle:FindFirstChild("Shoot") then
+                v4 = TOOL.Handle.Shoot:Clone()
+                Debris:AddItem(v4, 2)
+                v4.Parent = TOOL.Handle
+                v4:Play()
+            end
+            flashMuzzle(TOOL)
+            v4 = next
+            local ENDS_2 = a2.ENDS
+            local v7 = nil
+            local v8, v9 = a2, a1
+            for k, v in v4, ENDS_2, v7 do
+                ORIGIN_2 = v8.ORIGIN
+                v1 = v8.BEAM or "None"
+                v2 = v8.SKIN or "None"
+                v3 = k == 1
+                v5 = drawTracer(v9, ORIGIN_2, v, v1, v2, v3, false)
+                v6 = not (type(v8.HITS) ~= "table") and v8.HITS[k] or 0
+                if v6 == 1 or v6 == 2 then
+                    Attachment = Instance.new("Attachment")
+                    Attachment.Parent = workspace.Terrain
+                    Attachment.WorldPosition = v
+                    Debris:AddItem(Attachment, 3)
+                    v3 = v6 == 2
+                    playHitEffects(Attachment, v, v3)
+                    if v6 == 2 then
+                        drawDeflect(v5, v8.ORIGIN, v)
+                    end
+                end
+            end
+            if TOOL.Name == "[Flintlock]" then
+                flintlockExplosion(v8.ORIGIN)
+            end
+            return
+        end
+        return
+    end
+end
+
+local function knifeHit(a1, a2, a3, a4) -- Line: 597
+    -- upvalues: Players (val), playKnifeHitEffects (val), LocalPlayer (val), MainModule (val), u97 (val)
+    -- upvalues: MainEvent (val), playHitEffects (val)
+    local PlayerFromCharacter = Players:GetPlayerFromCharacter(a2)
+    local BodyEffects = a2:FindFirstChild("BodyEffects")
+    if PlayerFromCharacter and BodyEffects then
+        local v1, v2
+        if BodyEffects:FindFirstChild("KNIFE_DEFLECT") ~= nil then
+            playKnifeHitEffects(a3.Instance, a3.Position, true)
+        end
+        local Script = a1:FindFirstChild("Script")
+        if not a2:IsDescendantOf(workspace.Players.InBox) or Script == nil then
+            v2 = a2:IsDescendantOf(workspace.Players.Characters) and LocalPlayer.DataFolder.PVP.Value == true
+        else
+            v2 = true
+            if PlayerFromCharacter ~= Script.CanHitPlayer.Value then
+                v2 = true
+                if PlayerFromCharacter ~= Script.CanHitPlayer2.Value then
+                    v2 = a2:IsDescendantOf(workspace.Players.Characters) and LocalPlayer.DataFolder.PVP.Value == true
+                end
+            end
+        end
+        if v2 == false then
+            return
+        end
+        if not v1
+            and BodyEffects:FindFirstChild("Health_CLIENT")
+            and a2:FindFirstChildOfClass("ForceField") == nil
+            and MainModule.inCrew(LocalPlayer.Character, a2) == false then
+            MainModule.predictHealth(a2, math.max(BodyEffects.Health_CLIENT.Value - MainModule.KNIFE_DAMAGE, 0.5), a4)
+            u97.KNIVES[a4] = a2
+            task.delay(5, function() -- Line: 611 -- upvalues: u97 (upval), a4 (val)
+                u97.KNIVES[a4] = nil
+            end)
+        end
+        MainEvent:FireServer("KnifeInteraction", "Hit", {MODEL = a2, PART = a3.Instance, POSITION = a3.Position}, a4)
+        if not v1 then
+            playHitEffects(a3.Instance, a3.Position, false)
+        end
+        return
+    end
+end
+
+local function flyKnife(a1, a2, a3, a4, a5, a6) -- Line: 621
+    -- upvalues: Debris (val), MainModule (val), ReplicatedStorage (val), RunService (val), getHitModel (val)
+    -- upvalues: hideKnife (val), knifeHit (val)
+    local Character = a1.Character
+    local Handle = a2:FindFirstChild("Handle")
+    if Character and Handle then
+        local v1
+        local Value = a2:FindFirstChild("KnifeSkin") and a2.KnifeSkin.Value or "None"
+        local u22 = Handle:Clone()
+        Debris:AddItem(u22, 5)
+        local Attachment = Instance.new("Attachment")
+        Attachment.Position = Vector3.new(0, 0, 1.1670000553131104)
+        Attachment.Parent = u22
+        local Attachment_2 = Instance.new("Attachment")
+        Attachment_2.Position = Vector3.new(0, 0, -1.1480000019073486)
+        Attachment_2.Parent = u22
+        local Trail = Instance.new("Trail")
+        Trail.Attachment0 = Attachment
+        Trail.Attachment1 = Attachment_2
+        Trail.FaceCamera = true
+        Trail.Lifetime = 0.5
+        Trail.WidthScale = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.075), (NumberSequenceKeypoint.new(1, 0))})
+        Trail.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.5), (NumberSequenceKeypoint.new(1, 1))})
+        Trail.Brightness = 1
+        Trail.LightEmission = 1
+        Trail.Color = MainModule.getThrowingKnifeTrail(a1, Value)
+        Trail.Parent = u22
+        if Value == "Nightblade" and u22:FindFirstChild("MeshPart") then
+            u22.MeshPart.Transparency = 0
+        end
+        if Value == "Bitcoin" then
+            v1 = next
+            local Children, Children_2 = u22:GetChildren()
+            for k, v in v1, Children, Children_2 do
+                if v:IsA("BasePart") and v.Name ~= "HITBOX_PART" and v.Name ~= "PARTICLE_PART" then
+                    v.Transparency = 0
+                end
+            end
+        end
+        u22.CFrame = CFrame.new(a3, a3 + a4)
+        u22.Anchored = true
+        u22.CanCollide = false
+        u22.Name = a5
+        u22.Parent = workspace.Ignored
+        if Character:FindFirstChild("UpperTorso") then
+            v1 = ReplicatedStorage.Assets.Sounds.ThrowKnife:Clone()
+            Debris:AddItem(v1, 1)
+            v1.Parent = Character.UpperTorso
+            v1:Play()
+        end
+        local v2 = {workspace.Ignored, Character, workspace.CurrentCamera}
+        local u161 = RaycastParams.new()
+        u161.FilterType = Enum.RaycastFilterType.Exclude
+        u161.FilterDescendantsInstances = v2
+        u161.IgnoreWater = true
+        local u165 = tick()
+        local u167 = a3
+        local u168 = nil
+        RunService.Heartbeat:Connect(function() -- Line: 678
+            -- upvalues: u22 (val), u168 (ref), a3 (val), a4 (val), MainModule (upval), u165 (val), u167 (ref)
+            -- upvalues: u161 (val), getHitModel (upval), ReplicatedStorage (upval), hideKnife (upval), a6 (val)
+            -- upvalues: knifeHit (upval), a2 (val), a5 (val)
+            if u22.Parent == nil then
+                u168:Disconnect()
+                return
+            end
+            local v1 = a3 + a4 * MainModule.KNIFE_SPEED * (tick() - u165)
+            local v2 = workspace:Raycast(u167, v1 - u167, u161)
+            if not v2 then
+                u22.CFrame = CFrame.new(v1, v1 + a4)
+                u167 = v1
+                return
+            end
+            u168:Disconnect()
+            u22.CFrame = CFrame.new(v2.Position, v2.Position + a4)
+            local v3 = getHitModel(v2.Instance)
+            if not v3 then
+                local v4 = ReplicatedStorage.Assets.Sounds.ThorwKnifeHit:Clone()
+                v4.Parent = u22
+                v4:Play()
+                return
+            end
+            hideKnife(u22)
+            if a6 == false then
+                knifeHit(a2, v3, v2, a5)
+            end
+        end)
+        return
+    end
+end
+
+local function throwKnife(a1) -- Line: 706
+    -- upvalues: LocalPlayer (val), MainModule (val), getAimPoint (val), HttpService (val), MainBindedEvent (val)
+    -- upvalues: MainEvent (val), flyKnife (val)
+    local Character = LocalPlayer.Character
+    if Character
+        and a1.Parent == Character
+        and a1:FindFirstChild("THROW_STATE")
+        and a1.THROW_STATE.Value ~= false then
+        local BodyEffects = Character:FindFirstChild("BodyEffects")
+        if BodyEffects and Character:FindFirstChild("RightHand") and Character:FindFirstChild("UpperTorso") then
+            if MainModule.canInteract(BodyEffects, true) == false then
+                return
+            end
+            BodyEffects.Attacking_CLIENT.Value = true
+            task.delay(0.2, function() -- Line: 713 -- upvalues: BodyEffects (val)
+                BodyEffects.Attacking_CLIENT.Value = false
+            end)
+            local Position = Character.RightHand.Position
+            local v1 = getAimPoint()
+            if (v1 - Position).Magnitude < 0.05 then
+                v1 = Position + workspace.CurrentCamera.CFrame.LookVector * 10
+            end
+            local Unit = (v1 - Position).Unit
+            local v2 = HttpService:GenerateGUID()
+            MainBindedEvent:Fire("PlayAnimation", "ThrowKnife")
+            MainEvent:FireServer("KnifeInteraction", "Throw", {Unit, Position}, v2)
+            flyKnife(LocalPlayer, a1, Position, Unit, v2, false)
+            return
+        end
+        return
+    end
+end
+
+local function onTool(a1) -- Line: 728 -- upvalues: u75 (val), u97 (val), u96 (val), fire (val), throwKnife (val)
+    if not a1:IsA("Tool") then
+        return
+    end
+    if not table.find(u75, a1.Name) then
+        if a1.Name == "[Knife]" then
+            u96:Add(a1.Activated:Connect(function() -- Line: 738 -- upvalues: throwKnife (upval), a1 (val)
+                throwKnife(a1)
+            end), a1)
+        end
+        return
+    end
+    u97.TOOL = a1
+    u97.DATA = a1:FindFirstChild("GunData") and require(a1.GunData) or nil
+    u97.SKIN = a1:GetAttribute("SKIN") or "None"
+    u96:Add(a1.Activated:Connect(function() -- Line: 734 -- upvalues: fire (upval), a1 (val)
+        fire(a1)
+    end), a1)
+end
+
+local function initCharacter(a1) -- Line: 744 -- upvalues: LocalPlayer (val), u96 (val), onTool (val), u97 (val)
+    a1:WaitForChild("FULLY_LOADED_CHAR", 20)
+    if a1 == LocalPlayer.Character and a1.Parent ~= nil then
+        u96:Add(a1.ChildAdded:Connect(onTool), "CharacterConnection")
+        u96:Add(a1.ChildRemoved:Connect(function(a1_2) -- Line: 748 -- upvalues: u96 (upval), u97 (upval), a1 (val)
+            if not a1_2:IsA("Tool") then
+                return
+            end
+            u96:Cleanup(a1_2)
+            if u97.TOOL == a1_2 then
+                u97.TOOL = nil
+                u97.DATA = nil
+            end
+            if a1_2.Name == "[Knife]" then
+                local v1
+                if a1:FindFirstChild("RightHand") and a1.RightHand:FindFirstChild("Handle.R") then
+                    v1 = next
+                    local Children, Children_2 = a1.RightHand:GetChildren()
+                    for k, v in v1, Children, Children_2 do
+                        if v.Name == "Handle.R" then
+                            v:Destroy()
+                        end
+                    end
+                end
+                if a1:FindFirstChild("KNIFE_MODEL") then
+                    v1 = next
+                    local Children_3, Children_4 = a1:GetChildren()
+                    for k2, i in v1, Children_3, Children_4 do
+                        if i.Name == "KNIFE_MODEL" then
+                            i:Destroy()
+                        end
+                    end
+                end
+            end
+        end), "CharacterConnection")
+        local v1 = next
+        local Children, Children_2 = a1:GetChildren()
+        for k, v in v1, Children, Children_2 do
+            onTool(v)
+        end
+        return
+    end
+end
+
+if LocalPlayer.Character then
+    task.spawn(initCharacter, LocalPlayer.Character)
+end
+LocalPlayer.CharacterAdded:Connect(initCharacter)
+LocalPlayer.CharacterRemoving:Connect(function() -- Line: 782 -- upvalues: u96 (val), u97 (val)
+    u96:Cleanup()
+    u97.TOOL = nil
+    u97.DATA = nil
+end)
+MainEvent.OnClientEvent:Connect(function(a1, a2, a3) -- Line: 788 -- upvalues: settleShot (val), MainModule (val), u97 (val), showDiedFirst (val)
+    if a1 == "ShotResult" then
+        settleShot(a2, a3)
+        return
+    end
+    if a1 ~= "KnifeResult" then
+        if a1 == "HealthResult" then
+            MainModule.settleFood(a2, a3)
+        end
+        return
+    end
+    MainModule.clearHealthPrediction(a2)
+    local v1 = u97.KNIVES[a2]
+    u97.KNIVES[a2] = nil
+    if a3 == "DIED_FIRST" and v1 and v1.Parent then
+        showDiedFirst(v1)
+        return
+    end
+end)
+UnreliableMainEvent.OnClientEvent:Connect(function(a1, a2, a3, a4) -- Line: 803
+    -- upvalues: LocalPlayer (val), replicateShot (val), flyKnife (val), hideKnife (val), Debris (val)
+    -- upvalues: playKnifeHitEffects (val)
+    if a1 == "ReplicateShot" then
+        if type(a3) == "table" and not table.find(a3, LocalPlayer) then
+            replicateShot(a3[1], a2)
+            return
+        end
+        return
+    end
+    if a1 == "ReplicateEmptyClick" then
+        if type(a3) == "table" and not table.find(a3, LocalPlayer) then
+            if typeof(a2) == "Instance" and a2:FindFirstChild("Handle") and a2.Handle:FindFirstChild("NoAmmo") then
+                a2.Handle.NoAmmo:Play()
+                return
+            end
+            return
+        end
+        return
+    end
+    if a1 ~= "ReplicateKnifeInteraction" then
+        return
+    end
+    if type(a4) == "table" and not table.find(a4, LocalPlayer) and type(a3) == "table" then
+        if a2 == "Throw" then
+            local PLAYER = a3.PLAYER
+            local TOOL = a3.TOOL
+            if typeof(PLAYER) == "Instance"
+                and PLAYER:IsA("Player")
+                and typeof(TOOL) == "Instance"
+                and typeof(a3.ORIGIN) == "Vector3"
+                and typeof(a3.DIRECTION) == "Vector3"
+                and type(a3.ID) == "string" then
+                flyKnife(PLAYER, TOOL, a3.ORIGIN, a3.DIRECTION, a3.ID, true)
+                return
+            end
+            return
+        end
+        if a2 == "Hit" then
+            if typeof(a3.HIT_POSITION) ~= "Vector3" then
+                return
+            end
+            local v1 = false
+            if type(a3.ID) == "string" then
+                v1 = workspace.Ignored:FindFirstChild(a3.ID)
+            end
+            if v1 and v1:IsA("BasePart") then
+                hideKnife(v1)
+            end
+            local Part = Instance.new("Part")
+            Debris:AddItem(Part, 3)
+            Part.Size = Vector3.new(0.5, 0.5, 0.5)
+            Part.Position = a3.HIT_POSITION
+            Part.CanCollide = false
+            Part.CanQuery = false
+            Part.Transparency = 1
+            Part.Anchored = true
+            Part.Parent = workspace.Ignored
+            playKnifeHitEffects(Part, a3.HIT_POSITION, a3.DEFLECT == true)
+        end
+        return
+    end
+end)
+MainBindedEvent.Event:Connect(function(a1) -- Line: 838 -- upvalues: reload (val)
+    if a1 == "ReloadGun" then
+        reload()
+    end
+end)
+RunService.Heartbeat:Connect(function() -- Line: 844
+    -- upvalues: LocalPlayer (val), u97 (val), Mouse (val), getAimPoint (val), ReplicatedStorage (val), MainModule (val)
+    -- upvalues: MainEvent (val)
+    local Character = LocalPlayer.Character
+    local TOOL = u97.TOOL
+    if Character and TOOL and TOOL.Parent == Character and TOOL:FindFirstChild("Handle") then
+        local v1 = LocalPlayer.PlayerGui:FindFirstChild("Main Screen")
+        if v1 and v1:FindFirstChild("Aim") then
+            if _G.MobileShiftlock ~= true then
+                v1.Aim.Position = UDim2.new(0, Mouse.X, 0, Mouse.Y)
+            else
+                v1.Aim.Position = UDim2.new(0.5, 0, 0.5, -19)
+            end
+        end
+        local v2, v3 = getAimPoint()
+        _G.MOUSE_POSITION = v2
+        if ReplicatedStorage.AIMVIEWER_REQUESTS:FindFirstChild(LocalPlayer.Name) then
+            local v4
+            local Instance = v3
+            local Position_2 = v2
+            if _G.MobileShiftlock ~= true then
+                local Position = TOOL.Handle.Position
+                v4 = workspace
+                local v5 = (v2 - Position).Unit * MainModule.GUN_RANGE
+                local v6 = {workspace.Ignored, Character, workspace.CurrentCamera}
+                local v7 = RaycastParams.new()
+                v7.FilterType = Enum.RaycastFilterType.Exclude
+                v7.FilterDescendantsInstances = v6
+                v7.IgnoreWater = true
+                v4 = v4:Raycast(Position, v5, v7)
+                Instance = nil
+                Position_2 = Position + (v2 - Position).Unit * MainModule.GUN_RANGE
+                if v4 then
+                    Instance = v4.Instance
+                    Position_2 = v4.Position
+                end
+            end
+            local AssemblyLinearVelocity = Vector3.new()
+            if Instance and Instance.AssemblyRootPart then
+                AssemblyLinearVelocity = Instance.AssemblyRootPart.AssemblyLinearVelocity
+            end
+            v4 = {}
+            if Instance then
+                v4.thePart = Instance
+                v4.theOffset = Instance.CFrame:PointToObjectSpace(Position_2)
+            end
+            MainEvent:FireServer("MousePosUpdate", v4, Position_2, AssemblyLinearVelocity)
+        end
+        return
+    end
+end)
