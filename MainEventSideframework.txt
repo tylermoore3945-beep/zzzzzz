@@ -1,0 +1,674 @@
+-- Script path: ReplicatedFirst.SideFramework
+-- Decompile time: 8.80 ms
+
+local Descendants, Descendants_2, err, magnitude, success, v1, v2
+game:WaitForChild("ReplicatedFirst"):RemoveDefaultLoadingScreen()
+;(game:WaitForChild("StarterGui")):SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+if game:GetService("TeleportService"):GetArrivingTeleportGui()
+    and game:GetService("TeleportService"):GetArrivingTeleportGui().Name == "TIME_MACHINE_GUI" then
+    local v3 = game:GetService("TeleportService"):GetArrivingTeleportGui():Clone()
+    v3.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+end
+task.spawn(function() -- Line: 9
+    (game:GetService("ContentProvider")):PreloadAsync({"http://www.roblox.com/asset/?id=12300463597", "http://www.roblox.com/asset/?id=12300430738"})
+end)
+local u60 = os.date("!*t", os.time())
+_G.LOW_GFX = {}
+_G.LOW_GFX_ENABLED = false
+_G.IS_AFK = false
+_G.WINDOW_FOCUSED = true
+_G.TRADE_COUNTDOWN_IS_PLAYING = false
+_G.ShowedHighPingLatency = true
+_G.Snowing = false
+_G.TotalAmountOfWindows = 0
+_G.WindowTable = {}
+_G.WindowLightsOn = false
+_G.CurrentPad = nil
+_G.CurrentPadName = nil
+_G.CANCEL_LOADING_LOOP = false
+_G.CURRENT_DEVICE_TYPE = "Unidentified"
+_G.REQUESTED_REMINDER = false
+_G.Aimed = false
+_G.CharacterLoadedForMenu = false
+_G.TOUCH_SENSITIVITY = 1
+_G.US_STATE = nil
+_G.MOUSE_POSITION = Vector3.new()
+_G.SHOW_RENEW_FRAME = true
+_G.SHOW_PIN_RESET_FRAME = true
+_G.CHARACTER_POSITIONS = {}
+_G.PURCHASED_PRIORITY_QUEUE = false
+local u111 = {}
+local u112 = {AdorneeName = "BUBBLE_CHAT_PART", MinimizeDistance = 65}
+u112.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+u112.TextColor3 = Color3.fromRGB(255, 255, 255)
+local u123 = {AdorneeName = "BUBBLE_CHAT_PART", MinimizeDistance = 65, UserSpecificSettings = u111}
+local v4 = _G
+v4.AUDIT_LOG_DEFINITIONS = {
+    KICK_PLAYER = {
+        value1 = {Type = "UserId", FilterText = "User Id Who Kicked"},
+        value2 = {Type = "UserId", FilterText = "User Id Who Got Kicked"},
+        ActionText = "Kicked",
+        ActionTextColor = Color3.fromRGB(170, 0, 0),
+        ActionValue = nil,
+    },
+    DONATE_ROBUX_TO_PLAYER = {
+        value1 = {Type = "UserId", FilterText = "User Id Who Donated"},
+        value2 = {Type = "UserId", FilterText = "User Id Who Got Donated"},
+        value3 = {Type = "MinimumAmount", FilterText = "Minimum Amount Of Robux"},
+        ActionText = "Donated %s Robux To",
+        ActionTextColor = Color3.fromRGB(0, 170, 0),
+        ActionValue = "value3",
+    },
+    COMPLETE_ROBUX_TRANSFER = {
+        value1 = {Type = "UserId", FilterText = "User Id Who Sent Robux"},
+        value2 = {Type = "UserId", FilterText = "User Id Who Received Robux"},
+        value3 = {Type = "MinimumAmount", FilterText = "Minimum Amount Of Robux"},
+        value4 = {Type = "TransferRequestId", FilterText = "TransferRequestId"},
+        ActionText = "Sent %s Robux To",
+        ActionTextColor = Color3.fromRGB(0, 170, 0),
+        ActionValue = "value3",
+    },
+    PURCHASE = {
+        value1 = {Type = "UserId", FilterText = "User Id Who Purchased"},
+        value2 = nil,
+        value3 = {Type = "ProductId", FilterText = "Purchased Product Id"},
+        ActionText = "Purchased Product Id: %s",
+        ActionTextColor = Color3.fromRGB(85, 170, 255),
+        ActionValue = "value3",
+    },
+    GIFTING_PURCHASE = {
+        value1 = {Type = "UserId", FilterText = "User Id Who Purchased"},
+        value2 = {Type = "UserId", FilterText = "User Id Who Got Gifted"},
+        value3 = {Type = "ProductId", FilterText = "Purchased Product Id"},
+        ActionText = "Purchased Product Id %s To",
+        ActionTextColor = Color3.fromRGB(85, 170, 255),
+        ActionValue = "value3",
+    },
+    WIPE_DATA = {
+        value1 = {Type = "UserId", FilterText = "User Id Who Got Wiped"},
+        value2 = nil,
+        ActionText = "Has Wiped Their Data",
+        ActionTextColor = Color3.fromRGB(255, 255, 0),
+        ActionValue = nil,
+    },
+    STRIKE_PLAYER = {
+        value1 = {Type = "UserId", FilterText = "User Id Who Got Striked"},
+        value2 = nil,
+        ActionText = "Has Received A Strike",
+        ActionTextColor = Color3.fromRGB(170, 0, 0),
+        ActionValue = nil,
+    },
+    OPEN_LOOT_CAPSULE = {
+        value1 = {Type = "UserId", FilterText = "User Id Who Opened Capsule"},
+        value2 = nil,
+        ActionText = "Has Unboxed ItemId %s",
+        ActionValue = "value3",
+    },
+    DISMANTLE_ITEM = {
+        value1 = {Type = "UserId", FilterText = "User Id Who Dismantled"},
+        value2 = nil,
+        value3 = {Type = "ItemId", FilterText = "Item Id Which Got Dismantled"},
+        ActionText = "Has Dismantled ItemId %s",
+        ActionValue = "value3",
+    },
+    DELETE_ITEM = {
+        value1 = {Type = "UserId", FilterText = "User Id Who Deleted"},
+        value2 = nil,
+        value3 = {Type = "ItemId", FilterText = "Item Id Which Got Deleted"},
+        ActionText = "Has Deleted ItemId %s",
+        ActionValue = "value3",
+    },
+    DISENCHANT_ITEM = {
+        value1 = {Type = "UserId", FilterText = "User Id Who Dis-Enchanted"},
+        value2 = nil,
+        value4 = {Type = "ItemId", FilterText = "Book Item Id Which Got Destroyed"},
+        ActionText = "Has Destroyed Book %s",
+        ActionValue = "value4",
+    },
+    EXTRACT_ENCHANT = {
+        value1 = {Type = "UserId", FilterText = "User Id Who Extracted Enchant"},
+        value2 = nil,
+        value4 = {Type = "ItemId", FilterText = "Book Item Id Which Got Extracted"},
+        ActionText = "Has Extracted Book %s",
+        ActionValue = "value4",
+    },
+    PIN_RESET = {
+        value1 = {Type = "UserId", FilterText = "User Id Who Reset Their Trading Pin"},
+        value2 = nil,
+        ActionText = "Has Reset Their PIN",
+        ActionValue = nil,
+    },
+    MODERATION_ACCESS = {
+        value1 = {Type = "UserId", FilterText = "User Id Who Had Their Access Updated"},
+        value2 = nil,
+        value3 = {Type = "DiscordId", FilterText = "Discord Id Who Had Their Access Updated"},
+        ActionText = "Received Access Update, Tier: %s",
+        ActionValue = "value4",
+    },
+    BAN_PLAYER = {
+        value1 = {Type = "UserId", FilterText = "User Id Who Banned"},
+        value2 = {Type = "UserId", FilterText = "User Id Who Got Banned"},
+        value3 = {Type = "DiscordId", FilterText = "Discord Id Who Banned"},
+        ActionText = "Banned Following User For: %s",
+        ActionValue = "value4",
+    },
+    SERVER_BAN_PLAYER = {
+        value1 = {Type = "UserId", FilterText = "User Id Who Server Banned"},
+        value2 = {Type = "UserId", FilterText = "User Id Who Got Server Banned"},
+        ActionText = "Server Banned",
+        ActionTextColor = Color3.fromRGB(170, 0, 0),
+        ActionValue = nil,
+    },
+    TRANSFER_DATA = {
+        value1 = {Type = "UserId", FilterText = "Original User Id Who Held the Data"},
+        value2 = {Type = "UserId", FilterText = "User Id Who Received the Data"},
+        ActionText = "Transfer Initiated Between Users, Blob Id: %s",
+        ActionTextColor = Color3.fromRGB(170, 0, 0),
+        ActionValue = "value4",
+    },
+}
+v4 = _G
+v4.AccomplishmentData = {
+    ["1"] = {
+        Text = "<b>Winstreak: %s</b>",
+        Gradient = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 127)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 106, 6))),
+        }),
+        DataPath = "DataFolder.Information.WinstreakData.CurrentWinstreak",
+        MinAmount = 5,
+    },
+    ["2"] = {
+        Text = "<b>Donated: %s</b>" .. utf8.char(57346),
+        Gradient = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 0)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 170, 0))),
+        }),
+        DataPath = "DataFolder.Information.RobuxDonated",
+        MinAmount = 15000,
+    },
+    ["3"] = {
+        Text = "<b>Limited Value: %s ♦</b>",
+        Gradient = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(170, 255, 255)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(85, 170, 255))),
+        }),
+        DataPath = "DataFolder.LimitedsValue",
+        MinAmount = 1000000,
+    },
+    ["4"] = {
+        Text = "<b>Rare Username @</b>",
+        Gradient = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(187, 148, 255)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(121, 43, 255))),
+        }),
+        DataPath = "DataFolder.HasRareUsername",
+        MinAmount = 1,
+    },
+    ["5"] = {
+        Text = "<b>Verified</b>",
+        Gradient = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 190, 255)),
+            (ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 102, 255))),
+        }),
+        DataPath = "DataFolder.IsVerified",
+        MinAmount = 1,
+    },
+}
+v4 = _G
+v4.Guns = {
+    ["Void Dragon"] = {"Special", 0},
+    ["Hell Hound"] = {"Special", 0},
+    ["Snow Dragon"] = {"Special", 0},
+    Lovestruck = {"Special", 0},
+    Adurite = {"Special", 0},
+    Ascension = {"Special", 0},
+    Hallows = {"Special", 0},
+    ["Candy Cane"] = {"Special", 0},
+    Heartbringer = {"Special", 0},
+    ["Black Cat"] = {"Special", 0},
+    Arctic = {"Legendary", 0},
+    Cupid = {"Legendary", 0},
+    Lightbringer = {"Legendary", 0},
+    Deathbringer = {"Legendary", 0},
+    ["Hell Dragon"] = {"Legendary", 0},
+    Kitty = {"Legendary", 0},
+    Kirumi = {"Legendary", 0},
+    ["Blacksteel Dragon"] = {"Legendary", 0},
+    ["Shiryus Breath"] = {"Legendary", 0},
+    Poseidon = {"Legendary", 0},
+    Phoenix = {"Epic", 0},
+    Amethyst = {"Epic", 0},
+    Arsenic = {"Epic", 0},
+    ["Volcanic Ashes"] = {"Epic", 0},
+    Floral = {"Epic", 0},
+    Binary = {"Epic", 0},
+    Voxel = {"Epic", 0},
+    ["Hello Kitty"] = {"Common", 0},
+    Radiation = {"Common", 0},
+    Void = {"Common", 0},
+    Hexagram = {"Common", 0},
+    ["Strawberry Shortcake"] = {"Common", 0},
+    ["Black Ice"] = {"Common", 0},
+    ["Crimson Fangs"] = {"Common", 0},
+    ["Green Tint"] = {"Common", 0},
+    Ember = {"Common", 0},
+}
+v4 = _G
+v4.Misc = {
+    Coin = {"Legendary", 0},
+    ["Common Shard"] = {"Common", 0},
+    ["Epic Shard"] = {"Epic", 0},
+    ["Legendary Shard"] = {"Legendary", 0},
+}
+v4 = _G
+v4.Knives = {
+    Bitcoin = {"Special", 0},
+    Beta = {"Special", 0},
+    Fishbone = {"Special", 0},
+    Nightblade = {"Special", 0},
+}
+v4 = _G
+v4.BulletBeams = {
+    Lightning = {"Special", 0},
+    Beta = {"Special", 0},
+    Hallows = {"Special", 0},
+    Kitty = {"Legendary", 0},
+    Kirumi = {"Legendary", 0},
+    Rainbow = {"Legendary", 0},
+    Red = {"Epic", 0},
+    Blue = {"Epic", 0},
+    Green = {"Epic", 0},
+    Orange = {"Epic", 0},
+}
+v4 = _G
+v4.Frames = {
+    Lightbringer = {"Legendary", 0},
+    Deathbringer = {"Legendary", 0},
+    Aurora = {"Epic", 0},
+    ["Cyan Waves"] = {"Epic", 0},
+    Dusk = {"Epic", 0},
+    Valley = {"Epic", 0},
+    Sakura = {"Epic", 0},
+    Lotus = {"Epic", 0},
+}
+v4 = _G
+v4.Items = {
+    ["Angel Wings"] = {"Special", 0},
+    ["Water Gun"] = {"Special", 0},
+    ["Heart Balloon"] = {"Special", 0},
+    ["Snowball Launcher"] = {"Special", 0},
+    ["Mysterious Apple"] = {"Special", 0},
+    ["Firework Launcher"] = {"Special", 0},
+    Flintlock = {"Legendary", 0},
+    Rope = {"Legendary", 0},
+    LuckPotion = {"Legendary", 0},
+    ["Loot Capsule"] = {"Legendary", 0},
+    ["Capsule Key"] = {"Legendary", 0},
+}
+v4 = _G
+v4.Tags = {
+    Binary = {"Special", 0},
+    Star = {"Special", 0},
+    Beta = {"Special", 0},
+    Snow = {"Special", 0},
+    Easter = {"Special", 0},
+    Ghost = {"Special", 0},
+    Zombie = {"Legendary", 0},
+    Blood = {"Legendary", 0},
+    ["<3"] = {"Legendary", 0},
+    Meow = {"Legendary", 0},
+}
+v4 = _G
+v4.Enchants = {
+    Flutter = {"", 0},
+    Subzero = {"", 0},
+    Eruption = {"", 0},
+    Spirit = {"", 0},
+    Slaughter = {"", 0},
+}
+v4 = _G
+v4.Charms = {
+    Beta = {"Special", 0},
+    Lucky = {"Special", 0},
+    Snowflake = {"Legendary", 0},
+    Kirumi = {"Legendary", 0},
+    ["Hell Hound"] = {"Legendary", 0},
+}
+v4 = _G
+v4.AsmoMinecraftColors = {
+    Black = {0, 0, 0},
+    Blue = {0, 0, 175},
+    Green = {20, 171, 0},
+    EmeraldGreen = {92, 237, 15},
+    LightPurple = {255, 105, 180},
+    Gray = {170, 170, 170},
+    Cyan = {19, 170, 171},
+    Maroon = {169, 4, 0},
+    Purple = {169, 0, 178},
+    Orange = {254, 172, 0},
+    Light = {170, 170, 170},
+    Dark = {85, 85, 85},
+    Cobalt = {84, 76, 255},
+    Lime = {92, 255, 0},
+    Aqua = {91, 255, 255},
+    Red = {253, 86, 80},
+    Fuchsia = {253, 77, 255},
+    Yellow = {255, 255, 0},
+    White = {255, 255, 255},
+    Snow = {200, 249, 255},
+    Pastel = {255, 169, 228},
+    BinaryGreen = {81, 255, 0},
+}
+
+local function roundNumber(a1, a2) -- Line: 370
+    return (tonumber((string.format("%." .. (a2 or 0) .. "f", a1))))
+end
+
+local function UpdateBubbleChatForPlayer(a1) -- Line: 374 -- upvalues: u111 (val), u112 (val), u123 (val)
+    if a1:FindFirstChild("LOAD_SAVE_DATA") then
+        if a1.Gamepasses:FindFirstChild("DarkBubbleChat") then
+            u111[a1.UserId] = u112
+        end
+        print(u123)
+        game.Chat:SetBubbleChatSettings(u123)
+    end
+end
+
+local function initializeMainScreen() -- Line: 384
+    local PlayerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    if not PlayerGui:FindFirstChild("Main Screen") and not PlayerGui:FindFirstChild("LOADING_MAIN_SCREEN") then
+        local v1 = 0
+        local v2 = game.ReplicatedStorage["Main Screen"]:Clone()
+        v2.ResetOnSpawn = false
+        v2.Name = "LOADING_MAIN_SCREEN"
+        v2.Parent = PlayerGui
+        local v3 = next
+        local Children, Children_2 = game.ReplicatedStorage.MAIN_SCREEN_GUI:GetChildren()
+        for k, v in v3, Children, Children_2 do
+            v:Clone().Parent = v2
+            v1 = v1 + 1
+            if v1 ~= 0 and v1 % 10 == 0 then
+                task.wait(0.05)
+            end
+        end
+        v2.Name = "Main Screen"
+        return
+    end
+end
+
+local v5 = os.time() + 10
+local LocalPlayer = game.Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+LocalPlayer.Idled:Connect(function() -- Line: 412
+    _G.IS_AFK = true
+    game.ReplicatedStorage.MainEvent:FireServer("RequestAFKDisplay", true)
+end)
+UserInputService.WindowFocusReleased:Connect(function() -- Line: 417
+    _G.WINDOW_FOCUSED = false
+    _G.IS_AFK = true
+    game.ReplicatedStorage.MainEvent:FireServer("RequestAFKDisplay", true)
+end)
+UserInputService.WindowFocused:Connect(function() -- Line: 423
+    _G.WINDOW_FOCUSED = true
+    _G.IS_AFK = false
+    game.ReplicatedStorage.MainEvent:FireServer("RequestAFKDisplay", false)
+end)
+workspace:WaitForChild("Ignored")
+workspace.Ignored:WaitForChild("LeaderboardCharacters")
+game.ReplicatedStorage:WaitForChild("MainEvent")
+game.ReplicatedStorage:WaitForChild("SERVER_IS_FFA")
+task.wait()
+local MainModule = require(game.ReplicatedStorage:WaitForChild("MainModule"))
+require(game.ReplicatedStorage:WaitForChild("AsmoLoadSpin"))
+local v6 = next
+local Children, Children_2 = workspace.Ignored.LeaderboardCharacters:GetChildren()
+for k, v in v6, Children, Children_2 do
+    MainModule.initLeaderboardCharacterAnimations(v)
+end
+workspace.Ignored.LeaderboardCharacters.ChildAdded:Connect(function(a1) -- Line: 441 -- upvalues: MainModule (val)
+    task.wait(0.1)
+    MainModule.initLeaderboardCharacterAnimations(a1)
+end)
+if LocalPlayer.Character then
+    initializeMainScreen()
+end
+LocalPlayer.CharacterAdded:Connect(function() -- Line: 450 -- upvalues: initializeMainScreen (val)
+    initializeMainScreen()
+end)
+if game.ReplicatedStorage.SERVER_IS_FFA.Value == true then
+    _G.CANCEL_LOADING_LOOP = true
+end
+
+function game.TextChatService.OnBubbleAdded(a1, a2) -- Line: 559 -- types: a1: userdata, a2: userdata
+    if not a1.TextSource then
+        return
+    end
+    local BubbleChatMessageProperties = Instance.new("BubbleChatMessageProperties")
+    if game.Players:GetPlayerByUserId(a1.TextSource.UserId).Gamepasses:FindFirstChild("DarkBubbleChat") then
+        BubbleChatMessageProperties.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        BubbleChatMessageProperties.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end
+    return BubbleChatMessageProperties
+end
+
+game.Players.PlayerRemoving:Connect(function(a1) -- Line: 599 -- upvalues: u111 (val)
+    if _G.AimviewerPlayer == a1 then
+        _G.AimviewerPlayer = nil
+    end
+    if _G.CHARACTER_POSITIONS[a1.Name] then
+        _G.CHARACTER_POSITIONS[a1.Name] = nil
+    end
+    for k, v in next, u111 do
+        if k == a1.UserId then
+            u111[a1.UserId] = nil
+            return
+        end
+    end
+end)
+v6 = {
+    Color3.fromRGB(0, 255, 0),
+    Color3.fromRGB(255, 0, 0),
+    Color3.fromRGB(0, 255, 255),
+    Color3.fromRGB(245, 205, 48),
+    (Color3.fromRGB(255, 0, 191)),
+}
+spawn(function() -- Line: 685 -- upvalues: u60 (val)
+    repeat
+        wait()
+    until game:IsLoaded()
+    if u60.month ~= 10 then end
+    if game.ReplicatedStorage.SERVER_IS_THE_PIT.Value ~= false then end
+end)
+game.Players.LocalPlayer:WaitForChild("LOAD_SAVE_DATA", 50)
+_G.CURRENCY_VALUE = 0
+_G.GUN_EQUIPPED = false
+_G.HIDE_PLAYERS = false
+_G.CURRENCY_VALUE = game.Players.LocalPlayer.DataFolder.Information.Currency.Value
+local SoundGroup = Instance.new("SoundGroup")
+SoundGroup.Name = "Master"
+SoundGroup.Volume = game.Players.LocalPlayer.DataFolder.MasterVolume.Value
+SoundGroup.Parent = game.SoundService
+
+local function routeSound(a1) -- Line: 819 -- upvalues: SoundGroup (val)
+    if a1:IsA("Sound") and a1.SoundGroup == nil then
+        a1.SoundGroup = SoundGroup
+        return
+    end
+    if a1:IsA("SoundGroup") and a1 ~= SoundGroup and a1.Parent == game.SoundService then
+        a1.Parent = SoundGroup
+    end
+end
+
+local v7 = next
+local v8 = {
+    workspace,
+    game.SoundService,
+    game.Players.LocalPlayer:WaitForChild("PlayerGui"),
+    (game.Players.LocalPlayer:WaitForChild("PlayerScripts")),
+}
+local v9 = nil
+for k2, i in v7, v8, v9 do
+    v2 = next
+    Descendants, Descendants_2 = i:GetDescendants()
+    for k3, j in v2, Descendants, Descendants_2 do
+        if not j:IsA("Sound") then
+            if j:IsA("SoundGroup") and j ~= SoundGroup and j.Parent == game.SoundService then
+                j.Parent = SoundGroup
+            end
+        elseif j.SoundGroup == nil then
+            j.SoundGroup = SoundGroup
+        elseif j:IsA("SoundGroup") and j ~= SoundGroup and j.Parent == game.SoundService then
+            j.Parent = SoundGroup
+        end
+    end
+    i.DescendantAdded:Connect(routeSound)
+end
+game.Players.LocalPlayer.DataFolder.MasterVolume.Changed:Connect(function(a1) -- Line: 834 -- upvalues: SoundGroup (val)
+    SoundGroup.Volume = a1
+end)
+
+local function initializeRagdoll(a1) -- Line: 838
+    repeat
+        task.wait(0.5)
+    until a1.Parent == nil or a1:FindFirstChild("FULLY_LOADED_CHAR")
+    a1.BodyEffects["K.O"].Changed:Connect(function(a1_2) -- Line: 840 -- upvalues: a1 (val)
+        if a1_2 == true and a1:FindFirstChild("GRABBING_CONSTRAINT") == nil then
+            a1.UpperTorso:WaitForChild("RANDOM")
+            if a1:FindFirstChild("RANDOM") then
+                a1.UpperTorso.Anchored = true
+                a1.UpperTorso.Velocity = Vector3.new()
+                task.wait(a1.UpperTorso.RANDOM.Value)
+                a1.UpperTorso.Anchored = false
+                a1.UpperTorso.Velocity = Vector3.new()
+            end
+        end
+    end)
+end
+
+tick()
+local u1080 = tick()
+game.ReplicatedStorage.MainEvent.OnClientEvent:Connect(function(a1, a2, a3) -- Line: 872 -- upvalues: u1080 (ref), LocalPlayer (val)
+    if a1 == "OnClientPing" then
+        tick()
+        game.ReplicatedStorage.MainEvent:FireServer("GetPing")
+    end
+    if a1 ~= "TIME_MACHINE" then
+        if a1 == "TIME_MACHINE_UPDATE" then
+            local PlayerGui_4 = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+            PlayerGui_4:WaitForChild("Main Screen").COIN_FARM.Before.Text = "Your Coins: " .. game.Players.LocalPlayer.DataFolder.Information.Currency.Value
+            local PlayerGui_5 = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+            PlayerGui_5:WaitForChild("Main Screen").COIN_FARM.Next.Text = "Next Reward in " .. a2 .. " Seconds"
+        end
+        if a1 ~= "SHUT_DOWN_SERVERS" then
+            if a1 == "CleanUpCharacter" then
+                if _G.CHARACTER_POSITIONS[a2.Name] then
+                    _G.CHARACTER_POSITIONS[a2.Name] = nil
+                end
+                return
+            end
+            if a1 == "HideCharacter" then
+                if a2 == LocalPlayer then
+                    require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("HudMotion")).setHidden(true)
+                    return
+                end
+                if LocalPlayer.Character.Parent == workspace.Players.InBox
+                    and _G.CHARACTER_POSITIONS[a2.Name] == nil then
+                    _G.CHARACTER_POSITIONS[a2.Name] = a2.Character
+                    a2.Character.Parent = nil
+                    return
+                end
+                return
+            end
+            if a1 ~= "ShowCharacter" then
+                return
+            end
+            if _G.CHARACTER_POSITIONS[a2.Name] then
+                local v1 = _G.CHARACTER_POSITIONS[a2.Name]
+                v1.Parent = workspace.Players.Characters
+                _G.CHARACTER_POSITIONS[a2.Name] = nil
+            end
+            if a2 == LocalPlayer then
+                require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("HudMotion")).setHidden(false)
+            end
+            return
+        else
+            while true do
+                game.Players.LocalPlayer:WaitForChild("PlayerGui").SOFT_SHUTDOWN.Enabled = true
+                game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+                game["Run Service"].Heartbeat:Wait()
+            end
+        end
+    else
+        local PlayerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+        PlayerGui:WaitForChild("Main Screen").COIN_FARM.Visible = true
+        local PlayerGui_2 = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+        PlayerGui_2:WaitForChild("Main Screen").COIN_FARM.Before.Text = "Your Coins: " .. game.Players.LocalPlayer.DataFolder.Information.Currency.Value
+        ;(game.Players.LocalPlayer:WaitForChild("PlayerGui")):WaitForChild("TIME_MACHINE_GUI"):Destroy()
+        while true do
+            game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+            game["Run Service"].Heartbeat:Wait()
+        end
+    end
+end)
+u1080 = tick()
+game.ReplicatedStorage.MainEvent:FireServer("GetPing", (tick()) - u1080)
+task.spawn(function() -- Line: 941
+    local u0 = {"Guns", "BulletBeams", "Frames", "Tags", "Enchants", "Charms"}
+    while true do
+        pcall(function() -- Line: 945 -- upvalues: u0 (val)
+            local Children, Children_2, v1, v2, v3, v4
+            local VALUE_LIST_CACHE = game.ReplicatedStorage:FindFirstChild("VALUE_LIST_CACHE")
+            if VALUE_LIST_CACHE == nil then
+                return
+            end
+            local v5 = next
+            local v6 = nil
+            for k, v in v5, u0, v6 do
+                v2 = VALUE_LIST_CACHE:WaitForChild(v, 5)
+                v3 = _G[v]
+                if v2 ~= nil and type(v3) == "table" then
+                    v4 = next
+                    Children, Children_2 = v2:GetChildren()
+                    for k2, i in v4, Children, Children_2 do
+                        if type(v3[i.Name]) == "table" then
+                            v1 = v3[i.Name]
+                            v1[2] = i.Value
+                            if tonumber(i.Value) then
+                                v1 = v3[i.Name]
+                                v1[2] = (tonumber(i.Value))
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+        task.wait(60)
+    end
+end)
+while true do
+    magnitude = (workspace.CurrentCamera.Focus.p - workspace.CurrentCamera.CoordinateFrame.p).magnitude
+    v1 = magnitude < 2 and 1 - (magnitude - 0.5) / 1.5 or 0
+    if v1 < 0.5 then
+        v1 = 0
+    end
+    local u1138 = tonumber((string.format("%." .. 2 .. "f", v1)))
+    success, err = pcall(function() -- Line: 979 -- upvalues: LocalPlayer (val), u1138 (ref)
+        local v1 = next
+        local Children, Children_2 = LocalPlayer.Character:GetChildren()
+        for k, v in v1, Children, Children_2 do
+            if v:IsA("BasePart") then
+                v.LocalTransparencyModifier = u1138
+                if v:FindFirstChild("Decal") then
+                    v.Decal.Transparency = u1138
+                end
+            elseif v:IsA("Accessory") and v:FindFirstChild("Handle") then
+                v.Handle.LocalTransparencyModifier = u1138
+            end
+        end
+    end)
+    if not success then
+        warn((("Error in the transparency controller loop | %*"):format(err)))
+    end
+    task.wait(0.2)
+end

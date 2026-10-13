@@ -1,0 +1,932 @@
+-- Script path: Players.IlIIIlIIlIIIllIIIlII.PlayerScripts.CoreGuiHandler
+-- Decompile time: 17.83 ms
+
+local StarterGui_2 = game:GetService("StarterGui")
+game:GetService("ContextActionService")
+local UserInputService = game:GetService("UserInputService")
+local StarterGui = game:GetService("StarterGui")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalPlayer = game:GetService("Players").LocalPlayer
+LocalPlayer:WaitForChild("Backpack")
+local CurrentCamera = workspace.CurrentCamera
+StarterGui_2:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
+StarterGui_2:SetCoreGuiEnabled(Enum.CoreGuiType.Health, false)
+local CustomCoreGUI = LocalPlayer.PlayerGui:WaitForChild("CustomCoreGUI", 20)
+local Inventory = LocalPlayer.PlayerGui:WaitForChild("Inventory", 20)
+local ResetBindable = (ReplicatedStorage:WaitForChild("MainBindedEvent")):WaitForChild("ResetBindable")
+local hotBar = Inventory.hotBar
+local Inventory_2 = Inventory.Inventory
+local toolSlot = game.ReplicatedStorage.toolSlot
+local Icon = require(game.ReplicatedStorage.TopbarPlus.Icon)
+local u87 = (Icon.new():setLabel("Backpack")):autoDeselect(false)
+local u97 = (Icon.new():setLabel("Emotes")):autoDeselect(false)
+local v1 = (((Icon.new():setLabel("Return To Lobby")):autoDeselect(false)):oneClick(true)):setEnabled(false)
+local v2 = (((Icon.new():setLabel("Teleport to Pad")):autoDeselect(false)):oneClick(true)):setEnabled(false)
+;((Icon.new():setLabel("Menu")):align("Right")):setDropdown({u87, u97, v2, v1})
+local u152 = 100
+_G.QueueData = {}
+require(game.ReplicatedStorage:WaitForChild("MainModule"))
+local AsmoLoadSpin = require(game.ReplicatedStorage:WaitForChild("AsmoLoadSpin"))
+local Maid = require((game.ReplicatedStorage:WaitForChild("MainModule")):WaitForChild("Maid"))
+local ServerBrowserScreen = require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("ServerBrowserScreen"))
+local CaptchaGate = CustomCoreGUI:WaitForChild("CaptchaGate")
+local Content = CaptchaGate:WaitForChild("Content")
+local UIScale = Content:WaitForChild("UIScale")
+local Panel = Content:WaitForChild("Panel")
+local TO_SOLVE = Panel:WaitForChild("TO_SOLVE")
+local CaptchaCanvas = TO_SOLVE:WaitForChild("CaptchaCanvas")
+local UIStroke = TO_SOLVE:WaitForChild("UIStroke")
+local SolveLabel = Panel:WaitForChild("SolveLabel")
+local TextBox = Panel:WaitForChild("TextBox")
+local UIStroke_2 = TextBox:FindFirstChildOfClass("UIStroke")
+local Submit = Panel:WaitForChild("Submit")
+local UIScale_2 = Submit:WaitForChild("UIScale")
+local Cancel = Panel:WaitForChild("Cancel")
+local TextColor3 = SolveLabel.TextColor3
+local u260 = Color3.fromRGB(235, 70, 70)
+local u265 = Color3.fromRGB(90, 220, 120)
+local Color = UIStroke.Color
+local Color_2 = UIStroke_2.Color
+local u272 = TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local u277 = TweenInfo.new(0.32, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+local u282 = TweenInfo.new(0.38, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local u283 = 99
+local UIScale_3 = Instance.new("UIScale")
+UIScale_3.Parent = Panel
+local UIScale_4 = Instance.new("UIScale")
+UIScale_4.Parent = SolveLabel
+local Position = SolveLabel.Position
+local Position_2 = TO_SOLVE.Position
+_G.CAPTCHA_GATE_OPEN = false
+_G.CAPTCHA_RATE_LIMITED = false
+_G.CAPTCHA_COOLING = false
+_G.CAPTCHA_PENDING_SUBMIT = false
+local u300 = 0
+local u301 = 0
+local u302 = 0
+local u303 = 0
+local u305 = Maid.new()
+local u306 = {"Spit", "SitDown", "Greet", "Lay"}
+local u311 = nil
+
+local function handleTopBarButton(a1, a2) -- Line: 111
+    a1.MouseEnter:Connect(function() -- Line: 112 -- upvalues: a1 (val)
+        a1.StateOverlay.ImageColor3 = Color3.fromRGB(255, 255, 255)
+        a1.StateOverlay.ImageTransparency = 0.9
+    end)
+    a1.MouseLeave:Connect(function() -- Line: 117 -- upvalues: a1 (val)
+        a1.StateOverlay.ImageColor3 = Color3.fromRGB(255, 255, 255)
+        a1.StateOverlay.ImageTransparency = 1
+    end)
+    a1.MouseButton1Down:Connect(function() -- Line: 122 -- upvalues: a1 (val)
+        a1.StateOverlay.ImageColor3 = Color3.fromRGB(0, 0, 0)
+        a1.StateOverlay.ImageTransparency = 0.7
+    end)
+    a1.MouseButton1Up:Connect(function() -- Line: 127 -- upvalues: a1 (val), a2 (val)
+        a1.StateOverlay.ImageColor3 = Color3.fromRGB(255, 255, 255)
+        a1.StateOverlay.ImageTransparency = 0.9
+        a2()
+    end)
+end
+
+local function hurtEffect(a1) -- Line: 134 -- upvalues: u152 (ref), u305 (val), CustomCoreGUI (val)
+    local Health_CLIENT = (a1:WaitForChild("BodyEffects")):WaitForChild("Health_CLIENT")
+    u152 = Health_CLIENT.Value
+    u305:Add(Health_CLIENT.Changed:Connect(function() -- Line: 137 -- upvalues: u152 (upval), Health_CLIENT (val), CustomCoreGUI (upval)
+        if 5 <= u152 - Health_CLIENT.Value then
+            game.TweenService:Create(CustomCoreGUI.HurtOverlay, TweenInfo.new(0, Enum.EasingStyle.Linear), {ImageTransparency = 0.4}):Play()
+            task.wait(0.016666666666666666)
+            game.TweenService:Create(CustomCoreGUI.HurtOverlay, TweenInfo.new(0.15, Enum.EasingStyle.Linear), {ImageTransparency = 1}):Play()
+        end
+        u152 = Health_CLIENT.Value
+    end), "CharacterConnection")
+end
+
+local function switchEmoteGuiTarget(a1, a2) -- Line: 147 -- upvalues: u311 (ref), CustomCoreGUI (val)
+    if a1.Parent ~= a2 then
+        a1.Parent = a2
+        tonumber(a2.Name)
+        a1.Visible = true
+        local v1 = next
+        local Descendants, Descendants_2 = CustomCoreGUI.Emotes.EmotesWheel.Slots:GetDescendants()
+        for k, v in v1, Descendants, Descendants_2 do
+            if v:IsA("BasePart") then
+                v.Color = Color3.fromRGB(127, 127, 127)
+            end
+        end
+        v1 = next
+        local Children, Children_2 = a2.ViewportFrame.WorldModel.Rig:GetChildren()
+        for k2, i in v1, Children, Children_2 do
+            if i:IsA("BasePart") then
+                i.Color = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
+end
+
+local function selectEmote() -- Line: 165 -- upvalues: LocalPlayer (val), CustomCoreGUI (val), u306 (val), u311 (ref)
+    task.spawn(function() -- Line: 166 -- upvalues: LocalPlayer (upval), CustomCoreGUI (upval), u306 (upval), u311 (upval)
+        repeat
+            task.wait()
+        until LocalPlayer.Character:FindFirstChild("FULLY_LOADED_CHAR")
+        CustomCoreGUI.Emotes.Visible = false
+        if u306[u311] == "Spit" then
+            game.ReplicatedStorage.MainEvent:FireServer("Spit")
+            return
+        end
+        game.ReplicatedStorage.MainEvent:FireServer("Emote", u306[u311])
+    end)
+end
+
+local function emoteGui() -- Line: 177
+    -- upvalues: CustomCoreGUI (val), UserInputService (val), LocalPlayer (val), u306 (val), u311 (ref)
+    -- upvalues: switchEmoteGuiTarget (val)
+    local AbsolutePosition, v1, v2
+    if CustomCoreGUI.Emotes.Visible ~= false then
+        CustomCoreGUI.Emotes.Visible = false
+        CustomCoreGUI.TopBarFrame.RightFrame.DropDownMenu.DropDown.EmoteButton.Icon.Image = "rbxasset://textures/ui/TopBar/emotesOff.png"
+        return
+    end
+    CustomCoreGUI.Emotes.Visible = true
+    CustomCoreGUI.TopBarFrame.RightFrame.DropDownMenu.DropDown.EmoteButton.Icon.Image = "rbxasset://textures/ui/TopBar/emotesOn.png"
+    local v3 = {}
+    local Selected = CustomCoreGUI.Emotes.EmotesWheel.Slots.Selected
+    local v4 = UserInputService.InputBegan:Connect(function(a1, a2) -- Line: 185 -- upvalues: LocalPlayer (upval), CustomCoreGUI (upval), u306 (upval), u311 (upval)
+        if a1.UserInputType == Enum.UserInputType.MouseButton1 and not a2 then
+            task.spawn(function() -- Line: 166 -- upvalues: LocalPlayer (upval), CustomCoreGUI (upval), u306 (upval), u311 (upval)
+                repeat
+                    task.wait()
+                until LocalPlayer.Character:FindFirstChild("FULLY_LOADED_CHAR")
+                CustomCoreGUI.Emotes.Visible = false
+                if u306[u311] == "Spit" then
+                    game.ReplicatedStorage.MainEvent:FireServer("Spit")
+                    return
+                end
+                game.ReplicatedStorage.MainEvent:FireServer("Emote", u306[u311])
+            end)
+        end
+    end)
+    local v5 = next
+    local Children, Children_2 = CustomCoreGUI.Emotes.EmotesWheel.Slots:GetChildren()
+    for k, v in v5, Children, Children_2 do
+        if v:IsA("ImageLabel") and v.Name ~= "Selected" then
+            v2 = "CONECTION_" .. k
+            v3[v2] = (v.Action.MouseButton1Down:Connect(function() -- Line: 193 -- upvalues: u311 (upval), v (val), LocalPlayer (upval), CustomCoreGUI (upval), u306 (upval)
+                u311 = tonumber(v.Name)
+                task.spawn(function() -- Line: 166 -- upvalues: LocalPlayer (upval), CustomCoreGUI (upval), u306 (upval), u311 (upval)
+                    repeat
+                        task.wait()
+                    until LocalPlayer.Character:FindFirstChild("FULLY_LOADED_CHAR")
+                    CustomCoreGUI.Emotes.Visible = false
+                    if u306[u311] == "Spit" then
+                        game.ReplicatedStorage.MainEvent:FireServer("Spit")
+                        return
+                    end
+                    game.ReplicatedStorage.MainEvent:FireServer("Emote", u306[u311])
+                end)
+            end))
+        end
+    end
+    while CustomCoreGUI.Emotes.Visible == true do
+        AbsolutePosition = CustomCoreGUI.Emotes.Middle.AbsolutePosition
+        v1 = math.deg((math.atan2(LocalPlayer:GetMouse().Y - AbsolutePosition.Y, (LocalPlayer:GetMouse()).X - AbsolutePosition.X))) + 90
+        if not (v1 >= -45) then
+            if not (v1 > 45) then
+                if not (v1 > 135) then
+                    if not (v1 > 225) or not (v1 >= -45) then
+                        Selected.Visible = false
+                    else
+                        switchEmoteGuiTarget(Selected, CustomCoreGUI.Emotes.EmotesWheel.Slots["4"])
+                    end
+                elseif v1 <= 225 then
+                    switchEmoteGuiTarget(Selected, CustomCoreGUI.Emotes.EmotesWheel.Slots["3"])
+                elseif not (v1 > 225) or not (v1 >= -45) then
+                    Selected.Visible = false
+                else
+                    switchEmoteGuiTarget(Selected, CustomCoreGUI.Emotes.EmotesWheel.Slots["4"])
+                end
+            elseif v1 <= 135 then
+                switchEmoteGuiTarget(Selected, CustomCoreGUI.Emotes.EmotesWheel.Slots["2"])
+            elseif not (v1 > 135) then
+                if not (v1 > 225) or not (v1 >= -45) then
+                    Selected.Visible = false
+                else
+                    switchEmoteGuiTarget(Selected, CustomCoreGUI.Emotes.EmotesWheel.Slots["4"])
+                end
+            elseif v1 <= 225 then
+                switchEmoteGuiTarget(Selected, CustomCoreGUI.Emotes.EmotesWheel.Slots["3"])
+            elseif not (v1 > 225) or not (v1 >= -45) then
+                Selected.Visible = false
+            else
+                switchEmoteGuiTarget(Selected, CustomCoreGUI.Emotes.EmotesWheel.Slots["4"])
+            end
+        elseif v1 <= 45 then
+            switchEmoteGuiTarget(Selected, CustomCoreGUI.Emotes.EmotesWheel.Slots["1"])
+        elseif not (v1 > 45) then
+            if not (v1 > 135) then
+                if not (v1 > 225) or not (v1 >= -45) then
+                    Selected.Visible = false
+                else
+                    switchEmoteGuiTarget(Selected, CustomCoreGUI.Emotes.EmotesWheel.Slots["4"])
+                end
+            elseif v1 <= 225 then
+                switchEmoteGuiTarget(Selected, CustomCoreGUI.Emotes.EmotesWheel.Slots["3"])
+            elseif not (v1 > 225) or not (v1 >= -45) then
+                Selected.Visible = false
+            else
+                switchEmoteGuiTarget(Selected, CustomCoreGUI.Emotes.EmotesWheel.Slots["4"])
+            end
+        elseif v1 <= 135 then
+            switchEmoteGuiTarget(Selected, CustomCoreGUI.Emotes.EmotesWheel.Slots["2"])
+        elseif not (v1 > 135) then
+            if not (v1 > 225) or not (v1 >= -45) then
+                Selected.Visible = false
+            else
+                switchEmoteGuiTarget(Selected, CustomCoreGUI.Emotes.EmotesWheel.Slots["4"])
+            end
+        elseif v1 <= 225 then
+            switchEmoteGuiTarget(Selected, CustomCoreGUI.Emotes.EmotesWheel.Slots["3"])
+        elseif not (v1 > 225) or not (v1 >= -45) then
+            Selected.Visible = false
+        else
+            switchEmoteGuiTarget(Selected, CustomCoreGUI.Emotes.EmotesWheel.Slots["4"])
+        end
+        task.wait()
+    end
+    for k2, i in next, v3 do
+        i:Disconnect()
+    end
+    v4:Disconnect()
+    Selected.Parent = CustomCoreGUI.Emotes.EmotesWheel.Slots
+    CustomCoreGUI.TopBarFrame.RightFrame.DropDownMenu.DropDown.EmoteButton.Icon.Image = "rbxasset://textures/ui/TopBar/emotesOff.png"
+    v5 = next
+    local Descendants, Descendants_2 = CustomCoreGUI.Emotes.EmotesWheel.Slots:GetDescendants()
+    for k3, j in v5, Descendants, Descendants_2 do
+        if j:IsA("BasePart") then
+            j.Color = Color3.fromRGB(127, 127, 127)
+        end
+    end
+end
+
+LocalPlayer.CharacterAdded:Connect(function(a1) -- Line: 237 -- upvalues: hurtEffect (val)
+    hurtEffect(a1)
+end)
+LocalPlayer.CharacterRemoving:Connect(function() -- Line: 242 -- upvalues: u305 (val)
+    u305:Cleanup("CharacterConnection")
+end)
+if LocalPlayer.Character then
+    hurtEffect(LocalPlayer.Character)
+end
+UserInputService.InputBegan:Connect(function(a1, a2) -- Line: 259 -- upvalues: emoteGui (val)
+    if a1.KeyCode == Enum.KeyCode.B and not a2 then
+        emoteGui()
+    end
+end)
+handleTopBarButton(CustomCoreGUI.TopBarFrame.RightFrame.DropDownMenu.OpenButton, function() -- Line: 311 -- upvalues: CustomCoreGUI (val)
+    if CustomCoreGUI.TopBarFrame.RightFrame.DropDownMenu.DropDown.Visible == false then
+        CustomCoreGUI.TopBarFrame.RightFrame.DropDownMenu.DropDown.Visible = true
+        game.TweenService:Create(
+            CustomCoreGUI.TopBarFrame.RightFrame.DropDownMenu.OpenButton.Icon,
+            TweenInfo.new(0.1, Enum.EasingStyle.Linear),
+            {Rotation = 180}
+        ):Play()
+        return
+    end
+    CustomCoreGUI.TopBarFrame.RightFrame.DropDownMenu.DropDown.Visible = false
+    game.TweenService:Create(
+        CustomCoreGUI.TopBarFrame.RightFrame.DropDownMenu.OpenButton.Icon,
+        TweenInfo.new(0.1, Enum.EasingStyle.Linear),
+        {Rotation = 0}
+    ):Play()
+end)
+u87.toggled:Connect(function(a1, a2) -- Line: 321
+    if a2 == "User" then
+        if not a1 then end
+        game.ReplicatedStorage.MainBindedEvent:Fire("ManageInventory")
+    end
+end)
+u97.toggled:Connect(function(a1, a2) -- Line: 328 -- upvalues: emoteGui (val)
+    if a2 == "User" then
+        if not a1 then end
+        emoteGui()
+    end
+end)
+local u359 = nil
+v1.toggled:Connect(function(a1, a2) -- Line: 337 -- upvalues: u359 (ref)
+    if a2 == "User" then
+        if u359 and u359.Closed ~= true then
+            u359.close(false)
+            return
+        end
+        local BlurEffect = Instance.new("BlurEffect")
+        BlurEffect.Size = 10
+        BlurEffect.Parent = game.Lighting
+        u359 = (require(((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("Prompts")))).confirm({
+            title = "return to lobby",
+            text = "are you sure that you want to return to the lobby?",
+            confirmText = "return",
+            onConfirm = function() -- Line: 350 -- upvalues: BlurEffect (val)
+                BlurEffect:Destroy()
+                game.ReplicatedStorage.MainEvent:FireServer("BackToLobby")
+            end,
+            onCancel = function() -- Line: 354 -- upvalues: BlurEffect (val)
+                BlurEffect:Destroy()
+            end,
+        })
+        if u359 == nil then
+            BlurEffect:Destroy()
+        end
+    end
+end)
+v2.toggled:Connect(function() -- Line: 365
+    game.GuiService.SelectedObject = nil
+    game.ReplicatedStorage.MainEvent:FireServer("TeleportToPad")
+end)
+
+local function hideLoadSpin() -- Line: 371 -- upvalues: AsmoLoadSpin (val)
+    if not AsmoLoadSpin.Thread then
+        return
+    end
+    pcall(function() -- Line: 375 -- upvalues: AsmoLoadSpin (upval)
+        AsmoLoadSpin:Hide()
+    end)
+end
+
+local function captchaTween(a1, a2, a3) -- Line: 386
+    local v1 = game.TweenService:Create(a1, a2, a3)
+    v1:Play()
+    return v1
+end
+
+local function alertCaptcha(a1, a2) -- Line: 392
+    -- upvalues: u302 (ref), SolveLabel (val), u265 (val), u260 (val), UIScale_4 (val), u277 (val), Position (val)
+    -- upvalues: u282 (val), TextColor3 (val)
+    u302 = u302 + 1
+    local u4 = u302
+    SolveLabel.Text = a1 or "solve the math problem (e.g 4+7=<b><font color=\"#FFFFFF\">11</font></b>)"
+    SolveLabel.TextColor3 = a2 and u265 or u260
+    if not a2 then
+        task.spawn(function() -- Line: 401 -- upvalues: SolveLabel (upval), Position (upval)
+            local v1
+            for k, v in next, {8, -6, 4, -2, 0} do
+                v1 = game.TweenService:Create(
+                    SolveLabel,
+                    TweenInfo.new(0.05, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+                    {Position = Position + UDim2.fromOffset(v, 0)}
+                )
+                v1:Play()
+                v1.Completed:Wait()
+            end
+        end)
+    else
+        UIScale_4.Scale = 0.85
+        game.TweenService:Create(UIScale_4, u277, {Scale = 1}):Play()
+    end
+    task.delay(3, function() -- Line: 408 -- upvalues: u4 (val), u302 (upval), SolveLabel (upval), u282 (upval), TextColor3 (upval)
+        if u4 ~= u302 then
+            return
+        end
+        SolveLabel.Text = "solve the math problem"
+        game.TweenService:Create(SolveLabel, u282, {TextColor3 = TextColor3}):Play()
+    end)
+end
+
+local function flashCaptchaStrokes(a1) -- Line: 415
+    -- upvalues: UIStroke (val), u272 (val), UIStroke_2 (val), u282 (val), Color (val), Color_2 (val)
+    game.TweenService:Create(UIStroke, u272, {Color = a1}):Play()
+    game.TweenService:Create(UIStroke_2, u272, {Color = a1}):Play()
+    task.delay(0.6, function() -- Line: 418 -- upvalues: UIStroke (upval), u282 (upval), Color (upval), UIStroke_2 (upval), Color_2 (upval)
+        game.TweenService:Create(UIStroke, u282, {Color = Color}):Play()
+        game.TweenService:Create(UIStroke_2, u282, {Color = Color_2}):Play()
+    end)
+end
+
+local function shakeCaptcha() -- Line: 424 -- upvalues: TO_SOLVE (val), Position_2 (val)
+    task.spawn(function() -- Line: 425 -- upvalues: TO_SOLVE (upval), Position_2 (upval)
+        local v1
+        for k, v in next, {10, -8, 6, -3, 0} do
+            v1 = game.TweenService:Create(
+                TO_SOLVE,
+                TweenInfo.new(0.05, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+                {Position = Position_2 + UDim2.fromOffset(v, 0)}
+            )
+            v1:Play()
+            v1.Completed:Wait()
+        end
+    end)
+end
+
+local function clearCaptchaStrips() -- Line: 433 -- upvalues: CaptchaCanvas (val)
+    local v1 = next
+    local Children, Children_2 = CaptchaCanvas:GetChildren()
+    for k, v in v1, Children, Children_2 do
+        if v:IsA("Frame") then
+            v:Destroy()
+        end
+    end
+end
+
+local function drawCaptcha(a1, a2, a3) -- Line: 441
+    -- upvalues: clearCaptchaStrips (val), CaptchaCanvas (val), u277 (val), u272 (val)
+    local v1, v2, v3, v4, v5, v6, v7
+    clearCaptchaStrips()
+    local v8 = CaptchaCanvas.Size.X.Offset / a2
+    local v9 = CaptchaCanvas.Size.Y.Offset / a3
+    local v10 = a3 - 1
+    local v11, v12 = a2, a1
+    for i = 0, v10 do
+        v6 = i * v11
+        v7 = nil
+        v1 = 0
+        v2 = 0
+        while v2 <= v11 do
+            if not (v2 < v11) then
+                v3 = 0
+            else
+                v5 = v6 + v2
+                v3 = buffer.readu8(v12, v5) or 0
+            end
+            if v3 > 45 then
+                if not v7 then
+                    v1 = 0
+                end
+                v1 = v1 + v3
+            elseif v7 then
+                v4 = v2 - v7
+                local u53 = 1 - v1 / v4 / 255
+                local u57 = v4 * v8
+                local u61 = v9 + 1
+                local u64 = v7 * v8 + u57 / 2
+                local u70 = i * v9 + u61 / 2
+                local Frame = Instance.new("Frame")
+                Frame.BorderSizePixel = 0
+                Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+                Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                Frame.BackgroundTransparency = 1
+                Frame.Position = UDim2.fromOffset(u64 + (math.random() - 0.5) * 26, u70 + (math.random() - 0.5) * 26)
+                Frame.Rotation = (math.random() - 0.5) * 70
+                Frame.Size = UDim2.fromOffset(0, 0)
+                Frame.ZIndex = 54
+                Frame.Parent = CaptchaCanvas
+                task.delay(v7 / v11 * 0.3 + math.random() * 0.15, function() -- Line: 475
+                    -- upvalues: Frame (val), u277 (upval), u57 (val), u61 (val), u64 (val), u70 (val), u272 (upval)
+                    -- upvalues: u53 (val)
+                    if Frame.Parent then
+                        game.TweenService:Create(Frame, u277, {
+                            Rotation = 0,
+                            Size = UDim2.fromOffset(u57, u61),
+                            Position = UDim2.fromOffset(u64, u70),
+                        }):Play()
+                        game.TweenService:Create(Frame, u272, {BackgroundTransparency = u53}):Play()
+                    end
+                end)
+            end
+            v2 = v2 + 1
+        end
+    end
+end
+
+local function showCaptchaGate() -- Line: 488
+    -- upvalues: AsmoLoadSpin (val), CaptchaGate (val), u282 (val), UIScale_3 (val), u277 (val)
+    _G.CAPTCHA_GATE_OPEN = true
+    if AsmoLoadSpin.Thread then
+        pcall(function() -- Line: 375 -- upvalues: AsmoLoadSpin (upval)
+            AsmoLoadSpin:Hide()
+        end)
+    end
+    CaptchaGate.Visible = true
+    game.TweenService:Create(CaptchaGate, u282, {BackgroundTransparency = 0.45}):Play()
+    UIScale_3.Scale = 0.9
+    game.TweenService:Create(UIScale_3, u277, {Scale = 1}):Play()
+end
+
+local function hideCaptchaGate() -- Line: 497
+    -- upvalues: CaptchaGate (val), u282 (val), UIScale_3 (val), clearCaptchaStrips (val)
+    _G.CAPTCHA_GATE_OPEN = false
+    game.TweenService:Create(CaptchaGate, u282, {BackgroundTransparency = 1}):Play()
+    game.TweenService:Create(UIScale_3, u282, {Scale = 0.94}):Play()
+    task.delay(0.35, function() -- Line: 501 -- upvalues: CaptchaGate (upval), clearCaptchaStrips (upval)
+        CaptchaGate.Visible = false
+        clearCaptchaStrips()
+    end)
+end
+
+local function clearCaptchaPending() -- Line: 507 -- upvalues: u303 (ref)
+    _G.CAPTCHA_PENDING_SUBMIT = false
+    u303 = u303 + 1
+end
+
+local function startCaptchaCooldown(a1) -- Line: 512 -- upvalues: u301 (ref), TextBox (val), Submit (val)
+    _G.CAPTCHA_COOLING = true
+    u301 = u301 + 1
+    local u5 = u301
+    TextBox.TextEditable = false
+    task.spawn(function() -- Line: 517 -- upvalues: a1 (val), u5 (val), u301 (upval), Submit (upval), TextBox (upval)
+        local v1 = math.max(1, (math.floor(a1)))
+        while v1 > 0 do
+            if u5 ~= u301 or _G.CAPTCHA_RATE_LIMITED then
+                break
+            end
+            Submit.Text = "Wait " .. v1 .. "s"
+            task.wait(1)
+            v1 = v1 - 1
+        end
+        if u5 == u301 and not _G.CAPTCHA_RATE_LIMITED then
+            _G.CAPTCHA_COOLING = false
+            TextBox.TextEditable = true
+            Submit.Text = "Submit"
+            return
+        end
+    end)
+end
+
+local function startCaptchaLockout(a1) -- Line: 531
+    -- upvalues: u301 (ref), u300 (ref), showCaptchaGate (val), clearCaptchaStrips (val), TextBox (val), Submit (val)
+    -- upvalues: flashCaptchaStrokes (val), u260 (val), hideCaptchaGate (val)
+    _G.CAPTCHA_RATE_LIMITED = true
+    _G.CAPTCHA_COOLING = false
+    u301 = u301 + 1
+    u300 = u300 + 1
+    local u9 = u300
+    showCaptchaGate()
+    clearCaptchaStrips()
+    TextBox.Text = ""
+    TextBox.TextEditable = false
+    Submit.Text = "Rate Limited"
+    flashCaptchaStrokes(u260)
+    task.spawn(function() -- Line: 543
+        -- upvalues: a1 (val), u9 (val), u300 (upval), TextBox (upval), Submit (upval), hideCaptchaGate (upval)
+        local v1 = math.max(0, (math.floor(a1)))
+        while v1 > 0 do
+            if u9 ~= u300 then
+                break
+            end
+            TextBox.PlaceholderText = "rate limited - " .. string.format("%d:%02d", math.floor(v1 / 60), v1 % 60)
+            task.wait(1)
+            v1 = v1 - 1
+        end
+        if u9 ~= u300 then
+            return
+        end
+        _G.CAPTCHA_RATE_LIMITED = false
+        TextBox.TextEditable = true
+        TextBox.PlaceholderText = "Type the answer"
+        Submit.Text = "Submit"
+        hideCaptchaGate()
+    end)
+end
+
+local function submitCaptcha() -- Line: 559
+    -- upvalues: TextBox (val), flashCaptchaStrokes (val), u260 (val), alertCaptcha (val), u283 (ref), u302 (ref)
+    -- upvalues: SolveLabel (val), Position (val), u282 (val), TextColor3 (val), u303 (ref), Submit (val)
+    if not _G.CAPTCHA_RATE_LIMITED and not _G.CAPTCHA_COOLING and not _G.CAPTCHA_PENDING_SUBMIT then
+        if #TextBox.Text == 0 then
+            flashCaptchaStrokes(u260)
+            alertCaptcha()
+            return
+        end
+        local v1 = tonumber(TextBox.Text)
+        if v1 and not (u283 < v1) then
+            _G.CAPTCHA_PENDING_SUBMIT = true
+            u303 = u303 + 1
+            local u23 = u303
+            TextBox.TextEditable = false
+            Submit.Text = "Checking..."
+            game.ReplicatedStorage.MainEvent:FireServer("FFACaptchaSubmit", TextBox.Text)
+            task.delay(8, function() -- Line: 579 -- upvalues: u23 (val), u303 (upval), TextBox (upval), Submit (upval)
+                if u23 == u303 and _G.CAPTCHA_PENDING_SUBMIT then
+                    _G.CAPTCHA_PENDING_SUBMIT = false
+                    TextBox.TextEditable = true
+                    Submit.Text = "Submit"
+                    TextBox.PlaceholderText = "no response, try again"
+                    return
+                end
+            end)
+            return
+        end
+        flashCaptchaStrokes(u260)
+        local v2 = "the answer is between 1 and " .. u283
+        u302 = u302 + 1
+        local u49 = u302
+        SolveLabel.Text = v2 or "solve the math problem (e.g 4+7=<b><font color=\"#FFFFFF\">11</font></b>)"
+        SolveLabel.TextColor3 = u260
+        task.spawn(function() -- Line: 401 -- upvalues: SolveLabel (upval), Position (upval)
+            local v1
+            for k, v in next, {8, -6, 4, -2, 0} do
+                v1 = game.TweenService:Create(
+                    SolveLabel,
+                    TweenInfo.new(0.05, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+                    {Position = Position + UDim2.fromOffset(v, 0)}
+                )
+                v1:Play()
+                v1.Completed:Wait()
+            end
+        end)
+        task.delay(3, function() -- Line: 408 -- upvalues: u49 (val), u302 (upval), SolveLabel (upval), u282 (upval), TextColor3 (upval)
+            if u49 ~= u302 then
+                return
+            end
+            SolveLabel.Text = "solve the math problem"
+            game.TweenService:Create(SolveLabel, u282, {TextColor3 = TextColor3}):Play()
+        end)
+        TextBox.Text = ""
+        return
+    end
+end
+
+Submit.MouseEnter:Connect(function() -- Line: 588 -- upvalues: UIScale_2 (val), u272 (val)
+    if not _G.CAPTCHA_RATE_LIMITED and not _G.CAPTCHA_COOLING and not _G.CAPTCHA_PENDING_SUBMIT then
+        game.TweenService:Create(UIScale_2, u272, {Scale = 1.05}):Play()
+        return
+    end
+end)
+Submit.MouseLeave:Connect(function() -- Line: 593 -- upvalues: UIScale_2 (val), u272 (val)
+    game.TweenService:Create(UIScale_2, u272, {Scale = 1}):Play()
+end)
+Submit.MouseButton1Down:Connect(function() -- Line: 597 -- upvalues: UIScale_2 (val), u272 (val)
+    if not _G.CAPTCHA_RATE_LIMITED and not _G.CAPTCHA_COOLING and not _G.CAPTCHA_PENDING_SUBMIT then
+        game.TweenService:Create(UIScale_2, u272, {Scale = 0.95}):Play()
+        return
+    end
+end)
+Submit.MouseButton1Up:Connect(function() -- Line: 602 -- upvalues: UIScale_2 (val), u272 (val)
+    if not _G.CAPTCHA_RATE_LIMITED and not _G.CAPTCHA_COOLING and not _G.CAPTCHA_PENDING_SUBMIT then
+        game.TweenService:Create(UIScale_2, u272, {Scale = 1.05}):Play()
+        return
+    end
+end)
+Submit.MouseButton1Click:Connect(submitCaptcha)
+Cancel.MouseButton1Click:Connect(function() -- Line: 609 -- upvalues: hideCaptchaGate (val), AsmoLoadSpin (val)
+    hideCaptchaGate()
+    if not AsmoLoadSpin.Thread then
+        return
+    end
+    pcall(function() -- Line: 375 -- upvalues: AsmoLoadSpin (upval)
+        AsmoLoadSpin:Hide()
+    end)
+end)
+TextBox.FocusLost:Connect(function(a1) -- Line: 614 -- upvalues: submitCaptcha (val)
+    if a1 then
+        submitCaptcha()
+    end
+end)
+;(TextBox:GetPropertyChangedSignal("Text")):Connect(function() -- Line: 620
+    -- upvalues: TextBox (val), alertCaptcha (val), u283 (ref), u302 (ref), SolveLabel (val), u260 (val), Position (val)
+    -- upvalues: u282 (val), TextColor3 (val)
+    local u39
+    local Text = TextBox.Text
+    local v1 = Text:gsub("%D", "")
+    local v2 = v1:sub(1, 2)
+    if Text ~= v2 then
+        TextBox.Text = v2
+    end
+    if Text:find("%D") then
+        alertCaptcha()
+        return
+    end
+    local v3 = #v1
+    if #tostring(u283) < v3 then
+        v3 = "the answer is between 1 and " .. u283
+        u302 = u302 + 1
+        u39 = u302
+        SolveLabel.Text = v3 or "solve the math problem (e.g 4+7=<b><font color=\"#FFFFFF\">11</font></b>)"
+        SolveLabel.TextColor3 = u260
+        task.spawn(function() -- Line: 401 -- upvalues: SolveLabel (upval), Position (upval)
+            local v1
+            for k, v in next, {8, -6, 4, -2, 0} do
+                v1 = game.TweenService:Create(
+                    SolveLabel,
+                    TweenInfo.new(0.05, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+                    {Position = Position + UDim2.fromOffset(v, 0)}
+                )
+                v1:Play()
+                v1.Completed:Wait()
+            end
+        end)
+        task.delay(3, function() -- Line: 408 -- upvalues: u39 (val), u302 (upval), SolveLabel (upval), u282 (upval), TextColor3 (upval)
+            if u39 ~= u302 then
+                return
+            end
+            SolveLabel.Text = "solve the math problem"
+            game.TweenService:Create(SolveLabel, u282, {TextColor3 = TextColor3}):Play()
+        end)
+    elseif tonumber(v2) then
+        v3 = tonumber(v2)
+        if u283 < v3 then
+            v3 = "the answer is between 1 and " .. u283
+            u302 = u302 + 1
+            u39 = u302
+            SolveLabel.Text = v3 or "solve the math problem (e.g 4+7=<b><font color=\"#FFFFFF\">11</font></b>)"
+            SolveLabel.TextColor3 = u260
+            task.spawn(function() -- Line: 401 -- upvalues: SolveLabel (upval), Position (upval)
+                local v1
+                for k, v in next, {8, -6, 4, -2, 0} do
+                    v1 = game.TweenService:Create(
+                        SolveLabel,
+                        TweenInfo.new(0.05, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+                        {Position = Position + UDim2.fromOffset(v, 0)}
+                    )
+                    v1:Play()
+                    v1.Completed:Wait()
+                end
+            end)
+            task.delay(3, function() -- Line: 408 -- upvalues: u39 (val), u302 (upval), SolveLabel (upval), u282 (upval), TextColor3 (upval)
+                if u39 ~= u302 then
+                    return
+                end
+                SolveLabel.Text = "solve the math problem"
+                game.TweenService:Create(SolveLabel, u282, {TextColor3 = TextColor3}):Play()
+            end)
+        end
+    end
+end)
+local AbsoluteSize = CustomCoreGUI.AbsoluteSize
+if not (AbsoluteSize.X <= 0) and not (AbsoluteSize.Y <= 0) then
+    UIScale.Scale = math.min(AbsoluteSize.X / 1024, AbsoluteSize.Y / 576)
+end
+;(CustomCoreGUI:GetPropertyChangedSignal("AbsoluteSize")):Connect(function() -- Line: 380 -- upvalues: CustomCoreGUI (val), UIScale (val)
+    local AbsoluteSize = CustomCoreGUI.AbsoluteSize
+    if not (AbsoluteSize.X <= 0) and not (AbsoluteSize.Y <= 0) then
+        UIScale.Scale = math.min(AbsoluteSize.X / 1024, AbsoluteSize.Y / 576)
+        return
+    end
+end)
+CaptchaGate.Visible = false
+CaptchaGate.BackgroundTransparency = 1
+clearCaptchaStrips()
+local v3 = CustomCoreGUI.Emotes.EmotesWheel.Slots["2"].ViewportFrame.WorldModel.Rig.Humanoid:LoadAnimation(game.ReplicatedStorage.Animations.SitDown)
+v3.Looped = true
+v3:Play()
+local v4 = CustomCoreGUI.Emotes.EmotesWheel.Slots["3"].ViewportFrame.WorldModel.Rig.Humanoid:LoadAnimation(game.ReplicatedStorage.Animations.Greet)
+v4.Looped = true
+v4:Play()
+local v5 = CustomCoreGUI.Emotes.EmotesWheel.Slots["4"].ViewportFrame.WorldModel.Rig.Humanoid:LoadAnimation(game.ReplicatedStorage.Animations.Lay)
+v5.Looped = true
+v5:Play()
+;(game.ReplicatedStorage:WaitForChild("MainEvent")).OnClientEvent:Connect(function(a1, a2, a3, a4, a5) -- Line: 653
+    -- upvalues: u303 (ref), showCaptchaGate (val), u283 (ref), u302 (ref), SolveLabel (val), TextColor3 (val)
+    -- upvalues: TextBox (val), u301 (ref), Submit (val), drawCaptcha (val), startCaptchaLockout (val)
+    -- upvalues: flashCaptchaStrokes (val), u265 (val), u260 (val), UIScale_4 (val), u277 (val), u282 (val)
+    -- upvalues: hideCaptchaGate (val), AsmoLoadSpin (val), hideLoadSpin (val), ServerBrowserScreen (val)
+    -- upvalues: TO_SOLVE (val), Position_2 (val)
+    if a1 == "FFACaptcha" then
+        _G.CAPTCHA_PENDING_SUBMIT = false
+        u303 = u303 + 1
+        showCaptchaGate()
+        if a5 then
+            u283 = a5
+        end
+        u302 = u302 + 1
+        SolveLabel.Text = "solve the math problem"
+        SolveLabel.TextColor3 = TextColor3
+        TextBox.Text = ""
+        if not _G.CAPTCHA_RATE_LIMITED then
+            _G.CAPTCHA_COOLING = false
+            u301 = u301 + 1
+            TextBox.TextEditable = true
+            Submit.Text = "Submit"
+        end
+        drawCaptcha(a2, a3, a4)
+        return
+    end
+    if a1 == "FFACaptchaLocked" then
+        _G.CAPTCHA_PENDING_SUBMIT = false
+        u303 = u303 + 1
+        startCaptchaLockout(a2 or 1800)
+        return
+    end
+    if a1 ~= "FFACaptchaResult" then
+        if a1 == "QuickPlayStatus" then
+            ServerBrowserScreen.status(a2, a3)
+            return
+        end
+        if a1 == "CoreGuiNotification" then
+            game.ReplicatedStorage.MainBindedEvent:Fire("CoreGuiNotification", a2)
+        end
+        return
+    end
+    _G.CAPTCHA_PENDING_SUBMIT = false
+    u303 = u303 + 1
+    if a2 then
+        flashCaptchaStrokes(u265)
+        Submit.Text = "Verified!"
+        u302 = u302 + 1
+        local u58 = u302
+        SolveLabel.Text = "verified - joining"
+        SolveLabel.TextColor3 = u265 or u260
+        UIScale_4.Scale = 0.85
+        game.TweenService:Create(UIScale_4, u277, {Scale = 1}):Play()
+        task.delay(3, function() -- Line: 408 -- upvalues: u58 (val), u302 (upval), SolveLabel (upval), u282 (upval), TextColor3 (upval)
+            if u58 ~= u302 then
+                return
+            end
+            SolveLabel.Text = "solve the math problem"
+            game.TweenService:Create(SolveLabel, u282, {TextColor3 = TextColor3}):Play()
+        end)
+        task.delay(0.7, function() -- Line: 684
+            -- upvalues: hideCaptchaGate (upval), a3 (val), AsmoLoadSpin (upval), a4 (val), hideLoadSpin (upval)
+            -- upvalues: ServerBrowserScreen (upval)
+            hideCaptchaGate()
+            if a3 then
+                pcall(function() -- Line: 687 -- upvalues: AsmoLoadSpin (upval)
+                    AsmoLoadSpin:Show()
+                end)
+                game.ReplicatedStorage.MainEvent:FireServer(a3, a4)
+                if a3 == "JOIN_FFA_SERVER" then
+                    task.delay(1.5, hideLoadSpin)
+                    ServerBrowserScreen.joined(a3, a4)
+                end
+            end
+        end)
+        return
+    end
+    task.spawn(function() -- Line: 425 -- upvalues: TO_SOLVE (upval), Position_2 (upval)
+        local v1
+        for k, v in next, {10, -8, 6, -3, 0} do
+            v1 = game.TweenService:Create(
+                TO_SOLVE,
+                TweenInfo.new(0.05, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+                {Position = Position_2 + UDim2.fromOffset(v, 0)}
+            )
+            v1:Play()
+            v1.Completed:Wait()
+        end
+    end)
+    flashCaptchaStrokes(u260)
+    TextBox.Text = ""
+    TextBox.PlaceholderText = "Wrong, try again"
+    local u103 = a3 or 3
+    _G.CAPTCHA_COOLING = true
+    u301 = u301 + 1
+    local u108 = u301
+    TextBox.TextEditable = false
+    task.spawn(function() -- Line: 517 -- upvalues: u103 (val), u108 (val), u301 (upval), Submit (upval), TextBox (upval)
+        local v1 = math.max(1, (math.floor(u103)))
+        while v1 > 0 do
+            if u108 ~= u301 or _G.CAPTCHA_RATE_LIMITED then
+                break
+            end
+            Submit.Text = "Wait " .. v1 .. "s"
+            task.wait(1)
+            v1 = v1 - 1
+        end
+        if u108 == u301 and not _G.CAPTCHA_RATE_LIMITED then
+            _G.CAPTCHA_COOLING = false
+            TextBox.TextEditable = true
+            Submit.Text = "Submit"
+            return
+        end
+    end)
+end)
+;(LocalPlayer.PlayerGui.Inventory.Inventory:GetPropertyChangedSignal("Visible")):Connect(function() -- Line: 715 -- upvalues: LocalPlayer (val), u87 (val)
+    if LocalPlayer.PlayerGui.Inventory.Inventory.Visible == true then
+        u87:select()
+        return
+    end
+    u87:deselect()
+end)
+;(CustomCoreGUI.Emotes:GetPropertyChangedSignal("Visible")):Connect(function() -- Line: 723 -- upvalues: CustomCoreGUI (val), u97 (val)
+    if CustomCoreGUI.Emotes.Visible == true then
+        u97:select()
+        return
+    end
+    u97:deselect()
+end)
+if game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == true or game.ReplicatedStorage.SERVER_IS_FFA.Value == true then
+    v1:setEnabled(true)
+end
+task.wait(1)
+task.spawn(function() -- Line: 737 -- upvalues: StarterGui (val), ResetBindable (val)
+    local success, v1
+    local v2 = tick()
+    repeat
+        success = pcall(StarterGui.SetCore, StarterGui, "ResetButtonCallback", ResetBindable)
+        if not success then
+            task.wait(0.1)
+        end
+    until v1 or 15 < tick() - v2
+    if not v1 then
+        warn("[RESET] failed to bind ResetButtonCallback after 15s")
+    end
+end)
+game.ReplicatedStorage.MainBindedEvent.Event:Connect(function(a1, a2) -- Line: 748 -- upvalues: ServerBrowserScreen (val)
+    if a1 == "CoreGuiNotification" then
+        if ServerBrowserScreen.isOpen() then
+            ServerBrowserScreen.notice(a2)
+            return
+        end
+        require((((game.ReplicatedStorage:WaitForChild("Assets")):WaitForChild("Modules")):WaitForChild("UI")):WaitForChild("Notify")).push(
+            a2,
+            nil,
+            "error"
+        )
+    end
+end)
+repeat
+    task.wait(1)
+until LocalPlayer:FindFirstChild("LOAD_SAVE_DATA")
+if LocalPlayer.DataFolder.Subscription.HasSubscription.Value == true
+    and game.ReplicatedStorage.SERVER_IS_FFA.Value == false
+    and game.ReplicatedStorage.SERVER_IS_ANARCHY.Value == false then
+    v2:setEnabled(true)
+end
